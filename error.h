@@ -14,7 +14,7 @@
 #ifndef _EROR_H_
 #define _EROR_H_
 
-#define SUCCES 				  0 // Successfull return code
+#define SUCCESS 				  0 // Successfull return code
 #define ERROR_LEXICAL 		  1 // Lexical analysis error
 #define ERROR_SYNTAX 		  2 // Syntax analysis error
 #define ERROR_SEMANTIC 		  3 // Semantic error (undefined function/variable, redefinition)
