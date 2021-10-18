@@ -35,10 +35,6 @@ void str_free(string_t* s)
 {
 	free(s->str);
 
-	s->length = 0;
-	s->alloc_size = 0;
-	s->str[0] = '\0';
-
 }
 
 int str_add_char(string_t* s, char c)
