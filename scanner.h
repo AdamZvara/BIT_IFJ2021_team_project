@@ -23,8 +23,8 @@ typedef enum {
 	TOK_PLUS,			// +
 	TOK_MINUS,			// -
 	TOK_MUL,			// *
-	TOK_DIV,			// Whole number  after div (/) 
-	TOK_MOD,			// Remainder after div (//)
+	TOK_DIV,			// Divide two numbers (/) 
+	TOK_INT_DIV,		// Divide two int numbers (//)
 	TOK_CONCAT,			// Concatenation (..)
 	
 	TOK_RBRACKET, 		// )
