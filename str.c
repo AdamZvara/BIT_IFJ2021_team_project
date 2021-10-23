@@ -14,12 +14,13 @@
 #include <stdlib.h>
 #include "str.h"
 #include "error.h"
+#include <string.h>
 
 #define STR_LENGTH_INC 16 	// Length of the string when inicialized
 
 int str_init(string_t* s)
 {
-	s->str = malloc(sizeof(string_t) + STR_LENGTH_INC);
+	s->str = malloc(STR_LENGTH_INC);
 	if (!s->str) {
 		return ERROR_INTERNAL;
 	}
@@ -52,3 +53,16 @@ int str_add_char(string_t* s, char c)
 	return SUCCESS;
 }
 
+int str_copy(string_t* source, string_t* destination)
+{
+	if (source->length >= destination->length) {
+		destination->str = realloc(destination->str, source->length + 1);
+		if (!destination->str) {
+			return ERROR_INTERNAL;
+		}
+		destination->alloc_size = source->length + 1;
+	}
+	strcpy(destination->str, source->str);
+	destination->length = source->length + 1;
+	return SUCCESS;
+}

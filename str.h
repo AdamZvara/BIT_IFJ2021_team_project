@@ -48,5 +48,13 @@ void str_free(string_t* s);
  */
 int str_add_char(string_t* s, char c);
 
-
+/*
+ * @brief Copy string from source to destination
+ *
+ * @param source Source string to be copied
+ * @param destination Destination string
+ *
+ * @return 0 if successfull, else retrun 1.
+ */
+int str_copy(string_t* source, string_t* destination);
 #endif //_STR_H_
