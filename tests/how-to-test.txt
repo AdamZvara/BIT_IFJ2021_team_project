@@ -1,0 +1,12 @@
+For scanner testing:
+    Add any input you'd like scanner to parse into scanner-input,
+    then add the expected values into scanner-helper.expected and
+    then run ./runtests.sh
+
+    .expected file should be in this format:
+        for tokens without any special values:
+            `type_of_token` (e.g. `TOK_LES_EQ`)
+        for tokens that carry additional info:
+            `type_of_token : value` (e.g. `TOK_INT : 50`)
+
+    compilation of scanner-helper is needed and mentioned in scanner-helper.c
