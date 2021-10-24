@@ -12,13 +12,16 @@ for f in $INPUT_FILES; do
 
     # Run tests
     ./scanner-helper < $TEST_DIR$f > $OUTPUT
-
-    # Check output
-    diff $OUTPUT $EXPECTED > $DIFF
-    echo "Testing: $TEST_NAME"
+    
+    # Compare results if no error occurred
     if [ $? -eq 0 ]; then
-        echo "PASS"
-    else
-        echo "FAIL - CHECK .diff FILE"
+        # Check output
+        diff $OUTPUT $EXPECTED > $DIFF
+        echo "Testing: $TEST_NAME"
+        if [ $? -eq 0 ]; then
+            echo "PASS"
+        else
+            echo "FAIL - CHECK .diff FILE"
+        fi
     fi
 done
