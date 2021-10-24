@@ -26,7 +26,7 @@ typedef struct {
  *
  * @param s Pointer to the string.
  *
- * @return 0 if successfull, else retrun 1.
+ * @return 0 if successfull, else return 1.
  */
 int str_init(string_t* s);
 
@@ -44,7 +44,7 @@ void str_free(string_t* s);
  * @param s Pointer to the string.
  * @param c The added character
  *
- * @return 0 if successfull, else retrun 1.
+ * @return 0 if successfull, else return 1.
  */
 int str_add_char(string_t* s, char c);
 
@@ -54,7 +54,7 @@ int str_add_char(string_t* s, char c);
  * @param source Source string to be copied
  * @param destination Destination string
  *
- * @return 0 if successfull, else retrun 1.
+ * @return 0 if successfull, else return 1.
  */
 int str_copy(string_t* source, string_t* destination);
 #endif //_STR_H_
