@@ -37,15 +37,11 @@
 #define STATE_NUMBER_EXP_END 16
 #define STATE_CONCAT 17
 #define STATE_STRING 18
+#define STATE_BLOCK_COMMENT_FIRST 19
+#define STATE_BLOCK_COMMENT 20
+#define STATE_BLOCK_COMMENT_LEAVE 21
 
 //TODO string and espace_seq
-FILE *f;
-
-void set_file(FILE* source)
-{
-	f = source;
-	return;
-}
 
 int check_keyword(string_t* s, token_t* token) 
 {
@@ -92,8 +88,35 @@ int check_keyword(string_t* s, token_t* token)
 	return SUCCESS;
 }
 
+// function to convert char* to int number
+int convert_to_int(token_t* token, string_t* s) 
+{
+	int result = 0;
+	char *ptr;
+
+	result = strtol(s->str, &ptr, 10);
+	
+	token->type = TOK_INT;
+	token->attribute.number = result;
+	return SUCCESS;
+}
+
+int convert_to_double(token_t* token, string_t* s)
+{
+	double result = 0;
+	char *ptr;
+
+	result = strtod(s->str, &ptr);
+
+	token->type = TOK_DECIMAL;
+	token->attribute.decimal = result;
+	return SUCCESS;
+}
+
+
 int get_token(token_t *token) 
 {
+	FILE *f = stdin;
 	string_t s;
 	string_t* str = &s;
 
@@ -200,8 +223,8 @@ int get_token(token_t *token)
 					return ERROR_LEXICAL;
 				}
 
-				break;
-
+				break; // end of START_STATE
+			
 			case STATE_DIV:
 				if (c == '/') {
 					token->type = TOK_INT_DIV;
@@ -212,6 +235,7 @@ int get_token(token_t *token)
 
 				}
 				return SUCCESS;
+				break;
 
 			case STATE_CONCAT:
 				if (c == '.') {
@@ -223,6 +247,7 @@ int get_token(token_t *token)
 					return ERROR_LEXICAL;
 				
 				}
+				break;
 
 			case STATE_NOT_EQUAL:
 				if (c == '=') {
@@ -233,6 +258,7 @@ int get_token(token_t *token)
 					ungetc(c, f);
 					return ERROR_LEXICAL;
 				}
+				break;
 
 			case STATE_GREAT:
 				if (c == '=') {
@@ -243,7 +269,8 @@ int get_token(token_t *token)
 					token->type = TOK_GR;
 				}
 				return SUCCESS;
-		
+				break;
+
 			case STATE_LESS:
 				if (c == '=') {
 					token->type = TOK_LES_EQ;
@@ -252,6 +279,7 @@ int get_token(token_t *token)
 					token->type = TOK_LES;
 				}
 				return SUCCESS;
+				break;
 
 			case STATE_EQUAL:
 				if (c == '=') {
@@ -262,7 +290,9 @@ int get_token(token_t *token)
 
 				}
 				return SUCCESS;
+				break;
 
+			// state for id and keyword proccessing
 			case STATE_ID_OR_KEYWORD:
 				if (isalnum(c) || c == '_') {
 					if (str_add_char(str, c)) {
@@ -274,7 +304,9 @@ int get_token(token_t *token)
 					return check_keyword(str, token);
 
 				}
+				break;
 
+			// states for number proccessing
 			case STATE_NUMBER:
 				if (isdigit(c)) {
 					if (str_add_char(str, c)) {
@@ -295,7 +327,7 @@ int get_token(token_t *token)
 
 				} else {
 					ungetc(c, f);
-					return SUCCESS; // TODO convert_to_int
+					return convert_to_int(token, str);
 				}
 				break;
 
@@ -327,7 +359,7 @@ int get_token(token_t *token)
 
 				} else {
 					ungetc(c, f);
-					return SUCCESS;
+					return convert_to_double(token, str);
 				}
 
 				break;
@@ -373,16 +405,63 @@ int get_token(token_t *token)
 
 				} else {
 					ungetc(c, f);
-					return SUCCESS;
+					return convert_to_double(token, str);
 				
 				}
 
 				break;
 
+			// states for commentary or minus sign (-)
 			case STATE_MINUS:
-				//TODO
+				if (c == '-') {
+					scanner_state = STATE_COMMENT;
+
+				} else {
+					token->type = TOK_MINUS;
+					ungetc(c, f);
+					return SUCCESS;
+				}
 				break;
 
+			case STATE_COMMENT:
+				if (c == '\n') {
+					scanner_state = STATE_START;
+
+				} else if (c == '[') {
+					scanner_state = STATE_BLOCK_COMMENT_FIRST;
+				}
+				break;
+
+			case STATE_BLOCK_COMMENT_FIRST:
+				if (c == '[') {
+					scanner_state = STATE_BLOCK_COMMENT;
+				
+				} else if (c == '\n') {
+					scanner_state = STATE_START;
+					ungetc(c, f);
+					return SUCCESS;
+		
+				} else if (c != '\n') {
+					scanner_state = STATE_COMMENT;
+
+				}
+				break;
+
+			case STATE_BLOCK_COMMENT:
+				if (c == ']') {
+					scanner_state = STATE_BLOCK_COMMENT_LEAVE;
+				}
+				break;
+
+			case STATE_BLOCK_COMMENT_LEAVE:
+				if (c == ']') {
+					scanner_state = STATE_START; 
+				} else {
+					scanner_state = STATE_BLOCK_COMMENT;
+				}
+				break;
+
+			// state for string literal
 			case STATE_STRING:
 				//TODO
 				break;
