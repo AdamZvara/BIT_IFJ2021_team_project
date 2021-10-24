@@ -1,0 +1,15 @@
+TOK_KEYWORD : do
+TOK_KEYWORD : else
+TOK_KEYWORD : end
+TOK_KEYWORD : function
+TOK_KEYWORD : global
+TOK_KEYWORD : if
+TOK_KEYWORD : integer
+TOK_KEYWORD : local
+TOK_KEYWORD : nil
+TOK_KEYWORD : number
+TOK_KEYWORD : require
+TOK_KEYWORD : return
+TOK_KEYWORD : string
+TOK_KEYWORD : then
+TOK_KEYWORD : while

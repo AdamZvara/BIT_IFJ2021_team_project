@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../scanner.h"
+#include "../error.h"
 
 /* Compile like this while in the same dir as this file:
  * gcc -o scanner-helper scanner-helper.c ../scanner.c ../str.c */
@@ -10,6 +11,7 @@ int main ()
     // Load first token, then read tokens and output information based
     // on the type of the token until TOK_EOF is read
     token_t *token = malloc(sizeof(token_t));
+    
     get_token(token);
     while(token->type != TOK_EOF) {
         switch (token->type) {
@@ -32,7 +34,7 @@ int main ()
                 printf("%s\n", token->attribute.s->str);
                 break;
             case TOK_ID:
-                printf("TOK_ID");
+                printf("TOK_ID : ");
                 printf("%s\n", token->attribute.s->str);
                 break;
             case TOK_KEYWORD:
@@ -67,6 +69,7 @@ int main ()
                         break;
                     case KW_NUMBER:
                         printf("number\n");
+                        break;
                     case KW_REQUIRE:
                         printf("require\n");
                         break;
@@ -84,9 +87,9 @@ int main ()
                         break;
                 }
                 break;
-            case TOK_EOL:
+            /*case TOK_EOL:
                 printf("TOK_EOL\n");
-                break;
+                break;*/
             case TOK_NOTHING:
                 printf("TOK_NOTHING\n");
                 break;
@@ -149,7 +152,9 @@ int main ()
                 break;
 
         }
-        get_token(token);
+        if (get_token(token) != SUCCESS) {
+            printf("ERROR\n");
+        };
     }
     return 0;
 }

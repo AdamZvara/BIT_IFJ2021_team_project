@@ -16,8 +16,8 @@ for f in $INPUT_FILES; do
     # Compare results if no error occurred
     if [ $? -eq 0 ]; then
         # Check output
-        diff $OUTPUT $EXPECTED > $DIFF
         echo "Testing: $TEST_NAME"
+        diff $OUTPUT $EXPECTED > $DIFF
         if [ $? -eq 0 ]; then
             echo "PASS"
         else
