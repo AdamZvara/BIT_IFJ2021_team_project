@@ -55,6 +55,10 @@ int str_add_char(string_t* s, char c)
 
 int str_copy(string_t* source, string_t* destination)
 {
+	if (source == NULL || destination == NULL || source->str == NULL || destination->str == NULL) {
+		return ERROR_INTERNAL;
+	}
+
 	if (source->length >= destination->length) {
 		destination->str = realloc(destination->str, source->length + 1);
 		if (!destination->str) {
