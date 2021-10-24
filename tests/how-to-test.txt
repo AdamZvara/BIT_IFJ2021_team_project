@@ -1,6 +1,5 @@
 For scanner testing:
-    Add any input you'd like scanner to parse into scanner-input,
-    then add the expected values into scanner-helper.expected and
+    Create your-test.input, your-test.expected in scanner-tests dir,
     then run ./runtests.sh
 
     .expected file should be in this format:
