@@ -1,3 +1,4 @@
+
 /**
 * VUT IFJ Project 2021.
 *
@@ -18,7 +19,6 @@
 #include "scanner.h"
 #include "error.h"
 
-// TODO define states
 #define STATE_START 1
 #define STATE_ID_OR_KEYWORD 2
 #define STATE_MINUS 3
@@ -40,8 +40,11 @@
 #define STATE_BLOCK_COMMENT_FIRST 19
 #define STATE_BLOCK_COMMENT 20
 #define STATE_BLOCK_COMMENT_LEAVE 21
-
-//TODO string and espace_seq
+#define STATE_STRING_ESCAPE 22
+#define STATE_STRING_ESCAPE_NUM_1 23
+#define STATE_STRING_ESCAPE_NUM_2 24
+#define STATE_STRING_ESCAPE_NUM_3 25
+#define STATE_LINE_COMMENT 26
 
 int check_keyword(string_t* s, token_t* token) 
 {
@@ -81,7 +84,12 @@ int check_keyword(string_t* s, token_t* token)
 		token->type = TOK_KEYWORD;
 		return SUCCESS;
 	}
-	
+
+	// init string attribute in token to save id
+	if (str_init(token->attribute.s)) {
+		return ERROR_INTERNAL;
+	}
+
 	if (str_copy(s, token->attribute.s)) {
 		return ERROR_INTERNAL;
 	}
@@ -127,7 +135,7 @@ int get_token(token_t *token)
 	int scanner_state = STATE_START;
 	token->type = TOK_NOTHING;
 	char c = '\0';
-	char escape_seq[2] = {'\0'};
+	char escape_seq[3] = {'\0'};
 	
 	while(1) {
 		c = getc(f);
@@ -149,11 +157,11 @@ int get_token(token_t *token)
 					return SUCCESS;
 
 				} else if (c == '{') {
-					token->type = TOK_RCURLBRACKET;
+					token->type = TOK_LCURLBRACKET;
 					return SUCCESS;
 
 				} else if (c == '}') {
-					token->type = TOK_LCURBRACKET;
+					token->type = TOK_RCURLBRACKET;
 					return SUCCESS;
 
 				} else if (c == '+') {
@@ -276,6 +284,7 @@ int get_token(token_t *token)
 					token->type = TOK_LES_EQ;
 
 				} else {
+					ungetc(c, f);
 					token->type = TOK_LES;
 				}
 				return SUCCESS;
@@ -286,6 +295,7 @@ int get_token(token_t *token)
 					token->type = TOK_EQ;
 					
 				} else {
+					ungetc(c, f);
 					token->type = TOK_ASSIGN;
 
 				}
@@ -424,11 +434,22 @@ int get_token(token_t *token)
 				break;
 
 			case STATE_COMMENT:
+				if (c == '[') {
+					scanner_state = STATE_BLOCK_COMMENT_FIRST;
+
+				} else if (c == '\n') {
+					scanner_state = STATE_START;
+
+				} else {
+					scanner_state = STATE_LINE_COMMENT;
+
+				}
+				break;
+
+			case STATE_LINE_COMMENT:
 				if (c == '\n') {
 					scanner_state = STATE_START;
 
-				} else if (c == '[') {
-					scanner_state = STATE_BLOCK_COMMENT_FIRST;
 				}
 				break;
 
@@ -463,8 +484,109 @@ int get_token(token_t *token)
 
 			// state for string literal
 			case STATE_STRING:
-				//TODO
+				// cant write in string literal char with ascii value lower than 32
+				if (c < 32) {
+					return ERROR_LEXICAL;
+
+				} else if (c == '"') {
+					// inicialize token string attribute
+
+					if (str_init(token->attribute.s)) {
+						return ERROR_INTERNAL;
+					}
+
+					if (str_copy(str, token->attribute.s)) {
+						return ERROR_INTERNAL;
+					}
+
+					token->type = TOK_STRING;
+					return SUCCESS;
+
+				} else if (c == '\\') {
+					scanner_state = STATE_STRING_ESCAPE;
+
+				} else {
+					if (str_add_char(str, c)) {
+						return ERROR_INTERNAL;
+					}
+				}
 				break;
+
+			case STATE_STRING_ESCAPE:
+				if (c == 't') {
+					c = '\t';
+					if (str_add_char(str, c)) {
+						return ERROR_INTERNAL;
+					}
+					scanner_state = STATE_STRING;
+
+				} else if (c == 'n') {
+					c = '\n';
+					if (str_add_char(str, c)) {
+						return ERROR_INTERNAL;
+					}
+					scanner_state = STATE_STRING;
+
+				} else if (c == '"') {
+					c = '"';
+					if (str_add_char(str, c)) {
+						return ERROR_INTERNAL;
+					}
+					scanner_state = STATE_STRING;
+
+				} else if (c == '\\') {
+					c = '\\';
+					if (str_add_char(str, c)) {
+						return ERROR_INTERNAL;
+					}
+					scanner_state = STATE_STRING;
+					
+				} else if (isdigit(c)) {
+					escape_seq[0] = c;
+					scanner_state = STATE_STRING_ESCAPE_NUM_1;
+
+				} else {
+					return ERROR_LEXICAL;
+
+				}
+				break;
+
+			case STATE_STRING_ESCAPE_NUM_1:
+				if (isdigit(c)) {
+					escape_seq[1] = c;
+					scanner_state = STATE_STRING_ESCAPE_NUM_2;
+
+				} else {
+					return ERROR_LEXICAL;
+					
+				}
+				break;
+
+			case STATE_STRING_ESCAPE_NUM_2:
+				if (isdigit(c)) {
+					escape_seq[2] = c;
+					scanner_state = STATE_STRING;
+					
+					char *ptr;
+					int result = strtol(escape_seq, &ptr, 10);
+					// check if escape sequace character is between 1 and 255
+					// otherwise it's invalid character
+					if (result >= 1 && result <= 255) {
+						c = (char) result;
+						if (str_add_char(str, c)) {
+							return ERROR_INTERNAL;
+						}
+
+					} else {
+						return ERROR_LEXICAL;
+
+					}
+				} else {
+					return ERROR_LEXICAL;
+
+				}
+				break;
+
 		} // case
 	} // while loop
 	return SUCCESS; 
