@@ -30,7 +30,7 @@ typedef enum {
 	TOK_RBRACKET, 		// )
 	TOK_LBRACKET, 		// (
 	TOK_RCURLBRACKET, 	// }
-	TOK_LCURBRACKET, 	// {
+	TOK_LCURLBRACKET, 	// {
 	
 	TOK_COMMA, 			// ,
 	TOK_COLON, 			// :
