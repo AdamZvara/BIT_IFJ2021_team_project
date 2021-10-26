@@ -7,12 +7,12 @@ do
 --[ single line comment [[ 
 else
 
--- [[ multi 
+--[[ multi 
     line
     comment ]] local
--- [[ multi
+--[[ multi
     line][] not ending
 ]] number
 
--- [[ multi 
-    line -- single line --]]
+--[[ multi 
+	line -- single line --]]

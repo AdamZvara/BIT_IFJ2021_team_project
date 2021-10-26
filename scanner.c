@@ -46,6 +46,15 @@
 #define STATE_STRING_ESCAPE_NUM_3 25
 #define STATE_LINE_COMMENT 26
 
+
+// function to free allocated space for string when returning
+int free_and_return(string_t *s, int return_code) {
+
+	str_free(s);
+	return return_code;
+}
+
+// function to check if string is keyword or it's just an identificator
 int check_keyword(string_t* s, token_t* token) 
 {
 	if (!strcmp(s->str,"do")) 
@@ -86,12 +95,12 @@ int check_keyword(string_t* s, token_t* token)
 	}
 
 	// init string attribute in token to save id
-	if (str_init(token->attribute.s)) {
-		return ERROR_INTERNAL;
+	if (str_init(&token->attribute.s)) {
+		return free_and_return(s, ERROR_INTERNAL);
 	}
 
-	if (str_copy(s, token->attribute.s)) {
-		return ERROR_INTERNAL;
+	if (str_copy(s, &token->attribute.s)) {
+		return free_and_return(s, ERROR_INTERNAL); 
 	}
 	return SUCCESS;
 }
@@ -106,7 +115,7 @@ int convert_to_int(token_t* token, string_t* s)
 	
 	token->type = TOK_INT;
 	token->attribute.number = result;
-	return SUCCESS;
+	return free_and_return(s, SUCCESS);
 }
 
 int convert_to_double(token_t* token, string_t* s)
@@ -118,17 +127,17 @@ int convert_to_double(token_t* token, string_t* s)
 
 	token->type = TOK_DECIMAL;
 	token->attribute.decimal = result;
-	return SUCCESS;
+	return free_and_return(s, SUCCESS);
 }
+
 
 
 int get_token(token_t *token) 
 {
 	FILE *f = stdin;
-	string_t s;
-	string_t* str = &s;
+	string_t str;
 
-	if (str_init(str)) {
+	if (str_init(&str)) {
 		return ERROR_INTERNAL;
 	}
 
@@ -141,40 +150,36 @@ int get_token(token_t *token)
 		c = getc(f);
 		switch(scanner_state) {
 			case STATE_START:
-				if (c == '\n') {
-					token->type = TOK_EOL;
-					return SUCCESS;
-
-				} else if (isspace(c)) {
+				if (isspace(c)) {
 					scanner_state = STATE_START;
 
 				} else if (c == '(') {
 					token->type = TOK_LBRACKET;
-					return SUCCESS;
+					return free_and_return(&str, SUCCESS);
 
 				} else if (c == ')') {
 					token->type = TOK_RBRACKET;
-					return SUCCESS;
+					return free_and_return(&str, SUCCESS);
 
 				} else if (c == '{') {
 					token->type = TOK_LCURLBRACKET;
-					return SUCCESS;
+					return free_and_return(&str, SUCCESS);
 
 				} else if (c == '}') {
 					token->type = TOK_RCURLBRACKET;
-					return SUCCESS;
+					return free_and_return(&str, SUCCESS);
 
 				} else if (c == '+') {
 					token->type = TOK_PLUS;
-					return SUCCESS;
+					return free_and_return(&str, SUCCESS);
 
 				} else if (c == '#') {
 					token->type = TOK_LEN;
-					return SUCCESS;
+					return free_and_return(&str, SUCCESS);
 
 				} else if (c == '*') {
 					token->type = TOK_MUL;
-					return SUCCESS;
+					return free_and_return(&str, SUCCESS);
 
 				} else if (c == '/') {
 					scanner_state = STATE_DIV;
@@ -199,27 +204,27 @@ int get_token(token_t *token)
 
 				} else if (c == ':') {
 					token->type = TOK_COLON;
-					return SUCCESS;
+					return free_and_return(&str, SUCCESS);
 				
 				} else if (c == ',') {
 					token->type = TOK_COMMA;
-					return SUCCESS;
+					return free_and_return(&str, SUCCESS);
 
 				} else if (c == EOF) {
 					token->type = TOK_EOF;
-					return SUCCESS;
+					return free_and_return(&str, SUCCESS);
 
 				} else if (isalpha(c) || c == '_') {
 					
-					if (str_add_char(str, c)) {
-						return ERROR_INTERNAL;
+					if (str_add_char(&str, c)) {
+						return free_and_return(&str, ERROR_INTERNAL);
 					}
 					scanner_state = STATE_ID_OR_KEYWORD;
 
 				} else if (isdigit(c)) {
 					
-					if (str_add_char(str, c)) {
-						return ERROR_INTERNAL;
+					if (str_add_char(&str, c)) {
+						return free_and_return(&str, ERROR_INTERNAL);
 					}
 					scanner_state = STATE_NUMBER;
 				
@@ -228,7 +233,7 @@ int get_token(token_t *token)
 
 				} else {
 
-					return ERROR_LEXICAL;
+					return free_and_return(&str, ERROR_LEXICAL);
 				}
 
 				break; // end of START_STATE
@@ -242,17 +247,17 @@ int get_token(token_t *token)
 					token->type = TOK_DIV;
 
 				}
-				return SUCCESS;
+				return free_and_return(&str, SUCCESS);
 				break;
 
 			case STATE_CONCAT:
 				if (c == '.') {
 					token->type= TOK_CONCAT;
-					return SUCCESS;
+					return free_and_return(&str, SUCCESS);
 
 				} else {
 					ungetc(c, f);
-					return ERROR_LEXICAL;
+					return free_and_return(&str, ERROR_LEXICAL);
 				
 				}
 				break;
@@ -260,11 +265,11 @@ int get_token(token_t *token)
 			case STATE_NOT_EQUAL:
 				if (c == '=') {
 					token->type = TOK_NEQ;
-					return SUCCESS;
+					return free_and_return(&str, SUCCESS);
 				
 				} else {
 					ungetc(c, f);
-					return ERROR_LEXICAL;
+					return free_and_return(&str, ERROR_LEXICAL);
 				}
 				break;
 
@@ -276,7 +281,7 @@ int get_token(token_t *token)
 					ungetc(c, f);
 					token->type = TOK_GR;
 				}
-				return SUCCESS;
+				return free_and_return(&str, SUCCESS);
 				break;
 
 			case STATE_LESS:
@@ -287,7 +292,7 @@ int get_token(token_t *token)
 					ungetc(c, f);
 					token->type = TOK_LES;
 				}
-				return SUCCESS;
+				return free_and_return(&str, SUCCESS);
 				break;
 
 			case STATE_EQUAL:
@@ -299,19 +304,19 @@ int get_token(token_t *token)
 					token->type = TOK_ASSIGN;
 
 				}
-				return SUCCESS;
+				return free_and_return(&str, SUCCESS);
 				break;
 
 			// state for id and keyword proccessing
 			case STATE_ID_OR_KEYWORD:
 				if (isalnum(c) || c == '_') {
-					if (str_add_char(str, c)) {
-						return ERROR_INTERNAL;
+					if (str_add_char(&str, c)) {
+						return free_and_return(&str, ERROR_INTERNAL);
 					}
 
 				} else {
 					ungetc(c, f);
-					return check_keyword(str, token);
+					return check_keyword(&str, token);
 
 				}
 				break;
@@ -319,57 +324,57 @@ int get_token(token_t *token)
 			// states for number proccessing
 			case STATE_NUMBER:
 				if (isdigit(c)) {
-					if (str_add_char(str, c)) {
-						return ERROR_INTERNAL;
+					if (str_add_char(&str, c)) {
+						return free_and_return(&str, ERROR_INTERNAL);
 					}
 
 				} else if (c == '.') {
 					scanner_state = STATE_NUMBER_POINT;
-					if (str_add_char(str, c)) {
-						return ERROR_INTERNAL;
+					if (str_add_char(&str, c)) {
+						return free_and_return(&str, ERROR_INTERNAL);
 					}
 
 				} else if (c == 'e' || c == 'E') {
 					scanner_state = STATE_NUMBER_E;
-					if (str_add_char(str, c)) {
-						return ERROR_INTERNAL;
+					if (str_add_char(&str, c)) {
+						return free_and_return(&str, ERROR_INTERNAL);
 					}
 
 				} else {
 					ungetc(c, f);
-					return convert_to_int(token, str);
+					return convert_to_int(token, &str);
 				}
 				break;
 
 			case STATE_NUMBER_POINT:
 				if (isdigit(c)) {
-					if (str_add_char(str, c)) {
-						return ERROR_INTERNAL;
+					if (str_add_char(&str, c)) {
+						return free_and_return(&str, ERROR_INTERNAL);;
 					}
 					scanner_state = STATE_NUMBER_DEC;
 
 				} else {
 					ungetc(c, f);
-					return ERROR_LEXICAL;
+					return free_and_return(&str, ERROR_LEXICAL);
 				}
 
 				break;
 
 			case STATE_NUMBER_DEC:
 				if (isdigit(c)) {
-					if (str_add_char(str, c)) {
-						return ERROR_INTERNAL;
+					if (str_add_char(&str, c)) {
+						return free_and_return(&str, ERROR_INTERNAL);
 					}
 
 				} else if (c == 'E' || c == 'e') {
 					scanner_state = STATE_NUMBER_E;
-					if (str_add_char(str, c)) {
-						return ERROR_INTERNAL;
+					if (str_add_char(&str, c)) {
+						return free_and_return(&str, ERROR_INTERNAL);
 					}
 
 				} else {
 					ungetc(c, f);
-					return convert_to_double(token, str);
+					return convert_to_double(token, &str);
 				}
 
 				break;
@@ -377,45 +382,45 @@ int get_token(token_t *token)
 			case STATE_NUMBER_E:
 				if (isdigit(c)) {
 					scanner_state = STATE_NUMBER_EXP_END;
-					if (str_add_char(str, c)) {
-						return ERROR_INTERNAL;
+					if (str_add_char(&str, c)) {
+						return free_and_return(&str, ERROR_INTERNAL);
 					}
 					
 				} else if (c == '+' || c == '-') {
 					scanner_state = STATE_NUMBER_EXP_SIGN;
-					if (str_add_char(str, c)) {
-						return ERROR_INTERNAL;
+					if (str_add_char(&str, c)) {
+						return free_and_return(&str, ERROR_INTERNAL);
 					}
 
 				} else {
 					ungetc(c, f);
-					return ERROR_LEXICAL;
+					return free_and_return(&str, ERROR_LEXICAL);
 				}
 				
 				break;
 
 			case STATE_NUMBER_EXP_SIGN:
 				if (isdigit(c)) {
-					if (str_add_char(str, c)) {
-						return ERROR_INTERNAL;
+					if (str_add_char(&str, c)) {
+						return free_and_return(&str, ERROR_INTERNAL);
 					}
 
 				} else {
 					ungetc(c, f);
-					return ERROR_LEXICAL;
+					return free_and_return(&str, ERROR_LEXICAL);
 				}
 
 				break;
 
 			case STATE_NUMBER_EXP_END:
 				if (isdigit(c)) {
-					if (str_add_char(str, c)) {
-						return ERROR_INTERNAL;
+					if (str_add_char(&str, c)) {
+						return free_and_return(&str, ERROR_INTERNAL);
 					}
 
 				} else {
 					ungetc(c, f);
-					return convert_to_double(token, str);
+					return convert_to_double(token, &str);
 				
 				}
 
@@ -429,7 +434,7 @@ int get_token(token_t *token)
 				} else {
 					token->type = TOK_MINUS;
 					ungetc(c, f);
-					return SUCCESS;
+					return free_and_return(&str, SUCCESS);
 				}
 				break;
 
@@ -460,7 +465,7 @@ int get_token(token_t *token)
 				} else if (c == '\n') {
 					scanner_state = STATE_START;
 					ungetc(c, f);
-					return SUCCESS;
+					return free_and_return(&str, SUCCESS);
 		
 				} else if (c != '\n') {
 					scanner_state = STATE_COMMENT;
@@ -486,28 +491,28 @@ int get_token(token_t *token)
 			case STATE_STRING:
 				// cant write in string literal char with ascii value lower than 32
 				if (c < 32) {
-					return ERROR_LEXICAL;
+					return free_and_return(&str, ERROR_LEXICAL);
 
 				} else if (c == '"') {
 					// inicialize token string attribute
 
-					if (str_init(token->attribute.s)) {
-						return ERROR_INTERNAL;
+					if (str_init(&token->attribute.s)) {
+						return free_and_return(&str, ERROR_INTERNAL);
 					}
 
-					if (str_copy(str, token->attribute.s)) {
-						return ERROR_INTERNAL;
+					if (str_copy(&str, &token->attribute.s)) {
+						return free_and_return(&str, ERROR_INTERNAL);
 					}
 
 					token->type = TOK_STRING;
-					return SUCCESS;
+					return free_and_return(&str, SUCCESS);
 
 				} else if (c == '\\') {
 					scanner_state = STATE_STRING_ESCAPE;
 
 				} else {
-					if (str_add_char(str, c)) {
-						return ERROR_INTERNAL;
+					if (str_add_char(&str, c)) {
+						return free_and_return(&str, ERROR_INTERNAL);
 					}
 				}
 				break;
@@ -515,29 +520,29 @@ int get_token(token_t *token)
 			case STATE_STRING_ESCAPE:
 				if (c == 't') {
 					c = '\t';
-					if (str_add_char(str, c)) {
-						return ERROR_INTERNAL;
+					if (str_add_char(&str, c)) {
+						return free_and_return(&str, ERROR_INTERNAL);
 					}
 					scanner_state = STATE_STRING;
 
 				} else if (c == 'n') {
 					c = '\n';
-					if (str_add_char(str, c)) {
-						return ERROR_INTERNAL;
+					if (str_add_char(&str, c)) {
+						return free_and_return(&str, ERROR_INTERNAL);
 					}
 					scanner_state = STATE_STRING;
 
 				} else if (c == '"') {
 					c = '"';
-					if (str_add_char(str, c)) {
-						return ERROR_INTERNAL;
+					if (str_add_char(&str, c)) {
+						return free_and_return(&str, ERROR_INTERNAL);
 					}
 					scanner_state = STATE_STRING;
 
 				} else if (c == '\\') {
 					c = '\\';
-					if (str_add_char(str, c)) {
-						return ERROR_INTERNAL;
+					if (str_add_char(&str, c)) {
+						return free_and_return(&str, ERROR_INTERNAL);
 					}
 					scanner_state = STATE_STRING;
 					
@@ -546,7 +551,7 @@ int get_token(token_t *token)
 					scanner_state = STATE_STRING_ESCAPE_NUM_1;
 
 				} else {
-					return ERROR_LEXICAL;
+					return free_and_return(&str, ERROR_LEXICAL);
 
 				}
 				break;
@@ -557,7 +562,7 @@ int get_token(token_t *token)
 					scanner_state = STATE_STRING_ESCAPE_NUM_2;
 
 				} else {
-					return ERROR_LEXICAL;
+					return free_and_return(&str, ERROR_LEXICAL);
 					
 				}
 				break;
@@ -573,21 +578,20 @@ int get_token(token_t *token)
 					// otherwise it's invalid character
 					if (result >= 1 && result <= 255) {
 						c = (char) result;
-						if (str_add_char(str, c)) {
-							return ERROR_INTERNAL;
+						if (str_add_char(&str, c)) {
+							return free_and_return(&str, ERROR_INTERNAL);
 						}
 
 					} else {
-						return ERROR_LEXICAL;
+						return free_and_return(&str, ERROR_LEXICAL);
 
 					}
 				} else {
-					return ERROR_LEXICAL;
+					return free_and_return(&str, ERROR_LEXICAL);
 
 				}
 				break;
 
 		} // case
-	} // while loop
-	return SUCCESS; 
+	} // while loop 
 }

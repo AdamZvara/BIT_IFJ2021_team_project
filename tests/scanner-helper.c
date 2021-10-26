@@ -11,7 +11,7 @@ int main ()
     // Load first token, then read tokens and output information based
     // on the type of the token until TOK_EOF is read
     token_t *token = malloc(sizeof(token_t));
-    
+
     get_token(token);
     while(token->type != TOK_EOF) {
         switch (token->type) {
@@ -31,11 +31,11 @@ int main ()
                 break;
             case TOK_STRING:
                 printf("TOK_STRING : ");
-                printf("%s\n", token->attribute.s->str);
+                printf("%s\n", token->attribute.s.str);
                 break;
             case TOK_ID:
                 printf("TOK_ID : ");
-                printf("%s\n", token->attribute.s->str);
+                printf("%s\n", token->attribute.s.str);
                 break;
             case TOK_KEYWORD:
                 printf("TOK_KEYWORD : ");
