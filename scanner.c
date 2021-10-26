@@ -54,6 +54,7 @@ int free_and_return(string_t *s, int return_code) {
 	return return_code;
 }
 
+
 // function to check if string is keyword or it's just an identificator
 int check_keyword(string_t* s, token_t* token) 
 {
@@ -101,6 +102,7 @@ int check_keyword(string_t* s, token_t* token)
 
 	if (str_copy(s, &token->attribute.s)) {
 		return free_and_return(s, ERROR_INTERNAL); 
+
 	}
 	return SUCCESS;
 }
@@ -116,6 +118,7 @@ int convert_to_int(token_t* token, string_t* s)
 	token->type = TOK_INT;
 	token->attribute.number = result;
 	return free_and_return(s, SUCCESS);
+
 }
 
 int convert_to_double(token_t* token, string_t* s)
@@ -163,6 +166,7 @@ int get_token(token_t *token)
 
 				} else if (c == '{') {
 					token->type = TOK_LCURLBRACKET;
+
 					return free_and_return(&str, SUCCESS);
 
 				} else if (c == '}') {
@@ -247,7 +251,9 @@ int get_token(token_t *token)
 					token->type = TOK_DIV;
 
 				}
+
 				return free_and_return(&str, SUCCESS);
+        
 				break;
 
 			case STATE_CONCAT:
@@ -281,7 +287,9 @@ int get_token(token_t *token)
 					ungetc(c, f);
 					token->type = TOK_GR;
 				}
+
 				return free_and_return(&str, SUCCESS);
+
 				break;
 
 			case STATE_LESS:
@@ -292,7 +300,9 @@ int get_token(token_t *token)
 					ungetc(c, f);
 					token->type = TOK_LES;
 				}
+        
 				return free_and_return(&str, SUCCESS);
+
 				break;
 
 			case STATE_EQUAL:
@@ -304,7 +314,9 @@ int get_token(token_t *token)
 					token->type = TOK_ASSIGN;
 
 				}
+
 				return free_and_return(&str, SUCCESS);
+
 				break;
 
 			// state for id and keyword proccessing
@@ -342,7 +354,9 @@ int get_token(token_t *token)
 
 				} else {
 					ungetc(c, f);
+
 					return convert_to_int(token, &str);
+
 				}
 				break;
 
@@ -374,7 +388,9 @@ int get_token(token_t *token)
 
 				} else {
 					ungetc(c, f);
+
 					return convert_to_double(token, &str);
+
 				}
 
 				break;
@@ -420,7 +436,9 @@ int get_token(token_t *token)
 
 				} else {
 					ungetc(c, f);
+
 					return convert_to_double(token, &str);
+
 				
 				}
 
@@ -434,7 +452,9 @@ int get_token(token_t *token)
 				} else {
 					token->type = TOK_MINUS;
 					ungetc(c, f);
+
 					return free_and_return(&str, SUCCESS);
+
 				}
 				break;
 
@@ -465,7 +485,9 @@ int get_token(token_t *token)
 				} else if (c == '\n') {
 					scanner_state = STATE_START;
 					ungetc(c, f);
+
 					return free_and_return(&str, SUCCESS);
+
 		
 				} else if (c != '\n') {
 					scanner_state = STATE_COMMENT;
@@ -491,10 +513,13 @@ int get_token(token_t *token)
 			case STATE_STRING:
 				// cant write in string literal char with ascii value lower than 32
 				if (c < 32) {
+
 					return free_and_return(&str, ERROR_LEXICAL);
+
 
 				} else if (c == '"') {
 					// inicialize token string attribute
+
 
 					if (str_init(&token->attribute.s)) {
 						return free_and_return(&str, ERROR_INTERNAL);
@@ -507,10 +532,12 @@ int get_token(token_t *token)
 					token->type = TOK_STRING;
 					return free_and_return(&str, SUCCESS);
 
+
 				} else if (c == '\\') {
 					scanner_state = STATE_STRING_ESCAPE;
 
 				} else {
+
 					if (str_add_char(&str, c)) {
 						return free_and_return(&str, ERROR_INTERNAL);
 					}
@@ -578,6 +605,7 @@ int get_token(token_t *token)
 					// otherwise it's invalid character
 					if (result >= 1 && result <= 255) {
 						c = (char) result;
+            
 						if (str_add_char(&str, c)) {
 							return free_and_return(&str, ERROR_INTERNAL);
 						}
@@ -588,6 +616,7 @@ int get_token(token_t *token)
 					}
 				} else {
 					return free_and_return(&str, ERROR_LEXICAL);
+
 
 				}
 				break;
