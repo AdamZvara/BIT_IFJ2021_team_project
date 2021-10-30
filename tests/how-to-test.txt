@@ -1,0 +1,14 @@
+For scanner testing:
+    Create your-test.input, your-test.expected in scanner-tests dir,
+    then run ./runtests.sh
+
+    .expected file should be in this format:
+        for tokens without any special values:
+            `type_of_token` (e.g. `TOK_LES_EQ`)
+        for tokens that carry additional info:
+            `type_of_token : value` (e.g. `TOK_INT : 50`)
+        end each file with newline
+
+    compilation of scanner-helper is needed and mentioned in scanner-helper.c
+    do not start .input file with error token!
+    

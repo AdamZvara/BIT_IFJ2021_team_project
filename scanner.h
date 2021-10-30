@@ -60,7 +60,7 @@ typedef enum {
 } keyword_t;
 
 typedef union {
-	string_t* s;
+	string_t s;
 	double decimal;
 	int number;
 	keyword_t keyword;
@@ -71,7 +71,13 @@ typedef struct {
 	token_type_t type;
 } token_t;
 
-
+/**
+ * @brief Main scanner function, scans stdin and sends further corresponding token
+ *
+ * @param token Pointer to token, where all important info is stored
+ *
+ * @return SUCCESS (0) if successfull, else one of error return codes from error.h
+ */
 
 int get_token(token_t* token);
 

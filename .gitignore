@@ -1,0 +1,3 @@
+tests/scanner-tests/*.diff
+tests/scanner-tests/*.output
+tests/scanner-helper
