@@ -1,11 +1,13 @@
 --single line comment      
 while
 -- 123489 do while end 
-
+--
+--[
 --[ still single ]line comment
 do
 --[ single line comment [[ 
 else
+
 
 --[[ multi 
     line

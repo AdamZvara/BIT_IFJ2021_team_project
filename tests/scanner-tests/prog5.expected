@@ -1,0 +1,121 @@
+TOK_KEYWORD : require
+TOK_STRING : ifj21
+TOK_KEYWORD : function
+TOK_ID : main
+TOK_LBRACKET
+TOK_RBRACKET
+TOK_KEYWORD : local
+TOK_ID : s1
+TOK_COLON
+TOK_KEYWORD : string
+TOK_ASSIGN
+TOK_STRING : Toto je nejaky text
+TOK_KEYWORD : local
+TOK_ID : s2
+TOK_COLON
+TOK_KEYWORD : string
+TOK_ASSIGN
+TOK_ID : s1
+TOK_CONCAT
+TOK_STRING : , ktery jeste trochu obohatime
+TOK_ID : write
+TOK_LBRACKET
+TOK_ID : s1
+TOK_COMMA
+TOK_STRING : 
+
+TOK_COMMA
+TOK_ID : s2
+TOK_RBRACKET
+TOK_KEYWORD : local
+TOK_ID : s1len
+TOK_COLON
+TOK_KEYWORD : integer
+TOK_ASSIGN
+TOK_LEN
+TOK_ID : s1
+TOK_KEYWORD : local
+TOK_ID : s1len4
+TOK_COLON
+TOK_KEYWORD : integer
+TOK_ASSIGN
+TOK_ID : s1len
+TOK_ID : s1len
+TOK_ASSIGN
+TOK_ID : s1len
+TOK_MINUS
+TOK_INT : 4
+TOK_ID : s1
+TOK_ASSIGN
+TOK_ID : substr
+TOK_LBRACKET
+TOK_ID : s2
+TOK_COMMA
+TOK_ID : s1len
+TOK_COMMA
+TOK_ID : s1len4
+TOK_RBRACKET
+TOK_ID : s1len
+TOK_ASSIGN
+TOK_ID : s1len
+TOK_PLUS
+TOK_INT : 1
+TOK_ID : write
+TOK_LBRACKET
+TOK_STRING : 4 znaky od
+TOK_COMMA
+TOK_ID : s1len
+TOK_COMMA
+TOK_STRING : . znaku v "
+TOK_COMMA
+TOK_ID : s2
+TOK_COMMA
+TOK_STRING : ":
+TOK_COMMA
+TOK_ID : s1
+TOK_COMMA
+TOK_STRING : 
+
+TOK_RBRACKET
+TOK_ID : write
+TOK_LBRACKET
+TOK_STRING : Zadejte serazenou posloupnost vsech malych pismen a-h, 
+TOK_RBRACKET
+TOK_ID : write
+TOK_LBRACKET
+TOK_STRING : pricemz se pismena nesmeji v posloupnosti opakovat: 
+TOK_RBRACKET
+TOK_ID : s1
+TOK_ASSIGN
+TOK_ID : reads
+TOK_LBRACKET
+TOK_RBRACKET
+TOK_KEYWORD : if
+TOK_ID : s1
+TOK_NEQ
+TOK_KEYWORD : nil
+TOK_KEYWORD : then
+TOK_KEYWORD : while
+TOK_ID : s1
+TOK_NEQ
+TOK_STRING : abcdefgh
+TOK_KEYWORD : do
+TOK_ID : write
+TOK_LBRACKET
+TOK_STRING : 
+
+TOK_COMMA
+TOK_STRING : Spatne zadana posloupnost, zkuste znovu:
+TOK_RBRACKET
+TOK_ID : s1
+TOK_ASSIGN
+TOK_ID : reads
+TOK_LBRACKET
+TOK_RBRACKET
+TOK_KEYWORD : end
+TOK_KEYWORD : else
+TOK_KEYWORD : end
+TOK_KEYWORD : end
+TOK_ID : main
+TOK_LBRACKET
+TOK_RBRACKET
