@@ -17,7 +17,7 @@ TOK_INT : 0
 TOK_ID : write
 TOK_LBRACKET
 TOK_STRING : Zadejte cislo pro vypocet faktorialu
- 
+
 TOK_RBRACKET
 TOK_ID : a
 TOK_ASSIGN
@@ -70,7 +70,6 @@ TOK_KEYWORD : end
 TOK_ID : write
 TOK_LBRACKET
 TOK_STRING : Vysledek je: 
-
 TOK_COMMA
 TOK_ID : vysl
 TOK_COMMA

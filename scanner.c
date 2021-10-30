@@ -420,6 +420,7 @@ int get_token(token_t *token)
 					if (str_add_char(&str, c)) {
 						return free_and_return(&str, ERROR_INTERNAL);
 					}
+					scanner_state = STATE_NUMBER_EXP_END;
 
 				} else {
 					ungetc(c, f);
@@ -475,6 +476,9 @@ int get_token(token_t *token)
 				if (c == '\n') {
 					scanner_state = STATE_START;
 
+				} else if (c == EOF) {
+					ungetc(c, f);
+					scanner_state = STATE_START;
 				}
 				break;
 
@@ -484,13 +488,10 @@ int get_token(token_t *token)
 				
 				} else if (c == '\n') {
 					scanner_state = STATE_START;
-					ungetc(c, f);
 
-					return free_and_return(&str, SUCCESS);
-
-		
 				} else if (c != '\n') {
-					scanner_state = STATE_COMMENT;
+					scanner_state = STATE_LINE_COMMENT;
+					ungetc(c, f);
 
 				}
 				break;
@@ -498,12 +499,19 @@ int get_token(token_t *token)
 			case STATE_BLOCK_COMMENT:
 				if (c == ']') {
 					scanner_state = STATE_BLOCK_COMMENT_LEAVE;
-				}
+				
+				} else if (c == EOF) {
+					return free_and_return(&str, ERROR_LEXICAL);
+				} 
 				break;
 
 			case STATE_BLOCK_COMMENT_LEAVE:
 				if (c == ']') {
 					scanner_state = STATE_START; 
+
+				}  else if (c == EOF) {
+					return free_and_return(&str, ERROR_LEXICAL);
+
 				} else {
 					scanner_state = STATE_BLOCK_COMMENT;
 				}
