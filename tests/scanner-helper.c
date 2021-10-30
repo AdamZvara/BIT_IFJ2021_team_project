@@ -150,6 +150,8 @@ int main ()
             case TOK_ASSIGN:
                 printf("TOK_ASSIGN\n");
                 break;
+            default:
+                break;
 
         }
         if (get_token(token) != SUCCESS) {
