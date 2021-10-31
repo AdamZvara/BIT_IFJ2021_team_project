@@ -1,0 +1,25 @@
+27nazdar
+.else
+~while
+
+-- decimal numbers
+-- no whole part
+.5
+-- no decimal part
+1.
+-- no exponent
+1eabc
+1.5e
+1.8e-
+0.0e+
+
+-- strings
+-- non existing escape sequence
+-- 2 errors because error when "\p and "\n(actual new line not escaped)
+"\p"     
+"breakpoint"
+"\1"
+"\12"
+-- 2 errors again, parsing "\269 and "\n separately
+"\269"
+"\25a"

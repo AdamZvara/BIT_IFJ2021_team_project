@@ -89,10 +89,10 @@ int main ()
                 break;
             /*case TOK_EOL:
                 printf("TOK_EOL\n");
-                break;*/
+                break;
             case TOK_NOTHING:
                 printf("TOK_NOTHING\n");
-                break;
+                break;*/
             case TOK_EQ:
                 printf("TOK_EQ\n");
                 break;
