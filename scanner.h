@@ -5,8 +5,8 @@
 #include "str.h"
 
 typedef enum {
-	TOK_ID,				// Identifire
-	TOK_KEYWORD,		// Keyword
+	TOK_ID,				// Identifier
+	TOK_KEYWORD,		        // Keyword
 	TOK_EOL,			// EOL
 	TOK_EOF,			// EOF
 	TOK_NOTHING,	
@@ -17,20 +17,18 @@ typedef enum {
 	TOK_LES_EQ,			// Less and equal (<=)
 	TOK_GR,				// Greater than (>)
 	TOK_GR_EQ,			// Greater and equal (>=)
-	TOK_ASSIGN, 		// ASSIGN (=)
+	TOK_ASSIGN, 		        // ASSIGN (=)
 
 	TOK_LEN,			// Length (#)
 	TOK_PLUS,			// +
 	TOK_MINUS,			// -
 	TOK_MUL,			// *
 	TOK_DIV,			// Divide two numbers (/) 
-	TOK_INT_DIV,		// Divide two int numbers (//)
+	TOK_INT_DIV,		        // Divide two int numbers (//)
 	TOK_CONCAT,			// Concatenation (..)
 	
-	TOK_RBRACKET, 		// )
-	TOK_LBRACKET, 		// (
-	TOK_RCURLBRACKET, 	// }
-	TOK_LCURLBRACKET, 	// {
+	TOK_RBRACKET, 		        // )
+	TOK_LBRACKET, 		        // (
 	
 	TOK_COMMA, 			// ,
 	TOK_COLON, 			// :
@@ -76,7 +74,7 @@ typedef struct {
  *
  * @param token Pointer to token, where all important info is stored
  *
- * @return SUCCESS (0) if successfull, else one of error return codes from error.h
+ * @return SUCCESS (0) if successful, else one of error return codes from error.h
  */
 
 int get_token(token_t* token);

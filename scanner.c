@@ -164,15 +164,6 @@ int get_token(token_t *token)
 					token->type = TOK_RBRACKET;
 					return free_and_return(&str, SUCCESS);
 
-				} else if (c == '{') {
-					token->type = TOK_LCURLBRACKET;
-
-					return free_and_return(&str, SUCCESS);
-
-				} else if (c == '}') {
-					token->type = TOK_RCURLBRACKET;
-					return free_and_return(&str, SUCCESS);
-
 				} else if (c == '+') {
 					token->type = TOK_PLUS;
 					return free_and_return(&str, SUCCESS);

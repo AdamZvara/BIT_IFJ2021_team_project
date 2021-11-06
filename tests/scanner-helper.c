@@ -105,12 +105,6 @@ int main ()
             case TOK_RBRACKET:
                 printf("TOK_RBRACKET\n");
                 break;
-            case TOK_RCURLBRACKET:
-                printf("TOK_RCURLBRACKET\n");
-                break;
-            case TOK_LCURLBRACKET:
-                printf("TOK_LCURLBRACKET\n");
-                break;
             case TOK_PLUS:
                 printf("TOK_PLUS\n");
                 break;
