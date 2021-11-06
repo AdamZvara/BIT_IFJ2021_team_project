@@ -1,0 +1,5 @@
+TOK_KEYWORD : while
+TOK_KEYWORD : do
+TOK_KEYWORD : else
+TOK_KEYWORD : local
+TOK_KEYWORD : number
