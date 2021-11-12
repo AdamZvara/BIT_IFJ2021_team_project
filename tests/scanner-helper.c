@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../scanner.h"
-#include "../error.h"
+#include "../src/scanner.h"
+#include "../src/error.h"
 
 /* Compile like this while in the same dir as this file:
  * gcc -o scanner-helper scanner-helper.c ../scanner.c ../str.c */

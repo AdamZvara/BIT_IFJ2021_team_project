@@ -7,7 +7,6 @@
 typedef enum {
 	TOK_ID,				// Identifier
 	TOK_KEYWORD,		        // Keyword
-	TOK_EOL,			// EOL
 	TOK_EOF,			// EOF
 	TOK_NOTHING,	
 
