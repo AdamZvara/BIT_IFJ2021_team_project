@@ -1,0 +1,81 @@
+<require>   -> REQUIRE STRING_LIT <prog>
+-------------------------------------------------------------------
+<prog>      -> GLOBAL ID : FUNCTION (<params>) <ret_params> <prog>
+<prog>      -> FUNCTION ID (<params_2>) <ret_params> <body> end <prog>
+#tu by sa teoreticky mohlo stat, ze niekto bude volat funkciu z hlavnej casti s indentifikatorom -> semanticka chyba
+<prog>      -> ID (<args>) <prog>
+<prog>      -> EOF
+-------------------------------------------------------------------
+<params>    -> <types-keyword> <params_n>
+<params>    -> eps
+<params_n>  -> , <types-keyword> <params_n>
+<params_n>  -> eps
+-------------------------------------------------------------------
+<params_2>   -> ID : <types-keyword> <params2_n>
+<params_2>   -> eps
+<params_2_n> -> , ID : <types-keyword> <params2_n>
+<params_2_n> -> eps
+-------------------------------------------------------------------
+<ret_params>   -> : <types-keyword> <ret_params_n>
+<ret_params>   -> eps
+<ret_params_n> -> , <types-keyword> <ret_params_n>
+<ret_params_n> -> eps
+-------------------------------------------------------------------
+<body> -> LOCAL ID : <types-keyword> <init> <body>
+<body> -> IF <expr> THEN <body> ELSE <body> END <body>
+<body> -> WHILE <expr> DO <body> END <body>
+<body> -> ID <temp> <body>
+
+<temp> -> (<args>) 
+<temp> -> = <assign_single>
+
+<assign_single> -> ID <assign_single_id>
+<assign_single> -> <literal> <assign_single_literal>
+<assign_single> -> <expr>
+<assign_single_id> -> (<args>)
+<assign_single_id> -> <expr>
+<assign_single_id> -> eps
+<assign_single_literal> -> <expr>
+<assign_single_literal> -> eps
+
+
+<temp> -> , ID <assign_multi> = <R_side>
+<assign_multi> -> , ID <assign_multi>
+<assign_multi> -> eps
+<R_side> -> <expr> <R_side_n>
+<R_side> -> <func> <R_side_n>
+<R_side_n> -> , <R_side>
+<R_side_n> -> eps
+------------------------------------------------------------------
+<func> -> ID (<args>)
+-------------------------------------------------------------------
+<init> -> = <init_2>
+<init_2> -> ID <init_id>
+<init_2> -> <literal> <init_literal> 
+<init> -> eps
+<init_literal> -> <expr>
+<init_literal> -> eps
+<init_id> -> (<args>)
+<init_id> -> <expr>
+<init_id> -> eps
+-------------------------------------------------------------------
+<args>   -> eps
+<args>   -> <term> <args_n>
+<args_n> -> , <args>
+<args_n> -> eps
+-------------------------------------------------------------------
+<term> -> ID
+<term> -> <literal>
+-------------------------------------------------------------------
+<literal> -> INT_LIT
+<literal> -> NUM_LIT
+<literal> -> STRING_LIT
+-------------------------------------------------------------------
+<types-keyword> -> STRING
+<types-keyword> -> NUMBER
+<types-keyword> -> INTEGER
+-------------------------------------------------------------------
+
+
+
+

@@ -1,5 +1,6 @@
 tests/scanner-tests/*.diff
 tests/scanner-tests/*.output
 tests/scanner-helper
-doc/
+doc/warning*
+doc/html
 .idea/
