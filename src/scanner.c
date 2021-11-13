@@ -92,7 +92,7 @@ int check_keyword(string_t* s, token_t* token)
 
 	if (token->type != TOK_ID) {
 		token->type = TOK_KEYWORD;
-		return SUCCESS;
+		return free_and_return(s, SUCCESS);
 	}
 
 	// init string attribute in token to save id
@@ -104,7 +104,7 @@ int check_keyword(string_t* s, token_t* token)
 		return free_and_return(s, ERROR_INTERNAL); 
 
 	}
-	return SUCCESS;
+	return free_and_return(s, SUCCESS);
 }
 
 // function to convert char* to int number
