@@ -24,40 +24,37 @@
 <body> -> LOCAL ID : <types-keyword> <init> <body>
 <body> -> IF <expr> THEN <body> ELSE <body> END <body>
 <body> -> WHILE <expr> DO <body> END <body>
-<body> -> ID <temp> <body>
+<body> -> ID <body_n> <body>
+------------------------------------------------------------------
+<body_n> -> (<args>)                        #volanie funkcie
+<body_n> -> = <assign_single>               #priradenie 1 hodnoty
+<body_n> -> , ID <assign_multi> = <R_side>  #priradenie viac hodnot
 
-<temp> -> (<args>) 
-<temp> -> = <assign_single>
-
-<assign_single> -> ID <assign_single_id>
-<assign_single> -> <literal> <assign_single_literal>
+#v tomto pripade sa najprv skusi priamo spracovat expression
 <assign_single> -> <expr>
-<assign_single_id> -> (<args>)
-<assign_single_id> -> <expr>
-<assign_single_id> -> eps
-<assign_single_literal> -> <expr>
-<assign_single_literal> -> eps
+<assign_single> -> <func>
 
-
-<temp> -> , ID <assign_multi> = <R_side>
 <assign_multi> -> , ID <assign_multi>
 <assign_multi> -> eps
+
 <R_side> -> <expr> <R_side_n>
 <R_side> -> <func> <R_side_n>
 <R_side_n> -> , <R_side>
 <R_side_n> -> eps
-------------------------------------------------------------------
+-------------------------------------------------------------------
 <func> -> ID (<args>)
 -------------------------------------------------------------------
-<init> -> = <init_2>
-<init_2> -> ID <init_id>
-<init_2> -> <literal> <init_literal> 
+<init> -> = <init_n>
 <init> -> eps
-<init_literal> -> <expr>
-<init_literal> -> eps
-<init_id> -> (<args>)
-<init_id> -> <expr>
-<init_id> -> eps
+#najprv sa zavola vyhodnotenie expression
+<init_n> -> <expr>
+<init_n> -> <func>
+-------------------------------------------------------------------
+#pri spracovani <expr> prejdeme do precedencnej analyzy -> v nej skontrolujeme
+#ci sa jedna o identifikator
+    #ak ano a dalsi znak je '(', jedna sa o funkciu a predame nacitane tokeny do RZ
+    #ak ano a dalsi znak nie je '(', jedna sa o vyraz
+    #ak nie, jedna sa o vyraz
 -------------------------------------------------------------------
 <args>   -> eps
 <args>   -> <term> <args_n>
@@ -65,17 +62,10 @@
 <args_n> -> eps
 -------------------------------------------------------------------
 <term> -> ID
-<term> -> <literal>
--------------------------------------------------------------------
-<literal> -> INT_LIT
-<literal> -> NUM_LIT
-<literal> -> STRING_LIT
+<term> -> INT_LIT
+<term> -> NUM_LIT
+<term> -> STRING_LIT
 -------------------------------------------------------------------
 <types-keyword> -> STRING
 <types-keyword> -> NUMBER
 <types-keyword> -> INTEGER
--------------------------------------------------------------------
-
-
-
-
