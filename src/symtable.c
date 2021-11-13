@@ -16,7 +16,8 @@
 
 #include "symtable.h"
 
-int hash_function(sym_key str) {
+int hash_function(sym_key str)
+{
 	int h=0;
 	const unsigned char *p;
 	for(p=(const unsigned char*)str; *p!='\0'; p++)
@@ -24,7 +25,8 @@ int hash_function(sym_key str) {
 	return h % SYM_TABLE_SIZE;
 }
 
-symtab_t *symtab_init() {
+symtab_t *symtab_init()
+{
 	symtab_t *table;
 	// if allocation fails, return NULL, allocating space for hash table + 
 	// n * pointer to hash table item/record
@@ -39,7 +41,8 @@ symtab_t *symtab_init() {
 	return table;
 }
 
-symtab_data_t *symtab_find(symtab_t *t, sym_key key) {
+symtab_data_t *symtab_find(symtab_t *t, sym_key key)
+{
 	symtab_item_t *item;
 	// finding index of key in hash table
 	int index = hash_function(key);
@@ -57,16 +60,19 @@ symtab_data_t *symtab_find(symtab_t *t, sym_key key) {
 	return NULL;
 }
 
-symtab_item_t *symtab_init_item(sym_key key) {
+symtab_item_t *symtab_init_item(sym_key key)
+{
     return NULL;
 }
 
-symtab_data_t *symtab_lookup_add(symtab_t *t, sym_key key) {
+symtab_data_t *symtab_lookup_add(symtab_t *t, sym_key key)
+{
     // TODO
     return NULL;
 }
 
-bool symtab_erase(symtab_t *t, sym_key key) {
+bool symtab_erase(symtab_t *t, sym_key key)
+{
 	symtab_item_t *item;
 	symtab_item_t *tmp;
 	// counting index by calling hash function
@@ -107,7 +113,8 @@ bool symtab_erase(symtab_t *t, sym_key key) {
 	return false;
 }
 
-void symtab_clear(symtab_t *t) {
+void symtab_clear(symtab_t *t)
+{
 	symtab_item_t *item;
 	symtab_item_t *tmp;
 	for (size_t i = 0; i < SYM_TABLE_SIZE; i++) {
