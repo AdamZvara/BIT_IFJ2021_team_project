@@ -20,10 +20,19 @@
 #include "error.h"
 
 #define FREE_TOK_STRING() \
-    do                \
+    do {               \
 		if (curr_token->type == TOK_STRING || curr_token->type == TOK_ID) \
 			str_free(&curr_token->attribute.s); \
-    while(0)          \
+    } while(0);          \
+
+#define NEXT_TOKEN() \
+    do  {             \
+        FREE_TOK_STRING()    \
+        ret = get_token(curr_token); \
+        if (ret) {     \
+            return ret; \
+        }    \
+    } while(0); \
 
 int parse();
 int require();

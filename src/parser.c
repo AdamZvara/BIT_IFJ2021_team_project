@@ -77,44 +77,30 @@ int prog()
     if (curr_token->type == TOK_KEYWORD) { // new token is keyword
         if (curr_token->attribute.keyword == KW_GLOBAL) { // check if keyword is _global_
             // get new token that should be ID
-            FREE_TOK_STRING();
-            ret = get_token(curr_token);
-            if (ret)
-                return ret;
+
+            NEXT_TOKEN();
             if (curr_token->type != TOK_ID)
                 return ERROR_SYNTAX;
             
             // get new token that should be colon
-            FREE_TOK_STRING();
-            ret = get_token(curr_token);
-            if (ret)
-                return ret;
+            NEXT_TOKEN();
             if (curr_token->type != TOK_COLON)
                 return ERROR_SYNTAX;
 
             // get new token that should be keyword _function_
-            FREE_TOK_STRING();
-            ret = get_token(curr_token);
-            if (ret)
-                return ret;
+            NEXT_TOKEN();
             if (curr_token->type != TOK_KEYWORD || curr_token->attribute.keyword != KW_FUNCTION)
                 return ERROR_SYNTAX;
 
             // get new token that should be opening bracket
-            FREE_TOK_STRING();
-            ret = get_token(curr_token);
-            if (ret)
-                return ret;
+            NEXT_TOKEN();
             if (curr_token->type != TOK_LBRACKET)
                 return ERROR_SYNTAX;
 
             //TODO: call params()
 
             // get new token that should be closing bracket
-            FREE_TOK_STRING();
-            ret = get_token(curr_token);
-            if (ret)
-                return ret;
+            NEXT_TOKEN();
             if (curr_token->type != TOK_RBRACKET)
                 return ERROR_SYNTAX;
 
@@ -124,28 +110,19 @@ int prog()
 
         } else if (curr_token->attribute.keyword == KW_FUNCTION) { // check if keyword is _function_
             // get new token that should be ID
-            FREE_TOK_STRING();
-            ret = get_token(curr_token);
-            if (ret)
-                return ret;
+            NEXT_TOKEN();
             if (curr_token->type != TOK_ID)
                 return ERROR_SYNTAX;
 
             // get new token that should be opening bracket
-            FREE_TOK_STRING();
-            ret = get_token(curr_token);
-            if (ret)
-                return ret;
+            NEXT_TOKEN();
             if (curr_token->type != TOK_LBRACKET)
                 return ERROR_SYNTAX;
 
             //TODO: call params_2()
 
             // get new token that should be closing bracket
-            FREE_TOK_STRING();
-            ret = get_token(curr_token);
-            if (ret)
-                return ret;
+            NEXT_TOKEN();
             if (curr_token->type != TOK_RBRACKET)
                 return ERROR_SYNTAX;
 
@@ -154,10 +131,7 @@ int prog()
             //TODO: call body()
 
             // get new token that should be keyword end
-            FREE_TOK_STRING();
-            ret = get_token(curr_token);
-            if (ret)
-                return ret;
+            NEXT_TOKEN();
             if (curr_token->type != TOK_KEYWORD || curr_token->attribute.keyword != KW_END)
                 return ERROR_SYNTAX;
             
