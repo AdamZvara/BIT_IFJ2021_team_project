@@ -366,7 +366,10 @@ int body() {
                 return ret;
                 break;
             case KW_RETURN:
-                return r_side();
+                ret = r_side();
+                if (ret)
+                    return ret;
+                return body();
                 break;
             default:
                 return ERROR_SYNTAX;
@@ -386,7 +389,7 @@ int body_n() {
     NEXT_TOKEN();
     if (curr_token->type == TOK_LBRACKET) {
         return args();
-    } else if (curr_token->type == TOK_EQ) {
+    } else if (curr_token->type == TOK_ASSIGN) {
         return assign_single();
     } else if (curr_token->type == TOK_COMMA) {
         NEXT_TOKEN();
@@ -423,7 +426,7 @@ int assign_multi() {
         if (curr_token->type != TOK_ID)
             return ERROR_SYNTAX;
         return assign_multi();
-    } else if (curr_token->type == TOK_EQ) {
+    } else if (curr_token->type == TOK_ASSIGN) {
         return ret;
     } else {
         return ERROR_SYNTAX;
@@ -446,7 +449,7 @@ int r_side() {
     
 
     //TMP
-    return 0;
+    return r_side_n();
 }
 
 int r_side_n() {
@@ -470,7 +473,7 @@ int func() {
 
 int init() {
     NEXT_TOKEN();
-    if (curr_token->type == TOK_EQ) {
+    if (curr_token->type == TOK_ASSIGN) {
         return init_n();
     } else {
         backup_token = curr_token;
