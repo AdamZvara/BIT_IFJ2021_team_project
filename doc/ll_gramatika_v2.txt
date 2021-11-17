@@ -26,7 +26,7 @@
 <body> -> WHILE <expr> DO <body> END <body>
 <body> -> ID <body_n> <body>
 <body> -> END
-<body> -> RETURN <R_side>
+<body> -> RETURN <R_side> <body>
 ------------------------------------------------------------------
 <body_n> -> (<args>                        #volanie funkcie
 <body_n> -> = <assign_single>               #priradenie 1 hodnoty
