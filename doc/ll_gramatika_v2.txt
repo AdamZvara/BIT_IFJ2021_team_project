@@ -1,7 +1,7 @@
 <require>   -> REQUIRE STRING_LIT <prog>
 -------------------------------------------------------------------
 <prog>      -> GLOBAL ID : FUNCTION (<params>) <ret_params> <prog>
-<prog>      -> FUNCTION ID (<params_2>) <ret_params> <body> end <prog>
+<prog>      -> FUNCTION ID (<params_2>) <ret_params> <body> <prog>
 #tu by sa teoreticky mohlo stat, ze niekto bude volat funkciu z hlavnej casti s indentifikatorom -> semanticka chyba
 <prog>      -> ID (<args>) <prog>
 <prog>      -> EOF
@@ -25,6 +25,8 @@
 <body> -> IF <expr> THEN <body> ELSE <body> END <body>
 <body> -> WHILE <expr> DO <body> END <body>
 <body> -> ID <body_n> <body>
+<body> -> END
+<body> -> RETURN <R_side>
 ------------------------------------------------------------------
 <body_n> -> (<args>)                        #volanie funkcie
 <body_n> -> = <assign_single>               #priradenie 1 hodnoty
