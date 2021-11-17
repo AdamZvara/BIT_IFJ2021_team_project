@@ -22,6 +22,8 @@
 token_t *curr_token = NULL;
 token_t *backup_token = NULL;
 int ret = SUCCESS;
+global_symtab_t *global_tab = NULL;
+local_symtab_t *local_tab = NULL;
 
 //int token_init(token_t *token) {
 //    token = malloc(sizeof(token_t));
@@ -41,6 +43,9 @@ int parse()
     if (!curr_token) {
         return ERROR_INTERNAL;
     }
+
+    global_tab = global_create();
+
     ret = require(); 
     
 
@@ -84,6 +89,9 @@ int prog()
             NEXT_TOKEN();
             if (curr_token->type != TOK_ID)
                 return ERROR_SYNTAX;
+
+            // add function to global symtable
+            struct global_item *fun = global_add(global_tab, curr_token->attribute.s);
             
             // get new token that should be colon
             NEXT_TOKEN();
@@ -102,12 +110,12 @@ int prog()
 
             // call params rule, check exit code and return if params were not successful,
             // also skip reading next token
-            ret = params();
+            ret = params(fun);
             if (ret)
                 return ret;
 
             // step into <ret_params> rule
-            ret = ret_params();
+            ret = ret_params(fun);
             if (ret)
                 return ret;
 
@@ -129,7 +137,7 @@ int prog()
                 return ret;
 
             // step into <ret_params> rule
-            ret = ret_params();
+            ret = ret_params(NULL);
             if (ret)
                 return ret;
             
@@ -162,32 +170,42 @@ int prog()
     }
 }
 
-int params() {
+int params(struct global_item *fun) {
     NEXT_TOKEN();
     if (curr_token->type == TOK_RBRACKET) {
         return ret;
-    } else if ((curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_STRING) ||
-               (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_NUMBER) ||
-               (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_INTEGER)) {
-
-        return params_n();
+    } 
+    
+    if (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_STRING) {
+        str_add_char(&fun->params, 's');
+        return params_n(fun);
+    } else if (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_NUMBER) {
+        str_add_char(&fun->params, 'n');
+        return params_n(fun);
+    } else if (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_INTEGER) {
+        str_add_char(&fun->params, 'i');
+        return params_n(fun);
     } else {
         return ERROR_SYNTAX;
     }
 }
 
-int params_n() {
+int params_n(struct global_item *fun) {
     NEXT_TOKEN();
     if (curr_token->type == TOK_RBRACKET) {
         return ret;
     } else if (curr_token->type == TOK_COMMA) {
         NEXT_TOKEN();
-        if ((curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_STRING) ||
-               (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_NUMBER) ||
-               (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_INTEGER)) {
-
-            return params_n();
-        } else {
+        if (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_STRING) {
+            str_add_char(&fun->params, 's');
+            return params_n(fun);
+        } else if (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_NUMBER) {
+            str_add_char(&fun->params, 'n');
+            return params_n(fun);
+        } else if (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_INTEGER) {
+            str_add_char(&fun->params, 'i');
+            return params_n(fun);
+        }  else {
             return ERROR_SYNTAX;
         }
     } else {
@@ -248,19 +266,23 @@ int params_2_n() {
     }
 }
 
-int ret_params() {
+int ret_params(struct global_item *fun) {
     NEXT_TOKEN();
     if (curr_token->type != TOK_COLON) {
         backup_token = curr_token;
         return ret;
     }
     NEXT_TOKEN();
-    if ((curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_STRING) ||
-           (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_NUMBER) ||
-           (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_INTEGER)) {
-
-        return ret_params_n();
-    } else {
+    if (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_STRING) {
+        str_add_char(&fun->retvals, 's');
+        return params_n(fun);
+    } else if (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_NUMBER) {
+        str_add_char(&fun->retvals, 'n');
+        return ret_params_n(fun);
+    } else if (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_INTEGER) {
+        str_add_char(&fun->retvals, 'i');
+        return ret_params_n(fun);
+    }  else {
         return ERROR_SYNTAX;
     }
 }

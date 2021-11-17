@@ -15,44 +15,46 @@
  * original implementation was made by Vojtech Eichler (xeichl01) */
 
 #include "symtable.h"
+#include "error.h"
 
-int hash_function(sym_key str)
+int hash_function(string_t str)
 {
 	int h=0;
 	const unsigned char *p;
-	for(p=(const unsigned char*)str; *p!='\0'; p++)
+	for(p=(const unsigned char*)str.str; *p!='\0'; p++)
 		h = 65599*h + *p;
-	return h % SYM_TABLE_SIZE;
+	return h % GLOBAL_SYM_SIZE;
 }
 
-symtab_t *symtab_init()
+global_symtab_t *global_create()
 {
-	symtab_t *table;
+	global_symtab_t *table;
+
 	// if allocation fails, return NULL, allocating space for hash table + 
 	// n * pointer to hash table item/record
-	if (!(table = malloc(sizeof(symtab_t) + SYM_TABLE_SIZE * sizeof(symtab_item_t*))))
+	if (!(table = malloc(sizeof(*table) + GLOBAL_SYM_SIZE * sizeof(struct global_item*))))
 		return NULL;
 
 	// hash table initialization
-	table->size = 0;
-	for (int i = 0; i < SYM_TABLE_SIZE; i++)
-		table->items[i] = NULL;
+	table->size = GLOBAL_SYM_SIZE;
+	for (int i = 0; i < GLOBAL_SYM_SIZE; i++)
+		table->func[i] = NULL;
 
 	return table;
 }
 
-symtab_data_t *symtab_find(symtab_t *t, sym_key key)
+struct global_item *global_find(global_symtab_t *gs, string_t key)
 {
-	symtab_item_t *item;
 	// finding index of key in hash table
 	int index = hash_function(key);
 
 	// cycling through all records at index in hash table
-	item = t->items[index];
+	struct global_item *item;
+	item = gs->func[index];
 	while (item) {
 		// if current item has the wanted key
-		if (!(strcmp(key, item->key)))
-			return item->data;
+		if (str_cmp(key, item->key))
+			return item;
 		item = item->next;
 	}
 
@@ -60,73 +62,98 @@ symtab_data_t *symtab_find(symtab_t *t, sym_key key)
 	return NULL;
 }
 
-symtab_item_t *symtab_init_item(sym_key key)
+struct global_item *global_create_fun(string_t key)
 {
-    return NULL;
+    struct global_item *new_func = malloc(sizeof(*new_func));
+
+	// initialize all values
+	new_func->defined = false;
+	if (str_init(&new_func->key)) return NULL;
+	if (str_init(&new_func->retvals)) return NULL;
+	if (str_init(&new_func->params)) return NULL;
+	new_func->next = NULL;
+
+	// copy key to function key
+	if (str_copy(&key, &new_func->key)) return NULL;
+
+	return new_func;
 }
 
-symtab_data_t *symtab_lookup_add(symtab_t *t, sym_key key)
+
+struct global_item *global_add(global_symtab_t *gs, string_t key)
 {
-    // TODO
-    return NULL;
+	// try to find if function already exists and return pointer to it
+	struct global_item *find = global_find(gs, key);
+	if (find != NULL) {
+		return find;
+	}
+
+	// create new function and insert it at the beginning of list
+	int hash = hash_function(key);
+	struct global_item *new_func = global_create_fun(key);
+	if (new_func == NULL) {
+		return NULL;
+	}
+
+	new_func->next = gs->func[hash];
+	gs->func[hash] = new_func;
+
+	return new_func;
 }
 
-bool symtab_erase(symtab_t *t, sym_key key)
+local_symtab_t *local_create(string_t key)
 {
-	symtab_item_t *item;
-	symtab_item_t *tmp;
-	// counting index by calling hash function
-	int index = hash_function(key);
-	
-	// if first record is the one I am looking for, erase it
-	// also checks wherever there is a record at index
-	item = t->items[index];
-	if (item) {
-		if (!(strcmp(key, item->key))) {
-			tmp = item->next;
-			// TODO call item_destroy function
-			free(item->key);
-			free(item->data);
-			free(item);
-			t->items[index] = tmp;
-			t->size--;
-			return true;
-		}
-	} else {
-		return false;
+	// allocate memory for table
+	local_symtab_t *local = malloc(sizeof(*local) + LOCAL_SYM_SIZE * sizeof(struct local_data*));
+	if (local == NULL) {
+		return NULL;
 	}
 	
-	// cycling through the rest of records, erase if found
-	while (item->next) {
-		if (!(strcmp(key, item->key))) {
-			tmp = item->next;
-			item->next = item->next->next;
-			free(tmp->key);
-            free(tmp->data);
-			free(tmp);
-			t->size--;
-			return true;
-		}
-		item = item->next;
+	// initialize values
+	if (str_init(&local->key)) return NULL;
+	if (str_copy(&key, &local->key)) return NULL;
+	local->depth = 0;
+	local->size = 0;
+	local->alloc_size = LOCAL_SYM_SIZE;
+	local->next = NULL;
+
+	for (unsigned int i = 0; i < local->alloc_size; i++) {
+		local->data[i] = NULL;
 	}
-	// if record wasn't found
-	return false;
+
+	return local;
 }
 
-void symtab_clear(symtab_t *t)
+int local_new_depth(local_symtab_t **previous)
 {
-	symtab_item_t *item;
-	symtab_item_t *tmp;
-	for (size_t i = 0; i < SYM_TABLE_SIZE; i++) {
-		item = t->items[i];
-		while (item != NULL) {
-			tmp = item->next;
-			free(item->key);
-			free(item->data);
-			free(item);
-			item = tmp;
-		}
-		t->items[i] = NULL;
+	// create new local TS with same name as previous
+	local_symtab_t *new_local = local_create((*previous)->key);
+	if (new_local == NULL) {
+		return ERROR_INTERNAL;
 	}
-	t->size = 0;
+
+	new_local->depth++;
+
+	new_local->next = *previous;
+	*previous = new_local;
+
+	return 0;
+}
+
+struct local_data *local_add(local_symtab_t *act, string_t name)
+{
+	// create pointer to data
+	struct local_data **id = &(act->data[act->size]);
+	*id = malloc(sizeof(*act->data));
+	if (id == NULL) {
+		return NULL;
+	}
+
+	// fill pointer with information
+	if (str_init(&(*id)->name)) return NULL;
+	if (str_copy(&name, &(*id)->name)) return NULL;
+
+	act->size++;
+	// TODO: realloc if table is full
+	return 0;
 }
