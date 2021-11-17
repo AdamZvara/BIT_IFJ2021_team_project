@@ -30,14 +30,14 @@
 ------------------------------------------------------------------
 <body_n> -> (<args>)                        #volanie funkcie
 <body_n> -> = <assign_single>               #priradenie 1 hodnoty
-<body_n> -> , ID <assign_multi> = <R_side>  #priradenie viac hodnot
+<body_n> -> , ID <assign_multi> <R_side>  #priradenie viac hodnot
 
 #v tomto pripade sa najprv skusi priamo spracovat expression
 <assign_single> -> <expr>
 <assign_single> -> <func>
 
 <assign_multi> -> , ID <assign_multi>
-<assign_multi> -> eps
+<assign_multi> -> =
 
 <R_side> -> <expr> <R_side_n>
 <R_side> -> <func> <R_side_n>
