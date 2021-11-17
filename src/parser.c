@@ -124,7 +124,6 @@ int prog()
             if (curr_token->type != TOK_LBRACKET)
                 return ERROR_SYNTAX;
 
-            //TODO: call params_2()
             ret = params_2();
             if (ret)
                 return ret;
@@ -148,7 +147,10 @@ int prog()
         if (curr_token->type != TOK_LBRACKET)
             return ERROR_SYNTAX;
 
-        //TODO: call args()
+        // <args>
+        ret = args();
+        if (ret)
+            return ret;
         
         return prog();
 
@@ -383,12 +385,7 @@ int body() {
 int body_n() {
     NEXT_TOKEN();
     if (curr_token->type == TOK_LBRACKET) {
-        //TODO: call args()
-        //ret = args();
-        //if (ret)
-        //    return ret;
-
-        return ret;
+        return args();
     } else if (curr_token->type == TOK_EQ) {
         return assign_single();
     } else if (curr_token->type == TOK_COMMA) {
