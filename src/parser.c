@@ -71,8 +71,6 @@ int require()
 
 int prog()
 {
-    //TODO: check if we have backup token, if there is one, dont read new token and
-    // just copy backup_token to curr_token and make backup_token NULL
     if (!backup_token) {
         NEXT_TOKEN();
     } else {
@@ -136,11 +134,9 @@ int prog()
             if (ret)
                 return ret;
             
-            //TODO: call body()
-            // body has to check for end
-            // ret = body()
-            // if (ret)
-            //     return ret;
+            ret = body();
+            if (ret)
+                 return ret;
 
             return prog();
 
@@ -154,10 +150,6 @@ int prog()
 
         //TODO: call args()
         
-        NEXT_TOKEN();
-        if (curr_token->type != TOK_RBRACKET)
-            return ERROR_SYNTAX;
-
         return prog();
 
     }  else if (curr_token->type == TOK_EOF) {
@@ -289,10 +281,248 @@ int ret_params_n() {
 }
 
 int body() {
-    //TODO: check if we have backup token, if there is one, dont read new token and
-    // just copy backup_token to curr_token and make backup_token NULL
+    if (!backup_token) {
+        NEXT_TOKEN();
+    } else {
+        curr_token = backup_token;
+        backup_token = NULL;
+    }
+    
+    if (curr_token->type == TOK_KEYWORD) {
+        switch (curr_token->attribute.keyword) {
+            case KW_LOCAL:
+                NEXT_TOKEN();
+                if (curr_token->type != TOK_ID)
+                    return ERROR_SYNTAX;
+                NEXT_TOKEN();
+                if (curr_token->type != TOK_COLON)
+                    return ERROR_SYNTAX;
+                NEXT_TOKEN();
+                if ((curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_STRING) ||
+                   (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_NUMBER) ||
+                   (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_INTEGER)) {
+
+                    ret = init();
+                    if (ret)
+                        return ret;
+                }
+                return body();
+                break;
+            case KW_IF: // IF <expr> THEN <body> ELSE <body> END <body>
+                //TODO: call expr()
+
+                // THEN
+                NEXT_TOKEN();
+                if (curr_token->type != TOK_KEYWORD || curr_token->attribute.keyword != KW_THEN)
+                    return ERROR_SYNTAX;
+
+                // <body>
+                ret = body();
+                if (ret)
+                    return ret;
+
+                // ELSE
+                NEXT_TOKEN();
+                if (curr_token->type != TOK_KEYWORD || curr_token->attribute.keyword != KW_ELSE)
+                    return ERROR_SYNTAX;
+                
+                // <body>
+                ret = body();
+                if (ret)
+                    return ret;
+
+                // END
+                NEXT_TOKEN();
+                if (curr_token->type != TOK_KEYWORD || curr_token->attribute.keyword != KW_END)
+                    return ERROR_SYNTAX;
+                
+                // <body>
+                return body();
+                break;
+            case KW_WHILE:
+                //TODO: call expr()
+                
+                // DO
+                NEXT_TOKEN();
+                if (curr_token->type != TOK_KEYWORD || curr_token->attribute.keyword != KW_DO)
+                    return ERROR_SYNTAX;
+                
+                // <body>
+                ret = body();
+                if (ret)
+                    return ret;
+
+                // END
+                NEXT_TOKEN();
+                if (curr_token->type != TOK_KEYWORD || curr_token->attribute.keyword != KW_END)
+                    return ERROR_SYNTAX;
+                
+                // <body>
+                return body();
+                break;
+            case KW_END:
+                return ret;
+                break;
+            case KW_RETURN:
+                return r_side();
+                break;
+            default:
+                return ERROR_SYNTAX;
+                break;
+        }
+    } else if (curr_token->type == TOK_ID) { // ID <body_n> <body>
+        ret = body_n();
+        if (ret)
+            return ret;
+        return body();
+    } else {
+        return ERROR_SYNTAX;
+    }
+}
+
+int body_n() {
+    NEXT_TOKEN();
+    if (curr_token->type == TOK_LBRACKET) {
+        //TODO: call args()
+        //ret = args();
+        //if (ret)
+        //    return ret;
+
+        return ret;
+    } else if (curr_token->type == TOK_EQ) {
+        return assign_single();
+    } else if (curr_token->type == TOK_COMMA) {
+        NEXT_TOKEN();
+        if (curr_token->type != TOK_ID)
+            return ERROR_SYNTAX;
+
+        ret = assign_multi();
+        if (ret)
+            return ret;
+        
+        
+        return r_side();
+    } else {
+        return ERROR_SYNTAX;
+    }
+}
+
+int assign_single() {
+    // call expression()
+    // int exp_ret = expression();
+    // if (exp_ret == SUCCESS)
+    //    return exp_ret;
+    // else if (exp_ret == FUNCTION)
+    //    return func();
+    // else
+    //    return ERROR_SYNTAX;
+    return 0;
+}
+
+int assign_multi() {
+    NEXT_TOKEN();
+    if (curr_token->type == TOK_COMMA) {
+        NEXT_TOKEN();
+        if (curr_token->type != TOK_ID)
+            return ERROR_SYNTAX;
+        return assign_multi();
+    } else if (curr_token->type == TOK_EQ) {
+        return ret;
+    } else {
+        return ERROR_SYNTAX;
+    }
+}
+
+int r_side() {
+    // call expression()
+    // int exp_ret = expression();
+    // if (exp_ret == SUCCESS) {
+    //    return r_side_n();
+    //    
+    // else if (exp_ret == FUNCTION)
+    //    ret = func();
+    //    if (ret) 
+    //        return ret;
+    //    return r_side_n();
+    // else
+    //    return exp_ret;
+    
+
+    //TMP
+    return 0;
+}
+
+int r_side_n() {
+    NEXT_TOKEN();
+    if (curr_token->type == TOK_COMMA) {
+        return r_side();
+    } else {
+        backup_token = curr_token;
+        return ret;
+    }
+}
+
+int func() {
+    // <args>
+    ret = args();
+    if (ret)
+        return ret;
+
+    return ret;
+}
+
+int init() {
+    NEXT_TOKEN();
+    if (curr_token->type == TOK_EQ) {
+        return init_n();
+    } else {
+        backup_token = curr_token;
+        return ret;
+    }
+}
+
+int init_n() {
+    // call expression()
+    // int exp_ret = expression();
+    // if (exp_ret == SUCCESS)
+    //    return exp_ret;
+    // else if (exp_ret == FUNCTION)
+    //    return func();
+    // else
+    //    return ERROR_SYNTAX;
+
+
+    // TMP
+    return 0;
+}
+
+int args() {
+    NEXT_TOKEN();
+    if (curr_token->type == TOK_RBRACKET) {
+        return ret;
+    } else {
+        if (curr_token->type == TOK_STRING || curr_token->type == TOK_DECIMAL ||
+            curr_token->type == TOK_INT    || curr_token->type == TOK_ID) {
+
+            return args_n();
+        } else {
+            return ERROR_SYNTAX;
+        }
+    }
+}
+
+int args_n() {
+    NEXT_TOKEN();
+    if (curr_token->type == TOK_COMMA) {
+        return args();
+    } else if (curr_token->type == TOK_RBRACKET) {
+        return ret;
+    } else {
+        return ERROR_SYNTAX;
+    }
 
 }
+
 
 int main() {
     int ret_main = parse();
