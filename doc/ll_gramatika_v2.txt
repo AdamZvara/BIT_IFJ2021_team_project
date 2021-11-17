@@ -3,7 +3,7 @@
 <prog>      -> GLOBAL ID : FUNCTION (<params>) <ret_params> <prog>
 <prog>      -> FUNCTION ID (<params_2>) <ret_params> <body> <prog>
 #tu by sa teoreticky mohlo stat, ze niekto bude volat funkciu z hlavnej casti s indentifikatorom -> semanticka chyba
-<prog>      -> ID (<args>) <prog>
+<prog>      -> ID (<args>  <prog>
 <prog>      -> EOF
 -------------------------------------------------------------------
 <params>    -> <types-keyword> <params_n>
@@ -28,7 +28,7 @@
 <body> -> END
 <body> -> RETURN <R_side>
 ------------------------------------------------------------------
-<body_n> -> (<args>)                        #volanie funkcie
+<body_n> -> (<args>                        #volanie funkcie
 <body_n> -> = <assign_single>               #priradenie 1 hodnoty
 <body_n> -> , ID <assign_multi> <R_side>  #priradenie viac hodnot
 
@@ -44,7 +44,7 @@
 <R_side_n> -> , <R_side>
 <R_side_n> -> eps
 -------------------------------------------------------------------
-<func> -> <args>)
+<func> -> <args>
 -------------------------------------------------------------------
 <init> -> = <init_n>
 <init> -> eps
@@ -58,10 +58,10 @@
     #ak ano a dalsi znak nie je '(', jedna sa o vyraz
     #ak nie, jedna sa o vyraz
 -------------------------------------------------------------------
-<args>   -> eps
+<args>   -> )
 <args>   -> <term> <args_n>
 <args_n> -> , <args>
-<args_n> -> eps
+<args_n> -> )
 -------------------------------------------------------------------
 <term> -> ID
 <term> -> INT_LIT
