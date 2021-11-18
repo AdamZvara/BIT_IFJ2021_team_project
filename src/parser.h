@@ -34,7 +34,9 @@
         }    \
     } while(0); \
 
-#define GET_ID  curr_token->attribute.s
+#define GET_ID curr_token->attribute.s
+#define GET_KW curr_token->attribute.keyword
+#define GET_TYPE curr_token->type
 
 /**
  * @brief Helper structure to do semantic checks when declaring/defining new function

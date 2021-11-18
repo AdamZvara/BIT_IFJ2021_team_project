@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "scanner.h"	// keyword_t for variable
 #include "str.h"
 
 // Identificator types
@@ -128,10 +129,37 @@ local_symtab_t *local_create(string_t key);
 int local_new_depth(local_symtab_t **previous);
 
 /**
- * @brief Add new variable into local symtable
+ * @brief Add new variable into local symtable (used before local_add_type)
  * @param name Name of new variable
  * @return Pointer to new variable
  */
-struct local_data *local_add(local_symtab_t *act, string_t name);
+struct local_data *local_add(local_symtab_t *local_tab, string_t name, bool init);
+
+/**
+ * @brief Add type of identifier (after local_add)
+ * @param data Pointer to given id structure from local_add
+ * @param kw Type of identifier
+ */
+void local_add_type(struct local_data *data, keyword_t kw);
+
+/**
+ * @brief Find identifier in local symtable linked list (only functions with the same name)
+ * @param local_tab Pointer to local symtable
+ * @param name Name of identifier
+ * @return Pointer to item, if item was not found NULL
+ */
+struct local_data *local_find(local_symtab_t *local_tab, string_t name);
+
+/**
+ * @brief Free top of the local symtable and all its resources
+ * @param local_tab Pointer to active local symtable
+ */
+void local_delete_top(local_symtab_t *local_tab);
+
+/**
+ * @brief Free local symtable and all its resources
+ * @param local_tab Pointer to active local symtable
+ */
+void local_destroy(local_symtab_t *local_tab);
 
 #endif

@@ -53,7 +53,7 @@ struct global_item *global_find(global_symtab_t *gs, string_t key)
 	item = gs->func[index];
 	while (item) {
 		// if current item has the wanted key
-		if (str_cmp(key, item->key))
+		if (str_isequal(key, item->key))
 			return item;
 		item = item->next;
 	}
@@ -147,6 +147,10 @@ local_symtab_t *local_create(string_t key)
 
 int local_new_depth(local_symtab_t **previous)
 {
+	if (*previous == NULL) {
+		return ERROR_INTERNAL;
+	}
+
 	// create new local TS with same name as previous
 	local_symtab_t *new_local = local_create((*previous)->key);
 	if (new_local == NULL) {
@@ -161,11 +165,11 @@ int local_new_depth(local_symtab_t **previous)
 	return 0;
 }
 
-struct local_data *local_add(local_symtab_t *act, string_t name)
+struct local_data *local_add(local_symtab_t *local_tab, string_t name, bool init)
 {
 	// create pointer to data
-	struct local_data **id = &(act->data[act->size]);
-	*id = malloc(sizeof(*act->data));
+	struct local_data **id = &(local_tab->data[local_tab->size]);
+	*id = malloc(sizeof(*local_tab->data));
 	if (id == NULL) {
 		return NULL;
 	}
@@ -173,8 +177,76 @@ struct local_data *local_add(local_symtab_t *act, string_t name)
 	// fill pointer with information
 	if (str_init(&(*id)->name)) return NULL;
 	if (str_copy(&name, &(*id)->name)) return NULL;
+	(*id)->init = init;
+	(*id)->type = NIL_T;
 
-	act->size++;
+	local_tab->size++;
 	// TODO: realloc if table is full
-	return 0;
+	return *id;
+}
+
+void local_add_type(struct local_data *data, keyword_t kw)
+{
+	if (kw == KW_STRING) {
+		data->type = STR_T;
+	} else if (kw == KW_NUMBER) {
+		data->type = NUM_T;
+	} else if (kw == KW_INTEGER) {
+		data->type = INT_T;
+	} else if (kw == KW_NIL) {
+		data->type = NIL_T;
+	}
+}
+
+struct local_data *local_find(local_symtab_t *local_tab, string_t name)
+{
+	local_symtab_t *tmp = local_tab;
+	if (tmp == NULL) {
+		return NULL;
+	}
+
+	// iterate through all local symtabs with the same key
+	while (true) {
+		// search through identifiers in this local symtable
+		for (unsigned int i = 0; i < tmp->size; i++) {
+			if (str_isequal(tmp->data[i]->name, name)) {
+				return tmp->data[i];
+			}
+		}
+
+		// end of linked list
+		if (tmp->next == NULL) {
+			return NULL;
+		}
+
+		// check if next local symtab has different key
+		if (!str_isequal(tmp->key, tmp->next->key)) {
+			return NULL;
+		}
+		tmp = tmp->next;
+	}
+}
+
+void local_delete_top(local_symtab_t *local_tab)
+{
+	if (local_tab == NULL) {
+		return;
+	}
+
+	local_symtab_t *del;
+	del = local_tab;
+	local_tab = local_tab->next;
+
+	str_free(&del->key);
+	for (unsigned int i = 0; i < del->size; i++) {
+		str_free(&(del->data[i]->name));
+	}
+	free(del);
+}
+
+void local_destroy(local_symtab_t *local_tab)
+{
+	while (local_tab != NULL) {
+		local_delete_top(local_tab);
+	}
 }
