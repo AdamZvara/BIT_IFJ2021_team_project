@@ -100,7 +100,7 @@ void str_clear(string_t *src)
 	src->length = 0;
 }
 
-int str_cmp(const string_t src, const string_t dst)
+int str_isequal(const string_t src, const string_t dst)
 {
 	if (src.length == dst.length) {
 		return !strcmp(src.str, dst.str);

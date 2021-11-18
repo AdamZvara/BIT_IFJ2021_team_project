@@ -82,7 +82,7 @@ void str_clear(string_t *src);
  * 
  * @return 1 if stings are equal, otherwise 0
  */
-int str_cmp(const string_t src, const string_t dst);
+int str_isequal(const string_t src, const string_t dst);
 
 /**
  * @brief Check if string is empty
