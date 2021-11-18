@@ -94,10 +94,21 @@ int str_copy(string_t* source, string_t* destination)
 	return SUCCESS;
 }
 
+void str_clear(string_t *src)
+{
+	src->str[0] = '\0';
+	src->length = 0;
+}
+
 int str_cmp(const string_t src, const string_t dst)
 {
 	if (src.length == dst.length) {
 		return !strcmp(src.str, dst.str);
 	}
 	return 0;
+}
+
+int str_empty(const string_t src)
+{
+	return src.length == 0;
 }
