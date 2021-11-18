@@ -25,6 +25,110 @@ int ret = SUCCESS;
 global_symtab_t *global_tab = NULL;
 local_symtab_t *local_tab = NULL;
 
+/**
+ * @brief Initialize helper structure
+ * @param f Pointer to helper structure
+ */
+int func_init(func_def_t *f)
+{
+    f->item = NULL;
+    f->func_found = false;
+    if (str_init(&f->temp)) {
+        return ERROR_INTERNAL;
+    }
+    return SUCCESS;
+}
+
+void func_clear(func_def_t *f)
+{
+    str_clear(&f->temp);
+}
+
+void func_dispose(func_def_t *f)
+{
+    str_free(&f->temp);
+}
+
+/**
+ * @brief Set parameters of function in helper structure
+ * @param f Pointer to helper structure
+ * @param kw Which parameter should be added (string, number, integer)
+ * @todo return values from str_add_char 
+ */ 
+int func_set_params(func_def_t *f, keyword_t kw)
+{
+    switch (kw) {
+
+    case KW_STRING:
+        if (f->func_found) {
+                str_add_char(&f->temp, 's');
+            } else {
+                str_add_char(&f->item->params, 's');
+            }
+        break;
+
+    case KW_INTEGER:
+        if (f->func_found) {
+                str_add_char(&f->temp, 'i');
+            } else {
+                str_add_char(&f->item->params, 'i');
+            }
+        break;
+
+    case KW_NUMBER:
+        if (f->func_found) {
+                str_add_char(&f->temp, 'n');
+            } else {
+                str_add_char(&f->item->params, 'n');
+            }
+        break;
+
+    default:
+        break;
+    }
+
+    return 0;
+}
+
+/**
+ * @brief Set retvals of function in helper structure
+ * @param f Pointer to helper structure
+ * @param kw Which retval should be added (string, number, integer)
+ * @todo return values from str_add_char 
+ */ 
+int func_set_retvals(func_def_t *f, keyword_t kw) {
+    switch (kw) {
+    case KW_STRING:
+        if (f->func_found) {
+            str_add_char(&f->temp, 's');
+        } else {
+            str_add_char(&f->item->retvals, 's');
+        }
+        break;
+
+    case KW_INTEGER:
+        if (f->func_found) {
+            str_add_char(&f->temp, 'i');
+        } else {
+            str_add_char(&f->item->retvals, 'i');
+        }
+        break;    
+    
+    case KW_NUMBER:
+        if (f->func_found) {
+            str_add_char(&f->temp, 'n');
+        } else {
+            str_add_char(&f->item->retvals, 'n');
+        }
+        break;      
+
+    default:
+        break;
+    }
+
+    return 0;
+}
+
 //int token_init(token_t *token) {
 //    token = malloc(sizeof(token_t));
 //    if (!token)
@@ -44,6 +148,7 @@ int parse()
         return ERROR_INTERNAL;
     }
 
+    // create global symtable
     global_tab = global_create();
 
     ret = require(); 
@@ -75,7 +180,11 @@ int require()
 }
 
 int prog()
-{
+{ 
+    // initialize helper structure to parser function dec/def
+    func_def_t f_helper;
+    func_init(&f_helper);
+
     if (!backup_token) {
         NEXT_TOKEN();
     } else {
@@ -91,7 +200,12 @@ int prog()
                 return ERROR_SYNTAX;
 
             // add function to global symtable
-            struct global_item *fun = global_add(global_tab, curr_token->attribute.s);
+            f_helper.item = global_find(global_tab, GET_ID);
+            if (f_helper.item != NULL) {
+                // multiple declarations of function
+                return ERROR_SEMANTIC;
+            }
+            f_helper.item = global_add(global_tab, GET_ID);
             
             // get new token that should be colon
             NEXT_TOKEN();
@@ -110,12 +224,12 @@ int prog()
 
             // call params rule, check exit code and return if params were not successful,
             // also skip reading next token
-            ret = params(fun);
+            ret = params(&f_helper);
             if (ret)
                 return ret;
 
             // step into <ret_params> rule
-            ret = ret_params(fun);
+            ret = ret_params(&f_helper);
             if (ret)
                 return ret;
 
@@ -127,17 +241,29 @@ int prog()
             if (curr_token->type != TOK_ID)
                 return ERROR_SYNTAX;
 
+            // check if function is already in global symtable
+            f_helper.item = global_find(global_tab, GET_ID);
+            if (f_helper.item == NULL) {
+                // create new record in global symtable
+                f_helper.item = global_add(global_tab, GET_ID);
+            } else {
+                f_helper.func_found = true;
+            }
+
             // get new token that should be opening bracket
             NEXT_TOKEN();
             if (curr_token->type != TOK_LBRACKET)
                 return ERROR_SYNTAX;
 
-            ret = params_2();
+            ret = params_2(&f_helper);
             if (ret)
                 return ret;
+            
+            // clear string containing temporary params/retvals
+            func_clear(&f_helper);
 
             // step into <ret_params> rule
-            ret = ret_params(NULL);
+            ret = ret_params(&f_helper);
             if (ret)
                 return ret;
             
@@ -170,41 +296,33 @@ int prog()
     }
 }
 
-int params(struct global_item *fun) {
+int params(func_def_t *f_helper) {
     NEXT_TOKEN();
     if (curr_token->type == TOK_RBRACKET) {
         return ret;
     } 
     
-    if (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_STRING) {
-        str_add_char(&fun->params, 's');
-        return params_n(fun);
-    } else if (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_NUMBER) {
-        str_add_char(&fun->params, 'n');
-        return params_n(fun);
-    } else if (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_INTEGER) {
-        str_add_char(&fun->params, 'i');
-        return params_n(fun);
+    if ((curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_STRING) || 
+        (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_NUMBER) ||
+        (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_INTEGER)) {
+        func_set_params(f_helper, curr_token->attribute.keyword);
+        return params_n(f_helper);
     } else {
         return ERROR_SYNTAX;
     }
 }
 
-int params_n(struct global_item *fun) {
+int params_n(func_def_t *f_helper) {
     NEXT_TOKEN();
     if (curr_token->type == TOK_RBRACKET) {
         return ret;
     } else if (curr_token->type == TOK_COMMA) {
         NEXT_TOKEN();
-        if (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_STRING) {
-            str_add_char(&fun->params, 's');
-            return params_n(fun);
-        } else if (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_NUMBER) {
-            str_add_char(&fun->params, 'n');
-            return params_n(fun);
-        } else if (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_INTEGER) {
-            str_add_char(&fun->params, 'i');
-            return params_n(fun);
+        if ((curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_STRING) ||
+            (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_NUMBER) ||
+            (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_INTEGER)) {
+            func_set_params(f_helper, curr_token->attribute.keyword);
+            return params_n(f_helper);
         }  else {
             return ERROR_SYNTAX;
         }
@@ -213,11 +331,18 @@ int params_n(struct global_item *fun) {
     }
 }
 
-int params_2() {
+int params_2(func_def_t *f_helper) {
     // first check if params are empty or not
     NEXT_TOKEN();
     if (curr_token->type == TOK_RBRACKET) {
+        if (f_helper->func_found) {
+            if (str_empty(f_helper->item->params)) {
+                return ret;
+            } 
+            return ERROR_SEMANTIC;
+        }
         return ret;
+    
     } else if (curr_token->type == TOK_ID) { // params start correctly with ID
         // now check the rest of the syntax and go to params_2_n if everything is correct
         NEXT_TOKEN();
@@ -225,11 +350,12 @@ int params_2() {
             return ERROR_SYNTAX;
         // next few lines of code check <types_keyword> rule
         NEXT_TOKEN();
-        if ((curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_STRING) ||
-               (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_NUMBER) ||
-               (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_INTEGER)) {
 
-            return params_2_n();
+        if ((curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_STRING) ||
+            (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_NUMBER) ||
+            (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_INTEGER)) {
+            func_set_params(f_helper, curr_token->attribute.keyword);
+            return params_2_n(f_helper);
         } else {
             return ERROR_SYNTAX;
         }
@@ -238,11 +364,17 @@ int params_2() {
     }
 }
 
-int params_2_n() {
+int params_2_n(func_def_t *f_helper) {
     // check for end of params
     NEXT_TOKEN();
     if (curr_token->type == TOK_RBRACKET) {
+        if (f_helper->func_found) {   // function is in global table, check if parameters match
+            if (!str_cmp(f_helper->item->params, f_helper->temp)) {
+                return ERROR_SEMANTIC;
+            }
+        }
         return ret;
+        
     } else if (curr_token->type == TOK_COMMA) { // check for comma
         // check the rest of the syntax and descend into parama_2_n if everything is correct
         NEXT_TOKEN();
@@ -254,10 +386,10 @@ int params_2_n() {
         // next lines check <types_keyword> rule
         NEXT_TOKEN();
         if ((curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_STRING) ||
-               (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_NUMBER) ||
-               (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_INTEGER)) {
-
-            return params_2_n();
+            (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_NUMBER) ||
+            (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_INTEGER)) {
+            func_set_params(f_helper, curr_token->attribute.keyword);
+            return params_2_n(f_helper);
         } else {
             return ERROR_SYNTAX;
         }
@@ -266,39 +398,48 @@ int params_2_n() {
     }
 }
 
-int ret_params(struct global_item *fun) {
+int ret_params(func_def_t *f_helper) {
     NEXT_TOKEN();
     if (curr_token->type != TOK_COLON) {
+        if (f_helper->func_found) {
+            if (str_empty(f_helper->item->retvals)) {
+                backup_token = curr_token;
+                return ret;
+            } 
+            return ERROR_SEMANTIC;
+        }
         backup_token = curr_token;
         return ret;
     }
     NEXT_TOKEN();
-    if (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_STRING) {
-        str_add_char(&fun->retvals, 's');
-        return params_n(fun);
-    } else if (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_NUMBER) {
-        str_add_char(&fun->retvals, 'n');
-        return ret_params_n(fun);
-    } else if (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_INTEGER) {
-        str_add_char(&fun->retvals, 'i');
-        return ret_params_n(fun);
+
+    if ((curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_STRING) || 
+        (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_NUMBER) ||
+        (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_INTEGER)) {
+        func_set_retvals(f_helper, curr_token->attribute.keyword);
+        return ret_params_n(f_helper);
     }  else {
         return ERROR_SYNTAX;
     }
 }
 
-int ret_params_n() {
+int ret_params_n(func_def_t *f_helper) {
     NEXT_TOKEN();
     if (curr_token->type != TOK_COMMA) {
+        if (f_helper->func_found) {   // function is in global table, check if retvals match
+            if (!str_cmp(f_helper->item->params, f_helper->temp)) {
+                return ERROR_SEMANTIC;
+            }
+        }
         backup_token = curr_token;
         return ret;
     }
     NEXT_TOKEN();
     if ((curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_STRING) ||
-           (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_NUMBER) ||
-           (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_INTEGER)) {
-
-        return ret_params_n();
+        (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_NUMBER) ||
+        (curr_token->type == TOK_KEYWORD && curr_token->attribute.keyword == KW_INTEGER)) {
+        func_set_retvals(f_helper, curr_token->attribute.keyword);
+        return ret_params_n(f_helper);
     } else {
         return ERROR_SYNTAX;
     }
