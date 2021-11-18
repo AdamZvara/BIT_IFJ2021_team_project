@@ -21,9 +21,9 @@
 
 token_t *curr_token = NULL;
 token_t *backup_token = NULL;
-int ret = SUCCESS;
 global_symtab_t *global_tab = NULL;
 local_symtab_t *local_tab = NULL;
+int ret = SUCCESS;
 
 /**
  * @brief Initialize helper structure
@@ -39,12 +39,21 @@ int func_init(func_def_t *f)
     return SUCCESS;
 }
 
-void func_clear(func_def_t *f)
+/**
+ * @brief Clear string in helper structure
+ * @param f Pointer to helper structure
+ */
+inline void func_clear(func_def_t *f)
 {
     str_clear(&f->temp);
 }
 
-void func_dispose(func_def_t *f)
+
+/**
+ * @brief Free helper structure
+ * @param f Pointer to helper structure
+ */
+inline void func_dispose(func_def_t *f)
 {
     str_free(&f->temp);
 }
@@ -152,8 +161,8 @@ int parse()
     global_tab = global_create();
 
     ret = require(); 
-    
 
+    global_destroy(global_tab);
     token_free();
 	return ret;
 }
@@ -233,6 +242,7 @@ int prog()
             if (ret)
                 return ret;
 
+            func_dispose(&f_helper);
             return prog();
 
         } else if (curr_token->attribute.keyword == KW_FUNCTION) { // check if keyword is _function_
@@ -271,6 +281,7 @@ int prog()
             if (ret)
                  return ret;
 
+            func_dispose(&f_helper);
             return prog();
 
         } else { // unexpected keyword, return error
@@ -290,6 +301,7 @@ int prog()
 
     }  else if (curr_token->type == TOK_EOF) {
         // end of input, start returning all the way up the recursion
+        func_dispose(&f_helper);
         return ret;
     } else { // unexpected token, return error
         return ERROR_SYNTAX;
@@ -401,7 +413,9 @@ int params_2_n(func_def_t *f_helper) {
 int ret_params(func_def_t *f_helper) {
     NEXT_TOKEN();
     if (curr_token->type != TOK_COLON) {
-        if (f_helper->func_found) {
+        // function is in global table, check if retvals match
+        // current token is COLON so retvals should be empty
+        if (f_helper->func_found) { 
             if (str_empty(f_helper->item->retvals)) {
                 backup_token = curr_token;
                 return ret;
@@ -426,7 +440,9 @@ int ret_params(func_def_t *f_helper) {
 int ret_params_n(func_def_t *f_helper) {
     NEXT_TOKEN();
     if (curr_token->type != TOK_COMMA) {
-        if (f_helper->func_found) {   // function is in global table, check if retvals match
+        // function is in global table, check if retvals match
+        // retvals are not empty, compare them with f_helper temporary string
+        if (f_helper->func_found) {
             if (!str_cmp(f_helper->item->params, f_helper->temp)) {
                 return ERROR_SEMANTIC;
             }

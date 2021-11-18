@@ -101,6 +101,27 @@ struct global_item *global_add(global_symtab_t *gs, string_t key)
 	return new_func;
 }
 
+void global_destroy(global_symtab_t *gs)
+{
+	struct global_item *tmp, *del;
+
+	// free all link-listed functions 
+	for (unsigned int i = 0; i < gs->size; i++) {
+		tmp = gs->func[i];
+		while (tmp != NULL) {
+			del = tmp;
+			tmp = tmp->next;
+			// free all allocated strings
+			str_free(&del->key);
+			str_free(&del->params);
+			str_free(&del->retvals);
+			free(del);
+		}
+	}
+
+	free(gs);
+}
+
 local_symtab_t *local_create(string_t key)
 {
 	// allocate memory for table

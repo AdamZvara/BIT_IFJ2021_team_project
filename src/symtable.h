@@ -103,6 +103,12 @@ struct global_item *global_find(global_symtab_t *gs, string_t key);
  */
 struct global_item *global_add(global_symtab_t *gs, string_t key);
 
+/**
+ * @brief Destroy global symtable and free all its resources
+ * @param gs Pointer to global symtable
+ */ 
+void global_destroy(global_symtab_t *gs);
+
 // dont need these functions as they are just str_add_char()
 // global_add_param = str_add_char(global_item, first char of param);
 // global_add_retval = str_add_char(global_item, first char of retvals);

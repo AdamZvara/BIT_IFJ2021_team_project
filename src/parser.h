@@ -40,7 +40,7 @@
  * @brief Helper structure to do semantic checks when declaring/defining new function
  */
 typedef struct func_def {
-    struct global_item *item;    // Pointer to function in global symtab
+    struct global_item *item;   // Pointer to function in global symtab
     bool func_found;            // Whether function was already found in global symtab
     string_t temp;              // Temporary string to fill retvals/parameters of function
 } func_def_t; 
