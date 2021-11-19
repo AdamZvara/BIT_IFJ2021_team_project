@@ -40,6 +40,38 @@ int stack_push(stack_t *stack, int value)
     return 0;
 }
 
+int stack_push_above_term(stack_t *stack, int value)
+{
+    stack_item_t *curr = stack->top;
+    stack_item_t *prev = NULL;
+
+    stack_item_t *new = malloc(sizeof(stack_item_t));
+    if (new == NULL) {
+        return 1;
+    }
+
+    while (curr != NULL) {
+        if (curr->data < HANDLE) {
+            // found term
+            new->data = value;
+
+            if (prev == NULL) {
+                new->next = curr;
+                stack->top = new;
+            } else {
+                new->next = curr;
+                prev->next = new;
+            }
+        } else {
+            // NON_TERM on top
+            prev = curr;
+            curr = curr->next;
+        }
+    }
+
+    return 0;
+}
+
 int stack_pop(stack_t *stack)
 {
     if (stack->top == NULL) {

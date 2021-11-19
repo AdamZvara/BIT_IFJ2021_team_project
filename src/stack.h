@@ -51,6 +51,16 @@ int stack_is_empty(stack_t *stack);
 int stack_push(stack_t *stack, int value);
 
 /**
+ * @brief Push item above highest term
+ *
+ * @param stack Initialized stack
+ * @param value Value to push on stack
+ *
+ * @return 0 on success, else 1
+ */
+int stack_push_above_term(stack_t *stack, int value);
+
+/**
  * @brief Remove top item from a stack
  *
  * @param stack Initialized stack
