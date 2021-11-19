@@ -253,7 +253,7 @@ void local_delete_top(local_symtab_t **local_tab)
 
 void local_destroy(local_symtab_t *local_tab)
 {
-	// iterate through local symtables and destroy them
+	// iterate through local symtables and destroy
 	while (local_tab != NULL) {
 		local_delete_top(&local_tab);
 	}

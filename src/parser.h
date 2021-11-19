@@ -14,10 +14,7 @@
 #ifndef _PARSER_H_
 #define _PARSER_H_
 
-#include "symtable.h"
-#include "scanner.h"
-#include "str.h"
-#include "error.h"
+#include "func_helper.h"
 
 #define FREE_TOK_STRING() \
     do {               \
@@ -38,15 +35,6 @@
 #define GET_KW curr_token->attribute.keyword
 #define GET_TYPE curr_token->type
 
-/**
- * @brief Helper structure to do semantic checks when declaring/defining new function
- */
-typedef struct func_def {
-    struct global_item *item;   // Pointer to function in global symtab
-    bool func_found;            // Whether function was already found in global symtab
-    string_t temp;              // Temporary string to fill retvals/parameters of function
-} func_def_t; 
-
 int parse();
 int require();
 int prog();
@@ -57,7 +45,7 @@ int params_2_n(func_def_t *f_helper);
 int ret_params(func_def_t *f_helper);
 int ret_params_n(func_def_t *f_helper);
 int body();
-int body_n();
+int body_n(func_def_t *f_helper);
 int assign_single();
 int assign_multi();
 int r_side();
@@ -65,7 +53,7 @@ int r_side_n();
 int func();
 int init();
 int init_n();
-int args();
+int args(func_def_t *f_helper);
 int args_n();
 int term();
 int types_keyword();

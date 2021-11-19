@@ -6,7 +6,7 @@ TESTS_DIR = tests/
 #files for scanner
 SCANNER = src/scanner.c src/scanner.h src/str.c src/str.h src/error.h
 SCANNER_T = $(TESTS_DIR)scanner-helper.c
-PARSER = src/scanner.c src/scanner.h src/str.c src/str.h src/error.h src/parser.c src/parser.h src/symtable.c src/symtable.h
+PARSER = src/scanner.c src/scanner.h src/str.c src/str.h src/error.h src/parser.c src/parser.h src/symtable.c src/symtable.h src/ibuffer.c src/ibuffer.h src/generator.c src/generator.h src/func_helper.c src/func_helper.h
 
 .PHONY: doc test
 
