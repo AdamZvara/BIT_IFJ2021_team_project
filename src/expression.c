@@ -139,11 +139,7 @@ int expression(token_t *return_token)
             return ret_val;
         }
 
-        top_term = stack_top(&stack_prec);
-        if (top_term->data == NON_TERM) {
-            // get top terminal
-            top_term = top_term->next;
-        }
+        top_term = stack_top_term(&stack_prec);
         symbol = token_to_symbol(new_token);
 
         // get precedence symbol from precedence table
@@ -155,13 +151,16 @@ int expression(token_t *return_token)
                 break;
 
             case '<':
+                stack_push_above_term(&stack_prec, HANDLE);
+                stack_push(&stack_prec, symbol);
+
+                GET_NEW_TOKEN(new_token, ret_val);
                 break;
 
             case '>':
+                // reduce
                 break;
         }
-
-        // switch and the rest of alg ...
 
     } while (!end);
 
