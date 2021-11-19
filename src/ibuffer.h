@@ -17,30 +17,20 @@
 #include <stddef.h>
 
 // macro for appending instruction into ibuffer
-// ADD_INST(TEST) appends string "TEST" into buffer and increases its length by 1
-#define ADD_INST(STR)                                \
-do {                                                     \
-    strcpy(buffer->inst[buffer->length], STR);           \
-    buffer->length++;                                   \
-} while (0)                                               \
+// ADD_INST(TEST) appends string "TEST" into buffer
+#define ADD_INST(STR)                               \
+do {                                                \
+    strcpy(buffer->inst[buffer->length], STR);      \
+} while (0)                                         \
 
-#define ADD_INSTOP(STR, OP)                             \
-do {                                                    \
-    strcpy(buffer->inst[buffer->length], STR);          \
-    strcat(buffer->inst[buffer->length], OP);           \
-    strcat(buffer->inst[buffer->length], "\n");         \
-    buffer->length++;                                   \
-} while (0)                                             \
+// macro for appending newline to the end of current instruction
+#define ADD_NEWLINE()                               \
+do {                                                \
+    strcat(buffer->inst[buffer->length], "\n");     \
+    buffer->length++;                               \
+} while (0)                                         \
 
-#define ADD_INST2OP(STR, OP1, OP2)                             \
-do {                                                    \
-    strcpy(buffer->inst[buffer->length], STR);          \
-    strcat(buffer->inst[buffer->length], OP1);           \
-    strcat(buffer->inst[buffer->length], " ");          \
-    strcat(buffer->inst[buffer->length], OP2);           \
-    strcat(buffer->inst[buffer->length], "\n");         \
-    buffer->length++;                                   \
-} while (0)                                             \
+#define INST buffer->inst[buffer->length]
 
 /**
  * @struct ibuffer
@@ -83,6 +73,6 @@ void ibuffer_print(ibuffer_t *buffer);
  * 
  * @param buffer Pointer to instruction buffer
  */
-void ibuffer_free(ibuffer_t *buffer);
+void ibuffer_destroy(ibuffer_t *buffer);
 
 #endif  // _IBUFFER_H

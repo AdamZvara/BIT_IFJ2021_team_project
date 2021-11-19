@@ -16,6 +16,9 @@
 #include <string.h>
 #include "ibuffer.h"
 
+/**
+ * @brief Create space for single instruction
+ */
 char *inst_create(size_t inst_size)
 {
     char *inst = malloc(inst_size);
@@ -29,11 +32,13 @@ char *inst_create(size_t inst_size)
 
 ibuffer_t *ibuffer_create(size_t buffer_size, size_t inst_size)
 {
+    // allocate space for ibuffer
     ibuffer_t *buffer = malloc(sizeof(*buffer) + buffer_size*(sizeof(char *)));
     if (buffer == NULL) {
         return NULL;
     }
 
+    // initialize values
     buffer->inst_size = inst_size;
     buffer->size = buffer_size;
     buffer->length = 0;
@@ -51,6 +56,7 @@ ibuffer_t *ibuffer_create(size_t buffer_size, size_t inst_size)
 
 void ibuffer_clear(ibuffer_t *buffer)
 {
+    // clear all instructions
     for (size_t i = 0; i < buffer->length; i++) {
         memset(buffer->inst[i], 0, sizeof(buffer->inst_size));
     }
@@ -60,12 +66,13 @@ void ibuffer_clear(ibuffer_t *buffer)
 
 void ibuffer_print(ibuffer_t *buffer)
 {
+    // print all instructions
     for (size_t i = 0; i < buffer->length; i++) {
         printf("%s", buffer->inst[i]);
     }
 }
 
-void ibuffer_free(ibuffer_t *buffer)
+void ibuffer_destroy(ibuffer_t *buffer)
 {
     if (buffer == NULL) {
         return;
