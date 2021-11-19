@@ -69,6 +69,15 @@ int stack_pop(stack_t *stack);
 stack_item_t *stack_top(stack_t *stack);
 
 /**
+ * @brief Read term on the top of a stack
+ *
+ * @param stack Initialized stack
+ *
+ * @return Pointer to top term
+ */
+stack_item_t *stack_top_term(stack_t *stack);
+
+/**
  * @brief Delete stack
  *
  * @param stack Initialized stack

@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "expression.h"
 #include "stack.h"
 
 void stack_init(stack_t *stack)
@@ -55,6 +56,18 @@ int stack_pop(stack_t *stack)
 
 stack_item_t *stack_top(stack_t *stack)
 {
+    return stack->top;
+}
+
+stack_item_t *stack_top_term(stack_t *stack)
+{
+    stack_item_t *top;
+    top = stack_top(stack);
+
+    if (top->data == NON_TERM) {
+        top = top->next;
+    }
+
     return stack->top;
 }
 
