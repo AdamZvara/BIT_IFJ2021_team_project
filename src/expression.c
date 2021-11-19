@@ -69,7 +69,8 @@ int token_to_symbol(token_t *token)
     }
 }
 
-prec_table_index_t symbol_to_index(int symbol) {
+prec_table_index_t symbol_to_index(int symbol)
+{
     prec_table_index_t rv;
     switch (symbol) {
         case STR_LEN:
