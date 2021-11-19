@@ -11,6 +11,7 @@
  * @author Adam Zvara
  */
 
+#include <stdio.h>	// snprintf
 #include <stdlib.h>
 #include <string.h>
 #include "str.h"
@@ -76,6 +77,15 @@ int str_insert(string_t *str, char* to_insert)
 	return SUCCESS;
 }
 
+int str_insert_int(string_t* str, int num)
+{
+	// string into which num will be converted
+	char num_str[12] = {0};
+	snprintf(num_str, 12, "%d", num);
+
+	return str_insert(str, num_str);
+}
+
 int str_copy(string_t* source, string_t* destination)
 {
 	if (source == NULL || destination == NULL || source->str == NULL || destination->str == NULL) {
@@ -96,6 +106,10 @@ int str_copy(string_t* source, string_t* destination)
 
 void str_clear(string_t *src)
 {
+	if (src == NULL) {
+		return;
+	}
+
 	src->str[0] = '\0';
 	src->length = 0;
 }
@@ -111,4 +125,9 @@ int str_isequal(const string_t src, const string_t dst)
 int str_empty(const string_t src)
 {
 	return src.length == 0;
+}
+
+int str_len(const string_t src)
+{
+	return src.length;
 }

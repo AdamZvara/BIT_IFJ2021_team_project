@@ -58,6 +58,16 @@ int str_add_char(string_t* s, char c);
 int str_insert(string_t* str, char* insert);
 
 /**
+ * @brief Insert numeric value to string_t
+ * 
+ * @param str String to insert into
+ * @param num Number to insert
+ * 
+ * @return 0 if successful, else return 1
+ */
+int str_insert_int(string_t* str, int num);
+
+/**
  * @brief Copy string from source to destination
  *
  * @param source Source string to be copied
@@ -92,4 +102,14 @@ int str_isequal(const string_t src, const string_t dst);
  * @return 1 if string is empty, otherwise 0
  */
 int str_empty(const string_t src);
+
+/**
+ * @brief Get string length
+ * 
+ * @param src String
+ * 
+ * @return Length of string
+ */
+int str_len(const string_t src);
+
 #endif //_STR_H_
