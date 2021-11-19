@@ -169,7 +169,7 @@ struct local_data *local_add(local_symtab_t *local_tab, string_t name, bool init
 {
 	// create pointer to data
 	struct local_data **id = &(local_tab->data[local_tab->size]);
-	*id = malloc(sizeof(*local_tab->data));
+	*id = malloc(sizeof(struct local_data));
 	if (id == NULL) {
 		return NULL;
 	}
@@ -227,26 +227,34 @@ struct local_data *local_find(local_symtab_t *local_tab, string_t name)
 	}
 }
 
-void local_delete_top(local_symtab_t *local_tab)
+void local_delete_top(local_symtab_t **local_tab)
 {
-	if (local_tab == NULL) {
+	if (*local_tab == NULL) {
 		return;
 	}
 
+	// store top of local symtable to del pointer
+	// move local top to the next local symtable
 	local_symtab_t *del;
-	del = local_tab;
-	local_tab = local_tab->next;
+	del = *local_tab;
+	*local_tab = (*local_tab)->next;
 
+	// free key of local symtable
 	str_free(&del->key);
 	for (unsigned int i = 0; i < del->size; i++) {
+		// free names of all identifiers
 		str_free(&(del->data[i]->name));
+		// free local data structure
+		free(del->data[i]);
 	}
+	// free the local table itself
 	free(del);
 }
 
 void local_destroy(local_symtab_t *local_tab)
 {
+	// iterate through local symtables and destroy them
 	while (local_tab != NULL) {
-		local_delete_top(local_tab);
+		local_delete_top(&local_tab);
 	}
 }

@@ -483,7 +483,7 @@ int body() {
     
     if (GET_TYPE == TOK_KEYWORD) {
         switch (GET_KW) {
-            case KW_LOCAL:
+            case KW_LOCAL:  // Declaration of local variable
                 NEXT_TOKEN();
                 if (GET_TYPE != TOK_ID)
                     return ERROR_SYNTAX;
@@ -504,7 +504,9 @@ int body() {
                 return body();
                 break;
             case KW_IF: // IF <expr> THEN <body> ELSE <body> END <body>
+                // add new depth so local variables can be recognized
                 local_new_depth(&local_tab);
+
                 //TODO: call expr()
 
                 // THEN
@@ -513,9 +515,10 @@ int body() {
                     return ERROR_SYNTAX;
 
                 // <body>
-                ret = body();
+                /*ret = body();
                 if (ret)
                     return ret;
+                */
 
                 // ELSE
                 NEXT_TOKEN();
@@ -523,20 +526,26 @@ int body() {
                     return ERROR_SYNTAX;
                 
                 // <body>
-                ret = body();
+                /*ret = body();
                 if (ret)
                     return ret;
+                */
 
                 // END
                 NEXT_TOKEN();
                 if (GET_TYPE != TOK_KEYWORD || GET_KW != KW_END)
                     return ERROR_SYNTAX;
+
+                // delete top symtable 
+                local_delete_top(&local_tab);
                 
                 // <body>
                 return body();
                 break;
             case KW_WHILE:
+                // add new depth so local variables can be recognized
                 local_new_depth(&local_tab);
+
                 //TODO: call expr()
                 
                 // DO
@@ -554,10 +563,16 @@ int body() {
                 if (GET_TYPE != TOK_KEYWORD || GET_KW != KW_END)
                     return ERROR_SYNTAX;
                 
+                // delete top symtable 
+                local_delete_top(&local_tab);
+
                 // <body>
                 return body();
                 break;
             case KW_END:
+                // destroy local symtable for function
+                local_destroy(local_tab);
+                
                 return ret;
                 break;
             case KW_RETURN:

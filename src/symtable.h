@@ -154,7 +154,7 @@ struct local_data *local_find(local_symtab_t *local_tab, string_t name);
  * @brief Free top of the local symtable and all its resources
  * @param local_tab Pointer to active local symtable
  */
-void local_delete_top(local_symtab_t *local_tab);
+void local_delete_top(local_symtab_t **local_tab);
 
 /**
  * @brief Free local symtable and all its resources
