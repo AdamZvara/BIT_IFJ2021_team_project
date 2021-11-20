@@ -58,7 +58,7 @@ int str_add_char(string_t* s, char c);
 int str_insert(string_t* str, char* insert);
 
 /**
- * @brief Insert numeric value to string_t
+ * @brief Insert integer value to string_t
  * 
  * @param str String to insert into
  * @param num Number to insert
@@ -66,6 +66,16 @@ int str_insert(string_t* str, char* insert);
  * @return 0 if successful, else return 1
  */
 int str_insert_int(string_t* str, int num);
+
+/**
+ * @brief Insert double value to string_t
+ * 
+ * @param str String to insert into
+ * @param num Number to insert
+ * 
+ * @return 0 if successful, else return 1
+ */
+int str_insert_double(string_t* str, double num);
 
 /**
  * @brief Copy string from source to destination

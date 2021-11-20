@@ -86,6 +86,15 @@ int str_insert_int(string_t* str, int num)
 	return str_insert(str, num_str);
 }
 
+int str_insert_double(string_t* str, double num)
+{
+	// string into which num will be converted
+	char num_str[30] = {0};
+	snprintf(num_str, 30, "%a", num);
+
+	return str_insert(str, num_str);
+}
+
 int str_copy(string_t* source, string_t* destination)
 {
 	if (source == NULL || destination == NULL || source->str == NULL || destination->str == NULL) {
