@@ -107,3 +107,22 @@ void stack_dispose(stack_t *stack)
 {
     while (!stack_pop(stack)); // empty body
 }
+
+int items_to_handle(stack_t *stack)
+{
+    stack_item_t *tmp = stack_top(stack);
+    int count = 0;
+
+    while (tmp != NULL) {
+        if (tmp->data != HANDLE) {
+            count++;
+        } else {
+            // found handle, stop counting
+            break;
+        }
+
+        tmp = tmp->next;
+    }
+
+    return count;
+}
