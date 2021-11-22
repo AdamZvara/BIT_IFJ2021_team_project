@@ -117,6 +117,46 @@ prec_table_index_t symbol_to_index(int symbol)
     return rv;
 }
 
+int reduce(stack_t *stack)
+{
+    int count = items_to_handle(stack);
+    stack_item_t *top = stack_top(stack);
+
+    if (count == 1) {
+        if (top->data == ID) {
+            // ID
+            // Push ID
+        } else {
+            return EC_SYNTAX;
+        }
+    } else if (count == 2 ) {
+        if (top->data == NON_TERM && top->next->data == STR_LEN){
+            // unary operator #
+            // Generate unary operation #
+        } else {
+            return EC_SYNTAX;
+        }
+    } else if (count == 3 ) {
+        if (top->data == NON_TERM && top->next->next->data == NON_TERM) {
+            // binary operators
+            // Generate binary operation
+            // TODO brackets
+        } else {
+            return EC_SYNTAX;
+        }
+    } else {
+        return EC_SYNTAX;
+    }
+
+    // replace rule with NON_TERM
+    for (int i = 0; i < count + 1; i++) {
+        stack_pop(stack);
+    }
+
+    stack_push(stack, NON_TERM);
+    return EC_SUCCESS;
+}
+
 int expression(token_t *return_token)
 {
     // init stack and push $
@@ -133,12 +173,12 @@ int expression(token_t *return_token)
     int symbol;
     char prec_symbol;
 
-    do {
-        ret_val = get_token(new_token);
-        if (ret_val) {
-            return ret_val;
-        }
+    ret_val = get_token(new_token);
+    if (ret_val) {
+        return ret_val;
+    }
 
+    do {
         top_term = stack_top_term(&stack_prec);
         symbol = token_to_symbol(new_token);
 
@@ -156,9 +196,16 @@ int expression(token_t *return_token)
 
                 GET_NEW_TOKEN(new_token, ret_val);
                 break;
-
             case '>':
                 // reduce
+                ret_val = reduce(&stack_prec);
+                if (ret_val) {
+                    return ret_val;
+                }
+                break;
+
+            default:
+                // TODO error
                 break;
         }
 
