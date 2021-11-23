@@ -31,14 +31,6 @@ ibuffer_t *buffer = NULL;
 builtin_used_t *builtin_used = NULL;
 int ret = SUCCESS;
 
-
-//int token_init(token_t *token) {
-//    token = malloc(sizeof(token_t));
-//    if (!token)
-//        return 1;
-//    return 0;
-//}
-
 void token_free() {
     FREE_TOK_STRING();
     free(curr_token);
@@ -476,18 +468,16 @@ int body() {
                     return ERROR_SYNTAX;
 
                 // <body> TODO:
-                /*ret = body();
+                ret = body();
                 if (ret)
                     return ret;
-                */
 
                 // ELSE is checked by the body call above
 
                 // <body> TODO:
-                /*ret = body();
+                ret = body();
                 if (ret)
                     return ret;
-                */
                 
                 // END is checked by the body call above
 
@@ -522,13 +512,13 @@ int body() {
                 return body();
                 break;
             case KW_END:
-                // generate return code
-                generate_function_end();
-
-                // destroy local symtable for function
-                local_destroy(local_tab);
-                local_tab = NULL;
-
+                if (local_tab->depth == 0) {
+                    // generate return code
+                    generate_function_end();
+                    // destroy local symtable for function
+                    local_destroy(local_tab);
+                    local_tab = NULL;
+                }
                 return ret;
                 break;
             case KW_ELSE:
