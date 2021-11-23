@@ -142,9 +142,11 @@ int reduce(stack_t *stack)
         }
     } else if (count == 3 ) {
         if (top->data == NON_TERM && top->next->next->data == NON_TERM) {
-            // binary operators
-            // Generate binary operation
-            // TODO brackets
+            if (top->next->data >= MUL && top->next->data <= MINUS) {
+                // binary operators
+                // Generate binary operation
+            }
+            // TODO brackets?
         } else {
             return ERROR_SYNTAX;
         }
