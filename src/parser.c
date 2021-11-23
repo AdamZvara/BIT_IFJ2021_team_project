@@ -474,6 +474,10 @@ int body() {
 
                 // ELSE is checked by the body call above
 
+                // Delete if then scope and add new scope for else branch
+                local_delete_top(&local_tab);
+                local_new_depth(&local_tab);
+
                 // <body> TODO:
                 ret = body();
                 if (ret)
