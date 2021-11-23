@@ -5,7 +5,7 @@
  *
  * @brief Implementation of symtable and stack used for syntactic analysis
  *
- * @author Vojtěch Eichler 
+ * @author Vojtěch Eichler
  * @author Václav Korvas
  * @author Tomáš Matuš
  * @author Adam Zvara
@@ -19,7 +19,7 @@
 
 int hash_function(string_t str)
 {
-	int h=0;
+	long long h=0;
 	const unsigned char *p;
 	for(p=(const unsigned char*)str.str; *p!='\0'; p++)
 		h = 65599*h + *p;
@@ -30,7 +30,7 @@ global_symtab_t *global_create()
 {
 	global_symtab_t *table;
 
-	// if allocation fails, return NULL, allocating space for hash table + 
+	// if allocation fails, return NULL, allocating space for hash table +
 	// n * pointer to hash table item/record
 	if (!(table = malloc(sizeof(*table) + GLOBAL_SYM_SIZE * sizeof(struct global_item*))))
 		return NULL;
@@ -105,7 +105,7 @@ void global_destroy(global_symtab_t *gs)
 {
 	struct global_item *tmp, *del;
 
-	// free all link-listed functions 
+	// free all link-listed functions
 	for (unsigned int i = 0; i < gs->size; i++) {
 		tmp = gs->func[i];
 		while (tmp != NULL) {
@@ -129,7 +129,7 @@ local_symtab_t *local_create(string_t key)
 	if (local == NULL) {
 		return NULL;
 	}
-	
+
 	// initialize values
 	if (str_init(&local->key)) return NULL;
 	if (str_copy(&key, &local->key)) return NULL;
