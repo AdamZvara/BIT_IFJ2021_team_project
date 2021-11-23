@@ -21,10 +21,12 @@
 #include "generator.h"
 #include "ibuffer.h"
 #include "builtin.h"
+#include "expression.h"
 
 
 token_t *curr_token = NULL;
 token_t *backup_token = NULL;
+token_t *ret_token = NULL;
 global_symtab_t *global_tab = NULL;
 local_symtab_t *local_tab = NULL;
 ibuffer_t *buffer = NULL;
@@ -460,14 +462,21 @@ int body() {
                 // add new depth so local variables can be recognized
                 local_new_depth(&local_tab);
 
-                //TODO: call expr()
+                // call expression()
+                ret = expression(backup_token);
+                FREE_TOK_STRING();
+                free(curr_token);
+                curr_token = backup_token;
+                if (ret == EC_FUNC) {
+                    return ERROR_SYNTAX;
+                } else if (ret != EC_SUCCESS)
+                    return ret;
 
                 // THEN
-                NEXT_TOKEN();
                 if (GET_TYPE != TOK_KEYWORD || GET_KW != KW_THEN)
                     return ERROR_SYNTAX;
 
-                // <body> TODO:
+                // <body>
                 ret = body();
                 if (ret)
                     return ret;
@@ -478,7 +487,7 @@ int body() {
                 local_delete_top(&local_tab);
                 local_new_depth(&local_tab);
 
-                // <body> TODO:
+                // <body>
                 ret = body();
                 if (ret)
                     return ret;
@@ -495,10 +504,17 @@ int body() {
                 // add new depth so local variables can be recognized
                 local_new_depth(&local_tab);
 
-                //TODO: call expr()
+                // call expr()
+                ret = expression(backup_token);
+                FREE_TOK_STRING();
+                free(curr_token);
+                curr_token = backup_token;
+                if (ret == EC_FUNC) {
+                    return ERROR_SYNTAX;
+                } else if (ret != EC_SUCCESS)
+                    return ret;
 
-                // DO
-                NEXT_TOKEN();
+                // DO - already read by expression()
                 if (GET_TYPE != TOK_KEYWORD || GET_KW != KW_DO)
                     return ERROR_SYNTAX;
 
@@ -559,7 +575,13 @@ int body() {
 }
 
 int body_n(func_def_t *f_helper) {
-    NEXT_TOKEN();
+    if (backup_token) {
+        curr_token = backup_token;
+        backup_token = NULL;
+    } else {
+        NEXT_TOKEN();
+    }
+
     if (GET_TYPE == TOK_LBRACKET) {
         // function is not found
         if (f_helper->item == NULL) {
@@ -592,14 +614,34 @@ int body_n(func_def_t *f_helper) {
 
 int assign_single() {
     // call expression()
-    // int exp_ret = expression();
-    // if (exp_ret == SUCCESS)
-    //    return exp_ret;
-    // else if (exp_ret == FUNCTION)
-    //    return func();
-    // else
-    //    return ERROR_SYNTAX;
-    return 0;
+    ret = expression(backup_token);
+    if (ret == EC_SUCCESS) {
+        FREE_TOK_STRING();
+        free(curr_token);
+        curr_token = backup_token;
+        return ret;
+
+    } else if (ret == EC_FUNC) {
+        // free curr_token and use token given by expression instead
+        FREE_TOK_STRING();
+        free(curr_token);
+        curr_token = backup_token;
+
+        // perform function call
+        func_def_t f_helper;
+        func_init(&f_helper);
+        f_helper.item = global_find(global_tab, GET_ID);
+
+        builtin_used_update(builtin_used, f_helper.item->key);
+        
+        ret = body_n(&f_helper);
+
+        func_dispose(&f_helper);
+
+        return ret;
+    }
+    else
+        return ret;
 }
 
 int assign_multi() {
@@ -618,25 +660,48 @@ int assign_multi() {
 
 int r_side() {
     // call expression()
-    // int exp_ret = expression();
-    // if (exp_ret == SUCCESS) {
-    //    return r_side_n();
-    //
-    // else if (exp_ret == FUNCTION)
-    //    ret = func();
-    //    if (ret)
-    //        return ret;
-    //    return r_side_n();
-    // else
-    //    return exp_ret;
+    ret = expression(backup_token);
+    if (ret == EC_SUCCESS) {
+        FREE_TOK_STRING();
+        free(curr_token);
+        curr_token = backup_token;
+        return r_side_n();
+    } else if (ret == EC_FUNC) {
+        // free curr_token and use token given by expression instead
+        FREE_TOK_STRING();
+        free(curr_token);
+        curr_token = backup_token;
 
+        // perform function call
+        func_def_t f_helper;
+        func_init(&f_helper);
+        f_helper.item = global_find(global_tab, GET_ID);
 
-    //TMP
-    return r_side_n();
+        builtin_used_update(builtin_used, f_helper.item->key);
+        
+        backup_token = curr_token;
+        ret = body_n(&f_helper);
+
+        func_dispose(&f_helper);
+        if (ret)
+            return ret;
+
+        return r_side_n();
+    }
+    else
+        return ret;
 }
 
 int r_side_n() {
-    NEXT_TOKEN();
+    //TODO: not sure about this:
+    // but I think this should solve that expression reads one more token after
+    // the expression itself
+    if (backup_token) {
+        curr_token = backup_token;
+        backup_token = NULL;
+    } else
+        NEXT_TOKEN();
+
     if (GET_TYPE == TOK_COMMA) {
         return r_side();
     } else {
@@ -645,6 +710,7 @@ int r_side_n() {
     }
 }
 
+//TODO: remove this (probably useless?) function
 int func() {
     // <args>
     //ret = args(); TODO:
@@ -667,17 +733,33 @@ int init(struct local_data *id) {
 
 int init_n() {
     // call expression()
-    // int exp_ret = expression();
-    // if (exp_ret == SUCCESS)
-    //    return exp_ret;
-    // else if (exp_ret == FUNCTION)
-    //    return func();
-    // else
-    //    return ERROR_SYNTAX;
+    ret = expression(backup_token);
+    if (ret == EC_SUCCESS) {
+        FREE_TOK_STRING();
+        free(curr_token);
+        curr_token = backup_token;
+        return ret;
+    } else if (ret == EC_FUNC) {
+        // free curr_token and use token given by expression instead
+        FREE_TOK_STRING();
+        free(curr_token);
+        curr_token = backup_token;
 
+        // perform functino call
+        func_def_t f_helper;
+        func_init(&f_helper);
+        f_helper.item = global_find(global_tab, GET_ID);
 
-    // TMP
-    return 0;
+        builtin_used_update(builtin_used, f_helper.item->key);
+        
+        backup_token = curr_token;
+        ret = body_n(&f_helper);
+
+        func_dispose(&f_helper);
+
+        return ret;
+    } else
+        return ret;
 }
 
 int args(func_def_t *f_helper) {
