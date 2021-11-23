@@ -5,7 +5,7 @@
  *
  * @brief Definition of symtable and stack used for syntactic analysis
  *
- * @author Vojtěch Eichler 
+ * @author Vojtěch Eichler
  * @author Václav Korvas
  * @author Tomáš Matuš
  * @author Adam Zvara
@@ -73,7 +73,7 @@ struct global_item {
 typedef struct global_symtab {
 	unsigned int size;
 	struct global_item *func[];
-} global_symtab_t; 
+} global_symtab_t;
 
 /**
  * @brief Create index to hashtable from string
@@ -89,7 +89,7 @@ int hash_function(string_t key);
 global_symtab_t *global_create();
 
 /**
- * @brief Find function in global symtable 
+ * @brief Find function in global symtable
  * @param gs Pointer to global symtable
  * @param key Function name
  * @return Pointer to found function or NULL
@@ -107,7 +107,7 @@ struct global_item *global_add(global_symtab_t *gs, string_t key);
 /**
  * @brief Destroy global symtable and free all its resources
  * @param gs Pointer to global symtable
- */ 
+ */
 void global_destroy(global_symtab_t *gs);
 
 // dont need these functions as they are just str_add_char()
@@ -115,7 +115,7 @@ void global_destroy(global_symtab_t *gs);
 // global_add_retval = str_add_char(global_item, first char of retvals);
 
 /**
- * @brief Create local symtable 
+ * @brief Create local symtable
  * @param key Name of function
  * @return Pointer to newly created local symtable
  */

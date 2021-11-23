@@ -2,10 +2,10 @@
  * VUT IFJ Project 2021.
  *
  * @file ibuffer.c
- * 
+ *
  * @brief Implementation of instruction buffer
- * 
- * @author Vojtěch Eichler 
+ *
+ * @author Vojtěch Eichler
  * @author Václav Korvas
  * @author Tomáš Matuš
  * @author Adam Zvara
@@ -60,7 +60,7 @@ void ibuffer_clear(ibuffer_t *buffer)
     for (size_t i = 0; i < buffer->length; i++) {
         memset(buffer->inst[i], 0, sizeof(buffer->inst_size));
     }
-    
+
     buffer->length = 0;
 }
 

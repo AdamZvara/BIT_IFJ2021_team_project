@@ -2,10 +2,10 @@
  * VUT IFJ Project 2021.
  *
  * @file ibuffer.h
- * 
+ *
  * @brief Header file for instruction buffer
- * 
- * @author Vojtěch Eichler 
+ *
+ * @author Vojtěch Eichler
  * @author Václav Korvas
  * @author Tomáš Matuš
  * @author Adam Zvara
@@ -34,7 +34,7 @@ do {                                                \
 
 /**
  * @struct ibuffer
- * 
+ *
  * @brief Flexible array member for storing instructions during code generation
  */
 typedef struct ibuffer {
@@ -46,31 +46,31 @@ typedef struct ibuffer {
 
 /**
  * @brief Create ibuffer and initialize it's values
- * 
+ *
  * @param buffer_size   Size of new buffer
  * @param inst_size     Size of each instruction
- * 
+ *
  * @return Pointer to allocated buffer, otherwise NULL
  */
 ibuffer_t *ibuffer_create(size_t buffer_size, size_t inst_size);
 
 /**
  * @brief Clear all intructions from buffer and set it to initialized state
- * 
+ *
  * @param buffer Pointer to instruction buffer
  */
 void ibuffer_clear(ibuffer_t *buffer);
 
 /**
  * @brief Print out instructions stored in buffer
- * 
+ *
  * @param buffer Pointer to instruction buffer
  */
 void ibuffer_print(ibuffer_t *buffer);
 
 /**
  * @brief Free allocated memory of ibuffer
- * 
+ *
  * @param buffer Pointer to instruction buffer
  */
 void ibuffer_destroy(ibuffer_t *buffer);

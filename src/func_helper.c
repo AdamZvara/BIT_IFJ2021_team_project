@@ -2,10 +2,10 @@
  * VUT IFJ Project 2021.
  *
  * @file func_helper.c
- * 
+ *
  * @brief Helper structure when dealing with function declaration, definition, function call etc...
- * 
- * @author Vojtěch Eichler 
+ *
+ * @author Vojtěch Eichler
  * @author Václav Korvas
  * @author Tomáš Matuš
  * @author Adam Zvara
@@ -69,7 +69,7 @@ int func_set_params(func_def_t *f, keyword_t kw)
     return 0;
 }
 
-int func_set_retvals(func_def_t *f, keyword_t kw) 
+int func_set_retvals(func_def_t *f, keyword_t kw)
 {
     switch (kw) {
     case KW_STRING:
@@ -86,15 +86,15 @@ int func_set_retvals(func_def_t *f, keyword_t kw)
         } else {
             str_add_char(&f->item->retvals, 'i');
         }
-        break;    
-    
+        break;
+
     case KW_NUMBER:
         if (f->func_found) {
             str_add_char(&f->temp, 'n');
         } else {
             str_add_char(&f->item->retvals, 'n');
         }
-        break;      
+        break;
 
     default:
         break;
@@ -112,11 +112,11 @@ int func_call_params_const(func_def_t *f, token_type_t type)
 
     case TOK_INT:
         str_add_char(&f->temp, 'i');
-        break;    
-    
+        break;
+
     case TOK_DECIMAL:
         str_add_char(&f->temp, 'n');
-        break;      
+        break;
 
     default:
         break;
@@ -143,11 +143,11 @@ int func_call_params_id(func_def_t *f, string_t name)
 
     case INT_T:
         str_add_char(&f->temp, 'i');
-        break;    
-    
+        break;
+
     case NUM_T:
         str_add_char(&f->temp, 'n');
-        break;      
+        break;
 
     default:
         break;

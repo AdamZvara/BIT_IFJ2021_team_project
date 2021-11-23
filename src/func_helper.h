@@ -2,10 +2,10 @@
  * VUT IFJ Project 2021.
  *
  * @file func_helper.h
- * 
+ *
  * @brief Header file for func_helper.c
- * 
- * @author Vojtěch Eichler 
+ *
+ * @author Vojtěch Eichler
  * @author Václav Korvas
  * @author Tomáš Matuš
  * @author Adam Zvara
@@ -27,7 +27,7 @@ typedef struct func_def {
     struct global_item *item;   // Pointer to function in global symtab
     bool func_found;            // Whether function was already found in global symtab
     string_t temp;              // Temporary string to fill retvals/parameters of function
-} func_def_t; 
+} func_def_t;
 
 /**
  * @brief Initialize helper structure
@@ -51,23 +51,23 @@ void func_dispose(func_def_t *f);
  * @brief Set parameters of function in helper structure
  * @param f Pointer to helper structure
  * @param kw Which parameter should be added (string, number, integer)
- * @todo return values from str_add_char 
- */ 
+ * @todo return values from str_add_char
+ */
 int func_set_params(func_def_t *f, keyword_t kw);
 
 /**
  * @brief Set retvals of function in helper structure
  * @param f Pointer to helper structure
  * @param kw Which retval should be added (string, number, integer)
- * @todo return values from str_add_char 
- */ 
+ * @todo return values from str_add_char
+ */
 int func_set_retvals(func_def_t *f, keyword_t kw);
 
 /**
  * @brief Fill helper temporary string when function is called
  * @param f Pointer to helper structure
  * @param type Parameter type
- * @todo return values from str_add_char 
+ * @todo return values from str_add_char
  */
 int func_call_params_const(func_def_t *f, token_type_t type);
 
@@ -76,7 +76,7 @@ int func_call_params_const(func_def_t *f, token_type_t type);
  * @param f Pointer to helper structure
  * @param name Name of identifier
  * @return 0 if ID was found and added, otherwise 1
- * @todo return values from str_add_char 
+ * @todo return values from str_add_char
  */
 int func_call_params_id(func_def_t *f, string_t name);
 
