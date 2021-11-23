@@ -481,21 +481,15 @@ int body() {
                     return ret;
                 */
 
-                // ELSE
-                NEXT_TOKEN();
-                if (GET_TYPE != TOK_KEYWORD || GET_KW != KW_ELSE)
-                    return ERROR_SYNTAX;
+                // ELSE is checked by the body call above
 
                 // <body> TODO:
                 /*ret = body();
                 if (ret)
                     return ret;
                 */
-
-                // END
-                NEXT_TOKEN();
-                if (GET_TYPE != TOK_KEYWORD || GET_KW != KW_END)
-                    return ERROR_SYNTAX;
+                
+                // END is checked by the body call above
 
                 // delete top symtable
                 local_delete_top(&local_tab);
@@ -519,10 +513,7 @@ int body() {
                 if (ret)
                     return ret;
 
-                // END
-                NEXT_TOKEN();
-                if (GET_TYPE != TOK_KEYWORD || GET_KW != KW_END)
-                    return ERROR_SYNTAX;
+                // END is checked by the body call above
 
                 // delete top symtable
                 local_delete_top(&local_tab);
@@ -538,6 +529,9 @@ int body() {
                 local_destroy(local_tab);
                 local_tab = NULL;
 
+                return ret;
+                break;
+            case KW_ELSE:
                 return ret;
                 break;
             case KW_RETURN:
