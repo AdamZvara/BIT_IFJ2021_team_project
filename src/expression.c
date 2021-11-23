@@ -222,7 +222,7 @@ int expression(token_t *return_token)
 
     } while (!end);
 
-    if (!(top_term->data == NON_TERM && top_term->next->data == DOLLAR)) {
+    if (!(stack_prec.top->data == NON_TERM && stack_prec.top->next->data == DOLLAR)) {
         // final state of stack is not $E
         return ret_val = ERROR_SYNTAX;
     }
