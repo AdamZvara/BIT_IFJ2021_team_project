@@ -273,7 +273,7 @@ void generate_write(token_t *token)
         break;
 
     case TOK_DECIMAL:
-        generate_int(&value, token->attribute.decimal);
+        generate_decimal(&value, token->attribute.decimal);
         break;
 
     case TOK_ID:
