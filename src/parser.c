@@ -502,7 +502,7 @@ int body() {
                 ret = body();
                 if (ret)
                     return ret;
-
+                
                 // END is checked by the body call above
 
                 // delete top symtable
@@ -700,7 +700,7 @@ int args(func_def_t *f_helper) {
             return args_n(f_helper);
         }
         func_call_params_const(f_helper, GET_TYPE);
-        generate_params_const(curr_token, f_helper);
+        generate_call_params(curr_token, f_helper);
         return args_n(f_helper);
     } else if (GET_TYPE == TOK_ID) {
         if (!strcmp(f_helper->item->key.str, "write")) {
@@ -709,7 +709,7 @@ int args(func_def_t *f_helper) {
             return args_n(f_helper);
         }
         func_call_params_id(f_helper, GET_ID);
-        // TODO: generate_params_id
+        generate_call_params(curr_token, f_helper);
         return args_n(f_helper);
     } else {
         return ERROR_SYNTAX;

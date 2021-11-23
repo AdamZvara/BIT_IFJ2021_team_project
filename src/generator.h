@@ -51,7 +51,7 @@ void generate_function_end();
 void generate_identifier(string_t id_name);
 
 void generate_call_prep(func_def_t *f_helper);
-void generate_params_const(token_t *token, func_def_t *f_helper);
+void generate_call_params(token_t *token, func_def_t *f_helper);
 //void generate_params_id();
 void generate_call(func_def_t *f_helper);
 

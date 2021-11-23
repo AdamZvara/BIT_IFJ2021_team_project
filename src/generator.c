@@ -208,7 +208,7 @@ void generate_call_prep(func_def_t *f_helper)
     str_free(&param_name);
 }
 
-void generate_params_const(token_t *token, func_def_t *f_helper)
+void generate_call_params(token_t *token, func_def_t *f_helper)
 {
     ADD_INST("move TF@");
 
@@ -232,6 +232,11 @@ void generate_params_const(token_t *token, func_def_t *f_helper)
 
     case TOK_DECIMAL:
         generate_decimal(&param_name, token->attribute.decimal);
+        break;
+
+    case TOK_ID:
+        str_insert(&param_name, "LF@");
+        generate_name(&param_name, token->attribute.s);
         break;
 
     default:
