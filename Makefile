@@ -11,12 +11,17 @@ PARSER = src/*.c src/*.h
 .PHONY: doc test
 
 #run all tests
-test: scanner-test
-	cd $(TESTS_DIR); ./runtests.sh
+test: scanner-test parser-test
+#	@cd $(TESTS_DIR); ./scanner_tests.sh
+	@cd $(TESTS_DIR); ./parser_tests.sh
 
 #scanner tests
 scanner-test: $(SCANNER_T) $(SCANNER)
-	$(CC) $(CFLAGS) $^ -o $(TESTS_DIR)scanner-helper
+	@$(CC) $(CFLAGS) $^ -o $(TESTS_DIR)scanner-helper
+
+#parser tests
+parser-test: $(PARSER)
+	@$(CC) $(CFLAGS) $^ -o $(TESTS_DIR)parser
 
 #parser
 parser: $(PARSER)
