@@ -112,6 +112,10 @@ prec_table_index_t symbol_to_index(int symbol)
         case ID:
             rv = I_ID;
             break;
+
+        case DOLLAR:
+            rv = I_DOLLAR;
+            break;
     }
 
     return rv;
@@ -127,14 +131,14 @@ int reduce(stack_t *stack)
             // ID
             // Push ID
         } else {
-            return EC_SYNTAX;
+            return ERROR_SYNTAX;
         }
     } else if (count == 2 ) {
         if (top->data == NON_TERM && top->next->data == STR_LEN){
             // unary operator #
             // Generate unary operation #
         } else {
-            return EC_SYNTAX;
+            return ERROR_SYNTAX;
         }
     } else if (count == 3 ) {
         if (top->data == NON_TERM && top->next->next->data == NON_TERM) {
@@ -142,10 +146,10 @@ int reduce(stack_t *stack)
             // Generate binary operation
             // TODO brackets
         } else {
-            return EC_SYNTAX;
+            return ERROR_SYNTAX;
         }
     } else {
-        return EC_SYNTAX;
+        return ERROR_SYNTAX;
     }
 
     // replace rule with NON_TERM
@@ -197,6 +201,11 @@ int expression(token_t *return_token)
                 GET_NEW_TOKEN(new_token, ret_val);
                 break;
             case '>':
+                if (symbol == ID && top_term->data == ID) {
+                    // loaded two IDs, possible multiple assignmemts on one line
+                    // continue reducing
+                    symbol = DOLLAR;
+                }
                 // reduce
                 ret_val = reduce(&stack_prec);
                 if (ret_val) {
@@ -205,12 +214,19 @@ int expression(token_t *return_token)
                 break;
 
             default:
-                // TODO error
+                if (symbol == DOLLAR && top_term->data != DOLLAR) {
+                    end = 1;
+                }
                 break;
         }
 
     } while (!end);
 
+    if (!(top_term->data == NON_TERM && top_term->next->data == DOLLAR)) {
+        // final state of stack is not $E
+        return ret_val = ERROR_SYNTAX;
+    }
 
+    return_token = new_token;
     return ret_val;
 }
