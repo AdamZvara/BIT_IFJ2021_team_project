@@ -87,5 +87,12 @@ typedef enum
     I_DOLLAR
 } prec_table_index_t;
 
+int token_to_symbol(token_t *token);
+
+prec_table_index_t symbol_to_index(int symbol);
+
+int reduce(stack_t *stack);
+
+int expression(token_t *return_token);
 
 #endif // _EXPRESSION_H_
