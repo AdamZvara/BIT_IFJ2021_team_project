@@ -34,44 +34,44 @@
 typedef enum
 {
     // #
-    STR_LEN,
+    STR_LEN, // 0
 
     // * / '//'
-    MUL,
-    DIV,
-    DIV_INT,
+    MUL, // 1
+    DIV, // 2
+    DIV_INT, // 3
 
     // + -
-    PLUS,
-    MINUS,
+    PLUS, // 4
+    MINUS, // 5
 
     // ..
-    CONCAT,
+    CONCAT, // 6
 
     // = ~= < <= > >=
-    EQ,
-    NOT_EQ,
-    LESS,
-    LESS_EQ,
-    GREAT,
-    GREAT_EQ,
+    EQ, // 7
+    NOT_EQ, // 8
+    LESS, // 9
+    LESS_EQ, // 10
+    GREAT, // 11
+    GREAT_EQ, // 12
 
     // (
-    LEFT_BR,
+    LEFT_BR, // 13
 
     // )
-    RIGHT_BR,
+    RIGHT_BR, // 14
 
     // id
-    ID,
+    ID, // 15
 
     // $
-    DOLLAR,
+    DOLLAR, // 16
 
     // <
-    HANDLE,
+    HANDLE, // 17
 
-    NON_TERM
+    NON_TERM // 18
 } prec_table_term_t;
 
 typedef enum

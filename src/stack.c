@@ -62,6 +62,8 @@ int stack_push_above_term(stack_t *stack, int value)
                 new->next = curr;
                 prev->next = new;
             }
+
+            return 0;
         } else {
             // NON_TERM on top
             prev = curr;
@@ -100,7 +102,7 @@ stack_item_t *stack_top_term(stack_t *stack)
         top = top->next;
     }
 
-    return stack->top;
+    return top;
 }
 
 void stack_dispose(stack_t *stack)

@@ -63,6 +63,12 @@ int token_to_symbol(token_t *token)
         return RIGHT_BR;
     } else if (type == TOK_ID) {
         return ID;
+    } else if (type == TOK_INT) {
+        return ID;
+    } else if (type == TOK_DECIMAL) {
+        return ID;
+    } else if (type == TOK_STRING) {
+        return ID;
     } else {
         // token doesn't belong to the expression
         return DOLLAR;
@@ -216,7 +222,7 @@ int expression(token_t *return_token)
                 break;
 
             default:
-                if (symbol == DOLLAR && top_term->data != DOLLAR) {
+                if (symbol == DOLLAR && top_term->data == DOLLAR) {
                     end = 1;
                 }
                 break;
@@ -232,3 +238,11 @@ int expression(token_t *return_token)
     return_token = new_token;
     return ret_val;
 }
+
+#ifdef EXPR_TEST
+int main(){
+    token_t *returned = NULL;
+    int rv = expression(returned);
+    return rv;
+}
+#endif
