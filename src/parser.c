@@ -5,7 +5,7 @@
  *
  * @brief Implementation of parser
  *
- * @author Vojtěch Eichler 
+ * @author Vojtěch Eichler
  * @author Václav Korvas
  * @author Tomáš Matuš
  * @author Adam Zvara
@@ -20,6 +20,7 @@
 #include "parser.h"
 #include "generator.h"
 #include "ibuffer.h"
+#include "builtin.h"
 
 
 token_t *curr_token = NULL;
@@ -27,6 +28,7 @@ token_t *backup_token = NULL;
 global_symtab_t *global_tab = NULL;
 local_symtab_t *local_tab = NULL;
 ibuffer_t *buffer = NULL;
+builtin_used_t *builtin_used = NULL;
 int ret = SUCCESS;
 
 
@@ -51,11 +53,23 @@ int parse()
 
     // create global symtable
     global_tab = global_create();
+    if (global_tab == NULL) {
+        return ERROR_INTERNAL;
+    }
+
+    // add builtin function to global symtable
+    add_builtin(global_tab);
+
+    // structure to indicate which builtins have been used
+    builtin_used = builtin_used_create();
+    if (builtin_used == NULL) {
+        return ERROR_INTERNAL;
+    }
 
     // create ibuffer to store generated instructions
     buffer = ibuffer_create(IBUFFER_SIZE, INSTR_SIZE);
 
-    ret = require(); 
+    ret = require();
 
     ibuffer_print(buffer);
     ibuffer_destroy(buffer);
@@ -89,10 +103,13 @@ int require()
 }
 
 int prog()
-{ 
+{
     // initialize helper structure to parser function dec/def
     func_def_t f_helper;
     func_init(&f_helper);
+
+    // entry point has been generated
+    static bool entry = false;
 
     if (!backup_token) {
         NEXT_TOKEN();
@@ -115,7 +132,7 @@ int prog()
                 return ERROR_SEMANTIC;
             }
             f_helper.item = global_add(global_tab, GET_ID);
-            
+
             // get new token that should be colon
             NEXT_TOKEN();
             if (GET_TYPE != TOK_COLON)
@@ -171,7 +188,7 @@ int prog()
             ret = params_2(&f_helper);
             if (ret)
                 return ret;
-            
+
             // clear string containing temporary params/retvals
             func_clear(&f_helper);
 
@@ -182,7 +199,7 @@ int prog()
 
             // generate function label + retvals and parameters
             generate_function();
-            
+
             ret = body();
             if (ret)
                  return ret;
@@ -201,20 +218,43 @@ int prog()
             return ERROR_SEMANTIC;
         }
 
+        builtin_used_update(builtin_used, f_helper.item->key);
+
         NEXT_TOKEN();
         if (GET_TYPE != TOK_LBRACKET)
             return ERROR_SYNTAX;
+
+        // no entry label was created, create one
+        if (!entry) {
+            generate_entry();
+            entry = true;
+        }
+
+        // dont create new frame if function is write
+        if (strcmp(f_helper.item->key.str, "write")) {
+            generate_call_prep(&f_helper);
+        }
 
         // <args>
         ret = args(&f_helper);
         if (ret)
             return ret;
-        
+
         return prog();
 
     }  else if (GET_TYPE == TOK_EOF) {
         // end of input, start returning all the way up the recursion
         func_dispose(&f_helper);
+
+        // generate end label to skip builtin functions
+        generate_end();
+
+        // generate used builtin functions
+        builtin_used_generate(builtin_used);
+
+        // generate end label
+        generate_exit();
+
         return ret;
     } else { // unexpected token, return error
         return ERROR_SYNTAX;
@@ -225,9 +265,9 @@ int params(func_def_t *f_helper) {
     NEXT_TOKEN();
     if (GET_TYPE == TOK_RBRACKET) {
         return ret;
-    } 
-    
-    if ((GET_TYPE == TOK_KEYWORD && GET_KW == KW_STRING) || 
+    }
+
+    if ((GET_TYPE == TOK_KEYWORD && GET_KW == KW_STRING) ||
         (GET_TYPE == TOK_KEYWORD && GET_KW == KW_NUMBER) ||
         (GET_TYPE == TOK_KEYWORD && GET_KW == KW_INTEGER)) {
         func_set_params(f_helper, GET_KW);
@@ -267,10 +307,11 @@ int params_2(func_def_t *f_helper) {
             }
         }
         return ret;
-    
+
     } else if (GET_TYPE == TOK_ID) { // params start correctly with ID
         // add identifier to local symtable
         struct local_data *id = local_add(local_tab, GET_ID, true);
+
         // now check the rest of the syntax and go to params_2_n if everything is correct
         NEXT_TOKEN();
         if (GET_TYPE != TOK_COLON)
@@ -297,27 +338,27 @@ int params_2_n(func_def_t *f_helper) {
     // check for end of params
     NEXT_TOKEN();
     if (GET_TYPE == TOK_RBRACKET) {
-        if (f_helper->func_found) {   
+        if (f_helper->func_found) {
             // function is in global table, check if parameters match
             if (!str_isequal(f_helper->item->params, f_helper->temp)) {
                 return ERROR_SEMANTIC;
             }
         }
         return ret;
-        
+
     } else if (GET_TYPE == TOK_COMMA) { // check for comma
         // check the rest of the syntax and descend into parama_2_n if everything is correct
         NEXT_TOKEN();
         if (GET_TYPE != TOK_ID)
             return ERROR_SYNTAX;
-        
+
         // add identifier to local symtable
         struct local_data *id = local_add(local_tab, GET_ID, true);
-        
+
         NEXT_TOKEN();
         if (GET_TYPE != TOK_COLON)
             return ERROR_SYNTAX;
-        
+
         // next lines check <types_keyword> rule
         NEXT_TOKEN();
         if ((GET_TYPE == TOK_KEYWORD && GET_KW == KW_STRING) ||
@@ -340,11 +381,11 @@ int ret_params(func_def_t *f_helper) {
     if (GET_TYPE != TOK_COLON) {
         // function is in global table, check if retvals match
         // current token is COLON so retvals should be empty
-        if (f_helper->func_found) { 
+        if (f_helper->func_found) {
             if (str_empty(f_helper->item->retvals)) {
                 backup_token = curr_token;
                 return ret;
-            } 
+            }
             return ERROR_SEMANTIC;
         }
         backup_token = curr_token;
@@ -352,7 +393,7 @@ int ret_params(func_def_t *f_helper) {
     }
     NEXT_TOKEN();
 
-    if ((GET_TYPE == TOK_KEYWORD && GET_KW == KW_STRING) || 
+    if ((GET_TYPE == TOK_KEYWORD && GET_KW == KW_STRING) ||
         (GET_TYPE == TOK_KEYWORD && GET_KW == KW_NUMBER) ||
         (GET_TYPE == TOK_KEYWORD && GET_KW == KW_INTEGER)) {
         func_set_retvals(f_helper, GET_KW);
@@ -397,17 +438,18 @@ int body() {
     // print out instruction buffer
     ibuffer_print(buffer);
     ibuffer_clear(buffer);
-    
+
     if (GET_TYPE == TOK_KEYWORD) {
         switch (GET_KW) {
             case KW_LOCAL:  // Declaration of local variable
                 NEXT_TOKEN();
                 if (GET_TYPE != TOK_ID)
                     return ERROR_SYNTAX;
-                
+
                 // add identifer to local symtable
                 struct local_data *id = local_add(local_tab, GET_ID, false);
-                
+                generate_identifier(GET_ID);
+
                 NEXT_TOKEN();
                 if (GET_TYPE != TOK_COLON)
                     return ERROR_SYNTAX;
@@ -443,7 +485,7 @@ int body() {
                 NEXT_TOKEN();
                 if (GET_TYPE != TOK_KEYWORD || GET_KW != KW_ELSE)
                     return ERROR_SYNTAX;
-                
+
                 // <body> TODO:
                 /*ret = body();
                 if (ret)
@@ -455,9 +497,9 @@ int body() {
                 if (GET_TYPE != TOK_KEYWORD || GET_KW != KW_END)
                     return ERROR_SYNTAX;
 
-                // delete top symtable 
+                // delete top symtable
                 local_delete_top(&local_tab);
-                
+
                 // <body>
                 return body();
                 break;
@@ -466,12 +508,12 @@ int body() {
                 local_new_depth(&local_tab);
 
                 //TODO: call expr()
-                
+
                 // DO
                 NEXT_TOKEN();
                 if (GET_TYPE != TOK_KEYWORD || GET_KW != KW_DO)
                     return ERROR_SYNTAX;
-                
+
                 // <body>
                 ret = body();
                 if (ret)
@@ -481,14 +523,17 @@ int body() {
                 NEXT_TOKEN();
                 if (GET_TYPE != TOK_KEYWORD || GET_KW != KW_END)
                     return ERROR_SYNTAX;
-                
-                // delete top symtable 
+
+                // delete top symtable
                 local_delete_top(&local_tab);
 
                 // <body>
                 return body();
                 break;
             case KW_END:
+                // generate return code
+                generate_function_end();
+
                 // destroy local symtable for function
                 local_destroy(local_tab);
                 local_tab = NULL;
@@ -511,10 +556,12 @@ int body() {
         func_init(&f_helper);
         f_helper.item = global_find(global_tab, GET_ID);
 
+        builtin_used_update(builtin_used, f_helper.item->key);
+
         ret = body_n(&f_helper);
 
         func_dispose(&f_helper);
-        
+
         if (ret)
             return ret;
         return body();
@@ -530,6 +577,12 @@ int body_n(func_def_t *f_helper) {
         if (f_helper->item == NULL) {
             return ERROR_SEMANTIC;
         }
+
+        // dont create new frame if function is write
+        if (strcmp(f_helper->item->key.str, "write")) {
+            generate_call_prep(f_helper);
+        }
+
         return args(f_helper);
     } else if (GET_TYPE == TOK_ASSIGN) {
         return assign_single();
@@ -541,8 +594,8 @@ int body_n(func_def_t *f_helper) {
         ret = assign_multi();
         if (ret)
             return ret;
-        
-        
+
+
         return r_side();
     } else {
         return ERROR_SYNTAX;
@@ -580,15 +633,15 @@ int r_side() {
     // int exp_ret = expression();
     // if (exp_ret == SUCCESS) {
     //    return r_side_n();
-    //    
+    //
     // else if (exp_ret == FUNCTION)
     //    ret = func();
-    //    if (ret) 
+    //    if (ret)
     //        return ret;
     //    return r_side_n();
     // else
     //    return exp_ret;
-    
+
 
     //TMP
     return r_side_n();
@@ -605,7 +658,7 @@ int r_side_n() {
 }
 
 int func() {
-    // <args> 
+    // <args>
     //ret = args(); TODO:
     if (ret)
         return ret;
@@ -642,19 +695,37 @@ int init_n() {
 int args(func_def_t *f_helper) {
     NEXT_TOKEN();
     if (GET_TYPE == TOK_RBRACKET) {
-        if (!str_isequal(f_helper->item->params, f_helper->temp)) {
-            // function call does not match with definition params
-            return ERROR_SEMANTIC_PARAMS;
+        if (!strcmp(f_helper->item->key.str, "write")) {
+            // special case for write functions - variadic functions
+            // parameters are not checked
+            return ret;
         }
+
+        if (!str_isequal(f_helper->item->params, f_helper->temp)) {
+                // function call does not match with definition params
+                return ERROR_SEMANTIC_PARAMS;
+            }
+        generate_call(f_helper);
         return ret;
     }
 
-    if (GET_TYPE == TOK_STRING || GET_TYPE == TOK_DECIMAL ||
-            GET_TYPE == TOK_INT) {
+    if (GET_TYPE == TOK_STRING || GET_TYPE == TOK_DECIMAL || GET_TYPE == TOK_INT) {
+        if (!strcmp(f_helper->item->key.str, "write")) {
+            // instructions are generated on spot
+            generate_write(curr_token);
+            return args_n(f_helper);
+        }
         func_call_params_const(f_helper, GET_TYPE);
+        generate_params_const(curr_token, f_helper);
         return args_n(f_helper);
     } else if (GET_TYPE == TOK_ID) {
+        if (!strcmp(f_helper->item->key.str, "write")) {
+            // instructions are generated on spot
+            generate_write(curr_token);
+            return args_n(f_helper);
+        }
         func_call_params_id(f_helper, GET_ID);
+        // TODO: generate_params_id
         return args_n(f_helper);
     } else {
         return ERROR_SYNTAX;
@@ -666,10 +737,18 @@ int args_n(func_def_t *f_helper) {
     if (GET_TYPE == TOK_COMMA) {
         return args(f_helper);
     } else if (GET_TYPE == TOK_RBRACKET) {
+        if (!strcmp(f_helper->item->key.str, "write")) {
+            // special case for write functions - variadic functions
+            // parameters are not checked
+            return ret;
+        }
+
         if (!str_isequal(f_helper->item->params, f_helper->temp)) {
             // function call does not match with definition params
             return ERROR_SEMANTIC_PARAMS;
         }
+
+        generate_call(f_helper);
         return ret;
     } else {
         return ERROR_SYNTAX;
@@ -680,5 +759,6 @@ int args_n(func_def_t *f_helper) {
 
 int main() {
     int ret_main = parse();
+    fprintf(stderr, "%d", ret_main);
     return ret_main;
 }
