@@ -18,6 +18,7 @@ int func_init(func_def_t *f)
 {
     f->item = NULL;
     f->func_found = false;
+    f->par_counter = 0;
     if (str_init(&f->temp)) {
         return ERROR_INTERNAL;
     }
