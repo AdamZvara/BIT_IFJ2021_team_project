@@ -93,6 +93,6 @@ prec_table_index_t symbol_to_index(int symbol);
 
 int reduce(stack_t *stack);
 
-int expression(token_t *return_token);
+int expression(token_t **return_token);
 
 #endif // _EXPRESSION_H_

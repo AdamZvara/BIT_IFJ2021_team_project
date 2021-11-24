@@ -22,6 +22,7 @@
 #include "ibuffer.h"
 #include "symtable.h"
 #include "func_helper.h"
+#include "expression.h"
 
 
 extern local_symtab_t *local_tab;   // local symtable from parser
@@ -56,6 +57,11 @@ void generate_call_params(token_t *token, func_def_t *f_helper);
 void generate_call(func_def_t *f_helper);
 
 void generate_write(token_t *token);
+
+void generate_push_operator(prec_table_term_t op);
+void generate_push_operand(token_t *token);
+void generate_assign(string_t name);
+
 
 
 

@@ -289,3 +289,85 @@ void generate_write(token_t *token)
 
     str_free(&value);
 }
+
+void generate_push_operator(prec_table_term_t op)
+{
+    switch (op)
+    {
+    case MINUS:
+        ADD_INST_N("subs");
+        break;
+    
+    case PLUS:
+        ADD_INST_N("adds");
+        break;
+
+    case MUL:
+        ADD_INST_N("muls");
+        break;
+
+    case DIV:
+        ADD_INST_N("divs");
+        break;
+        
+    case DIV_INT:
+        ADD_INST_N("idivs");
+        break;
+
+    default:
+        break;
+    }
+}
+
+void generate_push_operand(token_t *token)
+{
+    string_t name;
+    str_init(&name);
+
+    ADD_INST("pushs ");
+
+    switch (token->type)
+    {
+    case TOK_STRING:
+        generate_string(&name, token->attribute.s);
+        break;
+        
+    case TOK_DECIMAL:
+        generate_decimal(&name, token->attribute.decimal);
+        break;
+
+    case TOK_INT:
+        generate_int(&name, token->attribute.number);
+        break;
+
+    case TOK_ID:
+        str_insert(&name, "LF@");
+        generate_name(&name, token->attribute.s);
+        break;
+    
+    default:
+        break;
+    }
+
+    strcat(INST, name.str);
+    ADD_NEWLINE();
+
+    str_free(&name);
+}
+
+void generate_assign(string_t name)
+{
+    string_t id_name;
+    str_init(&id_name);
+
+    // pop instruction to variable
+    ADD_INST("pops ");
+    str_insert(&id_name, "LF@");
+    generate_name(&id_name, name);
+    strcat(INST, id_name.str);
+    ADD_NEWLINE();
+
+    ADD_INST_N("clears");
+
+    str_free(&id_name);
+}

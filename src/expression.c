@@ -7,6 +7,7 @@
 #include "symtable.h"
 #include "error.h"
 #include "parser.h"
+#include "generator.h"
 
 const char prec_table[TABLE_SIZE][TABLE_SIZE] = {
     // ---> current token
@@ -23,7 +24,6 @@ const char prec_table[TABLE_SIZE][TABLE_SIZE] = {
 };
 
 int ret_val = EC_SUCCESS;
-int end = 0;
 
 /**
  * @brief Converts token to a symbol
@@ -151,7 +151,7 @@ int reduce(stack_t *stack)
             if (top->next->data >= MUL && top->next->data <= MINUS) {
                 // binary operators
                 // Generate binary operation
-                // TODO call generate func -- that func has switch
+                generate_push_operator(top->next->data);
             }
             // TODO brackets?
         } else {
@@ -170,8 +170,10 @@ int reduce(stack_t *stack)
     return EC_SUCCESS;
 }
 
-int expression(token_t *return_token)
-{
+int expression(token_t **return_token)
+{   
+    int end = 0;
+
     // init stack and push $
     stack_t stack_prec;
     stack_init(&stack_prec);
@@ -206,6 +208,12 @@ int expression(token_t *return_token)
             case '<':
                 stack_push_above_term(&stack_prec, HANDLE);
                 stack_push(&stack_prec, symbol);
+
+                // push operand
+                if (new_token->type == TOK_ID  || new_token->type == TOK_STRING ||
+                    new_token->type == TOK_INT || new_token->type == TOK_DECIMAL ) {
+                    generate_push_operand(new_token);
+                }
 
                 GET_NEW_TOKEN(new_token, ret_val);
                 break;
@@ -243,7 +251,7 @@ int expression(token_t *return_token)
     }
 
     stack_dispose(&stack_prec);
-    return_token = new_token;
+    *return_token = new_token;
     return ret_val;
 }
 
