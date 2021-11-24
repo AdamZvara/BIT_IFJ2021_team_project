@@ -51,6 +51,8 @@ typedef struct local_symtab {
 	unsigned int depth;				// Level of depth (if, while ...)
 	unsigned int size;				// Amount of stored variables
 	unsigned int alloc_size;		// Size of allocated space for variables
+	unsigned int if_cnt;			// Counter of if statements for unique label generation
+	unsigned int while_cnt;			// Counter of while statements for unique label generation
 	struct local_symtab *next;		// Pointer to next local TS (creating linked list)
 	struct local_data *data[];		// Variables inside function
 } local_symtab_t;
@@ -149,6 +151,26 @@ void local_add_type(struct local_data *data, keyword_t kw);
  * @return Pointer to item, if item was not found NULL
  */
 struct local_data *local_find(local_symtab_t *local_tab, string_t name);
+
+/**
+ * @brief Find identifier in local symtable linked list and return local symtable frame
+ * @param local_tab Pointer to local symtable
+ * @param name Name of identifier
+ * @return Pointer to local symtable frame, in which id was found, otherwise return NULL
+ */
+local_symtab_t *local_symtab_find(local_symtab_t *local_tab, string_t name);
+
+/**
+ * @brief Increase if_cnt in local symtable
+ * @param local_tab Pointer to local symtable
+ */
+void local_add_if(local_symtab_t *local_tab);
+
+/**
+ * @brief Increase while_cnt in local symtable
+ * @param local_tab Pointer to local symtable
+ */
+void local_add_while(local_symtab_t *local_tab);
 
 /**
  * @brief Free top of the local symtable and all its resources

@@ -133,6 +133,8 @@ local_symtab_t *local_create(string_t key)
 	// initialize values
 	if (str_init(&local->key)) return NULL;
 	if (str_copy(&key, &local->key)) return NULL;
+	local->if_cnt = 0;
+	local->while_cnt = 0;
 	local->depth = 0;
 	local->size = 0;
 	local->alloc_size = LOCAL_SYM_SIZE;
@@ -157,7 +159,9 @@ int local_new_depth(local_symtab_t **previous)
 		return ERROR_INTERNAL;
 	}
 
-	new_local->depth++;
+	new_local->depth = (*previous)->depth+1;
+	new_local->if_cnt = (*previous)->if_cnt;
+	new_local->while_cnt = (*previous)->while_cnt;
 
 	new_local->next = *previous;
 	*previous = new_local;
@@ -223,6 +227,69 @@ struct local_data *local_find(local_symtab_t *local_tab, string_t name)
 		if (!str_isequal(tmp->key, tmp->next->key)) {
 			return NULL;
 		}
+		tmp = tmp->next;
+	}
+}
+
+local_symtab_t *local_symtab_find(local_symtab_t *local_tab, string_t name)
+{
+	local_symtab_t *tmp = local_tab;
+	if (tmp == NULL) {
+		return NULL;
+	}
+
+	// iterate through all local symtabs with the same key
+	while (true) {
+		// search through identifiers in this local symtable
+		for (unsigned int i = 0; i < tmp->size; i++) {
+			if (str_isequal(tmp->data[i]->name, name)) {
+				return tmp;
+			}
+		}
+
+		// end of linked list
+		if (tmp->next == NULL) {
+			return NULL;
+		}
+
+		// check if next local symtab has different key
+		if (!str_isequal(tmp->key, tmp->next->key)) {
+			return NULL;
+		}
+		tmp = tmp->next;
+	}
+}
+
+
+void local_add_if(local_symtab_t *local_tab)
+{
+	// update if counter in all local_symtabs that belong to this function
+	local_symtab_t *tmp = local_tab;
+	tmp->if_cnt++;
+	
+	while (tmp->next != NULL) {	
+		// stop if next local symtab is from different function
+		if (!str_isequal(tmp->key, tmp->next->key)) {
+			break;
+		}
+		tmp->next->if_cnt++;
+		tmp = tmp->next;
+	}
+
+}
+
+void local_add_while(local_symtab_t *local_tab)
+{
+	// update while counter in all local_symtabs that belong to this function
+	local_symtab_t *tmp = local_tab;
+	tmp->while_cnt++;
+	
+	while (tmp->next != NULL) {	
+		// stop if next local symtab is from different function
+		if (!str_isequal(tmp->key, tmp->next->key)) {
+			break;
+		}
+		tmp->next->while_cnt++;
 		tmp = tmp->next;
 	}
 }
