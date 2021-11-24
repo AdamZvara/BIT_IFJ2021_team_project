@@ -449,4 +449,20 @@ void generate_then()
     str_insert(&label_name, "_then");
     strcat(INST, label_name.str);
     ADD_NEWLINE();
+
+    str_free(&label_name);
+}
+
+void generate_else()
+{
+    string_t label_name;
+    str_init(&label_name);
+
+    ADD_INST("label ");
+    generate_if_label(&label_name);
+    str_insert(&label_name, "_else");
+    strcat(INST, label_name.str);
+    ADD_NEWLINE();
+    
+    str_free(&label_name);
 }

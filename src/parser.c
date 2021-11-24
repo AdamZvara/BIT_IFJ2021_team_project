@@ -459,6 +459,8 @@ int body() {
                 return body();
                 break;
             case KW_IF: // IF <expr> THEN <body> ELSE <body> END <body>
+                // add new depth so local variables can be recognized
+                local_new_depth(&local_tab);
                 // call expression()
                 ret = expression(&backup_token);
                 FREE_TOK_STRING();
@@ -473,8 +475,6 @@ int body() {
                 if (GET_TYPE != TOK_KEYWORD || GET_KW != KW_THEN)
                     return ERROR_SYNTAX;
 
-                // add new depth so local variables can be recognized
-                local_new_depth(&local_tab);
                 // update if counter
                 local_add_if(local_tab);
                 backup_token = NULL;
@@ -549,6 +549,7 @@ int body() {
                 return ret;
                 break;
             case KW_ELSE:
+                generate_else();
                 return ret;
                 break;
             case KW_RETURN:
