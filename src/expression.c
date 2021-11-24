@@ -148,7 +148,7 @@ int reduce(stack_t *stack)
         }
     } else if (count == 3 ) {
         if (top->data == NON_TERM && top->next->next->data == NON_TERM) {
-            if (top->next->data >= MUL && top->next->data <= MINUS) {
+            if (top->next->data >= MUL && top->next->data <= GREAT_EQ) {
                 // binary operators
                 // Generate binary operation
                 generate_push_operator(top->next->data);
@@ -171,7 +171,7 @@ int reduce(stack_t *stack)
 }
 
 int expression(token_t **return_token)
-{   
+{
     int end = 0;
 
     // init stack and push $
