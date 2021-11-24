@@ -133,10 +133,7 @@ int reduce(stack_t *stack)
     stack_item_t *top = stack_top(stack);
 
     if (count == 1) {
-        if (top->data == ID) {
-            // ID
-            // Push ID
-        } else {
+        if (!(top->data == ID)) {
             return ERROR_SYNTAX;
         }
     } else if (count == 2 ) {
@@ -153,11 +150,15 @@ int reduce(stack_t *stack)
                 // Generate binary operation
                 generate_push_operator(top->next->data);
             }
-            // TODO brackets?
+        } else if (top->data == RIGHT_BR && top->next->next->data == RIGHT_BR) {
+            if (!(top->next->data == NON_TERM)) {
+                return ERROR_SYNTAX;
+            }
         } else {
             return ERROR_SYNTAX;
         }
     } else {
+        // incorrect count
         return ERROR_SYNTAX;
     }
 
@@ -257,7 +258,7 @@ int expression(token_t **return_token)
 
 #ifdef EXPR_TEST
 int main(){
-    token_t *returned = NULL;
+    token_t **returned = NULL;
     int rv = expression(returned);
     return rv;
 }
