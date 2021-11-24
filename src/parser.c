@@ -68,7 +68,9 @@ int parse()
     ibuffer_print(buffer);
     ibuffer_destroy(buffer);
     global_destroy(global_tab);
-    token_free();
+    if (curr_token != NULL) {
+        token_free();
+    }
 	return ret;
 }
 
@@ -461,6 +463,9 @@ int body() {
             case KW_IF: // IF <expr> THEN <body> ELSE <body> END <body>
                 // add new depth so local variables can be recognized
                 local_new_depth(&local_tab);
+                // update if counter
+                local_add_if(local_tab);
+
                 // call expression()
                 ret = expression(&backup_token);
                 FREE_TOK_STRING();
@@ -475,11 +480,7 @@ int body() {
                 if (GET_TYPE != TOK_KEYWORD || GET_KW != KW_THEN)
                     return ERROR_SYNTAX;
 
-                // update if counter
-                local_add_if(local_tab);
                 backup_token = NULL;
-
-                generate_then();
 
                 // <body>
                 ret = body();
@@ -545,7 +546,10 @@ int body() {
                     // destroy local symtable for function
                     local_destroy(local_tab);
                     local_tab = NULL;
+                } else {
+                    generate_if_end();
                 }
+
                 return ret;
                 break;
             case KW_ELSE:

@@ -64,7 +64,7 @@ void generate_push_operand(token_t *token);
 
 void generate_assign(string_t name);
 
-void generate_then();
 void generate_else();
+void generate_if_end();
 
 #endif // _GENERATOR_H

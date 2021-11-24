@@ -70,21 +70,26 @@ void generate_entry()
 
 void generate_start()
 {
-    ADD_INST(".IFJcode21");
-    ADD_NEWLINE();
-    ADD_INST("jump _start_");
+    ADD_INST_N(".IFJcode21");
+
+    // global variable to store results of comparisons in expressions
+    ADD_INST_N("defvar GF@bool"); 
+
+    // global variables to store operands of advanced comparisons in expressions 
+    ADD_INST_N("defvar GF@adv_comp1");
+    ADD_INST_N("defvar GF@adv_comp2");
+
+    ADD_INST_N("jump _start_");
 }
 
 void generate_end()
 {
-    ADD_INST("jump _end_");
-    ADD_NEWLINE();
+    ADD_INST_N("jump _end_");
 }
 
 void generate_exit()
 {
-    ADD_INST("label _end_");
-    ADD_NEWLINE();
+    ADD_INST_N("label _end_");
 }
 
 void generate_label(string_t label_name)
@@ -294,14 +299,75 @@ void generate_write(token_t *token)
     str_free(&value);
 }
 
+void generate_assign(string_t name)
+{
+    string_t id_name;
+    str_init(&id_name);
+
+    // pop instruction to variable
+    ADD_INST("pops ");
+    str_insert(&id_name, "LF@");
+    generate_name(&id_name, name);
+    strcat(INST, id_name.str);
+    ADD_NEWLINE();
+
+    str_free(&id_name);
+}
+
+void generate_if_label(string_t *insert_to, char *label_or_jump)
+{
+    str_insert(insert_to, label_or_jump);
+    str_add_char(insert_to, '_');
+    str_insert(insert_to, local_tab->key.str);
+    str_add_char(insert_to, '_');
+    str_insert_int(insert_to, local_tab->if_cnt);
+}
+
+void generate_else()
+{
+    string_t label_name;
+    str_init(&label_name);
+
+    // if cond is true, skip else part
+    generate_if_label(&label_name, "jump ");
+    str_insert(&label_name, "_end");
+    strcat(INST, label_name.str);
+    ADD_NEWLINE();
+    str_clear(&label_name);
+
+    generate_if_label(&label_name, "label ");
+    str_insert(&label_name, "_else");
+    strcat(INST, label_name.str);
+    ADD_NEWLINE();
+    
+    str_free(&label_name);
+}
+
+void generate_if_end()
+{
+    string_t label_name;
+    str_init(&label_name);
+
+    generate_if_label(&label_name, "label ");
+    str_insert(&label_name, "_end");
+    strcat(INST, label_name.str);
+    ADD_NEWLINE();
+    
+    str_free(&label_name);
+}
+
+
 void generate_push_compare(prec_table_term_t op)
 {
     switch (op)
     {
     case EQ:
+        ADD_INST_N("eqs");
         break;
     
     case NOT_EQ:
+        ADD_INST_N("eqs");
+        ADD_INST_N("nots");
         break;
 
     case LESS:
@@ -309,6 +375,22 @@ void generate_push_compare(prec_table_term_t op)
         break;
 
     case LESS_EQ:
+        // store variables
+        ADD_INST_N("pops GF@adv_comp2");
+        ADD_INST_N("pops GF@adv_comp1");
+        
+        // compare < only
+        ADD_INST_N("pushs GF@adv_comp1");
+        ADD_INST_N("pushs GF@adv_comp2");
+        ADD_INST_N("lts");
+
+        // compare ==
+        ADD_INST_N("pushs GF@adv_comp1");
+        ADD_INST_N("pushs GF@adv_comp2");
+        ADD_INST_N("eqs");
+
+        // compare <=
+        ADD_INST_N("ors");
         break;
         
     case GREAT:
@@ -316,11 +398,39 @@ void generate_push_compare(prec_table_term_t op)
         break;
 
     case GREAT_EQ:
+        // store variables
+        ADD_INST_N("pops GF@adv_comp2");
+        ADD_INST_N("pops GF@adv_comp1");
+        
+        // compare > only
+        ADD_INST_N("pushs GF@adv_comp1");
+        ADD_INST_N("pushs GF@adv_comp2");
+        ADD_INST_N("gts");
+
+        // compare ==
+        ADD_INST_N("pushs GF@adv_comp1");
+        ADD_INST_N("pushs GF@adv_comp2");
+        ADD_INST_N("eqs");
+
+        // compare >=
+        ADD_INST_N("ors");
         break;
 
     default:
         break;
     }
+
+    ADD_INST_N("pops GF@bool");
+
+    string_t label_name;
+    str_init(&label_name);
+
+    generate_if_label(&label_name, "jumpifneq ");
+    str_insert(&label_name, "_else GF@bool bool@true");
+    strcat(INST, label_name.str);
+    ADD_NEWLINE();
+
+    str_free(&label_name);
 }
 
 void generate_push_arithmetic(prec_table_term_t op)
@@ -412,57 +522,4 @@ void generate_push_operand(token_t *token)
     ADD_NEWLINE();
 
     str_free(&name);
-}
-
-void generate_assign(string_t name)
-{
-    string_t id_name;
-    str_init(&id_name);
-
-    // pop instruction to variable
-    ADD_INST("pops ");
-    str_insert(&id_name, "LF@");
-    generate_name(&id_name, name);
-    strcat(INST, id_name.str);
-    ADD_NEWLINE();
-
-    ADD_INST_N("clears");
-
-    str_free(&id_name);
-}
-
-void generate_if_label(string_t *insert_to)
-{
-    str_add_char(insert_to, '_');
-    str_insert(insert_to, local_tab->key.str);
-    str_add_char(insert_to, '_');
-    str_insert_int(insert_to, local_tab->if_cnt);
-}
-
-void generate_then()
-{
-    string_t label_name;
-    str_init(&label_name);
-
-    ADD_INST("label ");
-    generate_if_label(&label_name);
-    str_insert(&label_name, "_then");
-    strcat(INST, label_name.str);
-    ADD_NEWLINE();
-
-    str_free(&label_name);
-}
-
-void generate_else()
-{
-    string_t label_name;
-    str_init(&label_name);
-
-    ADD_INST("label ");
-    generate_if_label(&label_name);
-    str_insert(&label_name, "_else");
-    strcat(INST, label_name.str);
-    ADD_NEWLINE();
-    
-    str_free(&label_name);
 }
