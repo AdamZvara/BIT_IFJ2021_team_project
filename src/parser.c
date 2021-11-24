@@ -567,12 +567,14 @@ int body() {
                 break;
         }
     } else if (GET_TYPE == TOK_ID) { // ID <body_n> <body>
-        // in case of function call
         func_def_t f_helper;
         func_init(&f_helper);
+
+        // in case of function call
         f_helper.item = global_find(global_tab, GET_ID);
 
-        builtin_used_update(builtin_used, f_helper.item->key);
+        // in case of ID assign
+        f_helper.id = local_find(local_tab, GET_ID);
 
         ret = body_n(&f_helper);
 
@@ -600,6 +602,8 @@ int body_n(func_def_t *f_helper) {
             return ERROR_SEMANTIC;
         }
 
+        builtin_used_update(builtin_used, f_helper->item->key);
+
         // dont create new frame if function is write
         if (strcmp(f_helper->item->key.str, "write")) {
             generate_call_prep(f_helper);
@@ -607,7 +611,7 @@ int body_n(func_def_t *f_helper) {
 
         return args(f_helper);
     } else if (GET_TYPE == TOK_ASSIGN) {
-        return assign_single();
+        return assign_single(f_helper);
     } else if (GET_TYPE == TOK_COMMA) {
         NEXT_TOKEN();
         if (GET_TYPE != TOK_ID)
@@ -624,10 +628,11 @@ int body_n(func_def_t *f_helper) {
     }
 }
 
-int assign_single() {
+int assign_single(func_def_t *f_helper) {
     // call expression()
     ret = expression(&backup_token);
     if (ret == EC_SUCCESS) {
+        generate_assign(f_helper->id->name);
         FREE_TOK_STRING();
         free(curr_token);
         curr_token = backup_token;
@@ -640,15 +645,9 @@ int assign_single() {
         curr_token = backup_token;
 
         // perform function call
-        func_def_t f_helper;
-        func_init(&f_helper);
-        f_helper.item = global_find(global_tab, GET_ID);
+        f_helper->item = global_find(global_tab, GET_ID);
 
-        builtin_used_update(builtin_used, f_helper.item->key);
-        
-        ret = body_n(&f_helper);
-
-        func_dispose(&f_helper);
+        ret = body_n(f_helper);
 
         return ret;
     }

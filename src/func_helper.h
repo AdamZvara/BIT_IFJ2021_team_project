@@ -24,6 +24,7 @@ extern local_symtab_t *local_tab;
  * @brief Helper structure to do semantic checks when declaring/defining new function
  */
 typedef struct func_def {
+    struct local_data *id;      // Pointer to identificator in local symtab
     struct global_item *item;   // Pointer to function in global symtab
     bool func_found;            // Whether function was already found in global symtab
     string_t temp;              // Temporary string to fill retvals/parameters of function

@@ -46,7 +46,7 @@ int ret_params(func_def_t *f_helper);
 int ret_params_n(func_def_t *f_helper);
 int body();
 int body_n(func_def_t *f_helper);
-int assign_single();
+int assign_single(func_def_t *f_helper);
 int assign_multi();
 int r_side();
 int r_side_n();
@@ -54,7 +54,7 @@ int func();
 int init(struct local_data *id);
 int init_n(struct local_data *id);
 int args(func_def_t *f_helper);
-int args_n();
+int args_n(func_def_t *f_helper);
 int term();
 int types_keyword();
 

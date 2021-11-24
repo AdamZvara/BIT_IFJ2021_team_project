@@ -16,6 +16,7 @@
 
 int func_init(func_def_t *f)
 {
+    f->id = NULL;
     f->item = NULL;
     f->func_found = false;
     f->par_counter = 0;
