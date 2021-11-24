@@ -463,7 +463,7 @@ int body() {
                 local_new_depth(&local_tab);
 
                 // call expression()
-                ret = expression(backup_token);
+                ret = expression(&backup_token);
                 FREE_TOK_STRING();
                 free(curr_token);
                 curr_token = backup_token;
@@ -475,6 +475,8 @@ int body() {
                 // THEN
                 if (GET_TYPE != TOK_KEYWORD || GET_KW != KW_THEN)
                     return ERROR_SYNTAX;
+
+                backup_token = NULL;
 
                 // <body>
                 ret = body();
@@ -505,7 +507,7 @@ int body() {
                 local_new_depth(&local_tab);
 
                 // call expr()
-                ret = expression(backup_token);
+                ret = expression(&backup_token);
                 FREE_TOK_STRING();
                 free(curr_token);
                 curr_token = backup_token;
@@ -517,6 +519,8 @@ int body() {
                 // DO - already read by expression()
                 if (GET_TYPE != TOK_KEYWORD || GET_KW != KW_DO)
                     return ERROR_SYNTAX;
+
+                backup_token = NULL;
 
                 // <body>
                 ret = body();
@@ -614,7 +618,7 @@ int body_n(func_def_t *f_helper) {
 
 int assign_single() {
     // call expression()
-    ret = expression(backup_token);
+    ret = expression(&backup_token);
     if (ret == EC_SUCCESS) {
         FREE_TOK_STRING();
         free(curr_token);
@@ -660,7 +664,7 @@ int assign_multi() {
 
 int r_side() {
     // call expression()
-    ret = expression(backup_token);
+    ret = expression(&backup_token);
     if (ret == EC_SUCCESS) {
         FREE_TOK_STRING();
         free(curr_token);
@@ -724,17 +728,18 @@ int init(struct local_data *id) {
     NEXT_TOKEN();
     if (GET_TYPE == TOK_ASSIGN) {
         id->init = true;
-        return init_n();
+        return init_n(id);
     } else {
         backup_token = curr_token;
         return ret;
     }
 }
 
-int init_n() {
+int init_n(struct local_data *id) {
     // call expression()
-    ret = expression(backup_token);
+    ret = expression(&backup_token);
     if (ret == EC_SUCCESS) {
+        generate_assign(id->name);
         FREE_TOK_STRING();
         free(curr_token);
         curr_token = backup_token;

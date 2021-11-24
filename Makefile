@@ -8,7 +8,7 @@ SCANNER = src/scanner.c src/scanner.h src/str.c src/str.h src/error.h
 SCANNER_T = $(TESTS_DIR)scanner-helper.c
 PARSER = src/*.c src/*.h
 
-.PHONY: doc test
+.PHONY: doc test run
 
 #run all tests
 test: scanner-test parser-test
@@ -25,9 +25,13 @@ parser-test: $(PARSER)
 
 #parser
 parser: $(PARSER)
-	$(CC) $(CFLAGS) $^ -o src/parser
+	@$(CC) $(CFLAGS) $^ -o src/parser
 
 #generate doxygen documentation
 doc: Doxyfile
 	doxygen
 	mv warning_doxygen.txt doc/
+
+run: parser
+	@./src/parser < prog.tl > test.code
+	@./interpret/ic21int test.code
