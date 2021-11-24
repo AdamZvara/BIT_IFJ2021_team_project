@@ -151,6 +151,7 @@ int reduce(stack_t *stack)
             if (top->next->data >= MUL && top->next->data <= MINUS) {
                 // binary operators
                 // Generate binary operation
+                // TODO call generate func -- that func has switch
             }
             // TODO brackets?
         } else {
@@ -190,10 +191,10 @@ int expression(token_t *return_token)
         return ret_val;
     }
 
-    do {
-        top_term = stack_top_term(&stack_prec);
-        symbol = token_to_symbol(new_token);
+    top_term = stack_top_term(&stack_prec);
+    symbol = token_to_symbol(new_token);
 
+    while (!end) {
         // get precedence symbol from precedence table
         prec_symbol = prec_table[symbol_to_index(top_term->data)][symbol_to_index(symbol)];
         switch (prec_symbol) {
@@ -208,6 +209,7 @@ int expression(token_t *return_token)
 
                 GET_NEW_TOKEN(new_token, ret_val);
                 break;
+
             case '>':
                 if (symbol == ID && top_term->data == ID) {
                     // loaded two IDs, possible multiple assignmemts on one line
@@ -228,13 +230,19 @@ int expression(token_t *return_token)
                 break;
         }
 
-    } while (!end);
+        if (symbol != DOLLAR) {
+            symbol = token_to_symbol(new_token);
+        }
+        top_term = stack_top_term(&stack_prec);
+
+    } // end while
 
     if (!(stack_prec.top->data == NON_TERM && stack_prec.top->next->data == DOLLAR)) {
         // final state of stack is not $E
         return ret_val = ERROR_SYNTAX;
     }
 
+    stack_dispose(&stack_prec);
     return_token = new_token;
     return ret_val;
 }
