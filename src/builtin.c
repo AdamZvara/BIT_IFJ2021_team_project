@@ -19,12 +19,6 @@
 
 extern ibuffer_t *buffer;           // instruction buffer from parser
 
-#define ADD_INST_N(string)  \
-do {                        \
-    ADD_INST(string);       \
-    ADD_NEWLINE();          \
-} while (0)                 \
-
 builtin_used_t *builtin_used_create()
 {
     builtin_used_t *bu = malloc(sizeof(*bu));

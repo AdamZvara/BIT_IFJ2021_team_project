@@ -30,6 +30,13 @@ do {                                                \
     buffer->length++;                               \
 } while (0)                                         \
 
+// append instruction with newline
+#define ADD_INST_N(string)  \
+do {                        \
+    ADD_INST(string);       \
+    ADD_NEWLINE();          \
+} while (0)                 \
+
 #define INST buffer->inst[buffer->length]
 
 /**
