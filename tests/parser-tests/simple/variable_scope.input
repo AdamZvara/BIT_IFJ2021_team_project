@@ -1,0 +1,20 @@
+require "ifj21"
+
+global f : function(string)
+
+function foo()
+  local x : integer = 3
+  if x == 3 then
+     local x : integer = x + 1
+     write(x)
+   else end
+   f("Borovicka\n")
+
+end
+
+function f(s : string)
+	write(s)
+end
+
+
+foo()

@@ -1,0 +1,13 @@
+require "ifj21"
+
+function main()
+    local a : integer = 2
+    local b : integer = 5
+    local c : integer = 7
+    local z : integer
+
+    z = a * b
+    write("Result is: ", z, "\n")
+end
+
+main()

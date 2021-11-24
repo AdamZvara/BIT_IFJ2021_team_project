@@ -1,0 +1,13 @@
+require "ifj21"
+
+function foo(s : string)
+
+	local i : integer
+	i = #s
+	local len : integer = #"xyz"
+	write(i,"\n")
+		write(len,"\n")
+
+
+end
+foo("hello")
