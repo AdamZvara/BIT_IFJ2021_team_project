@@ -18,7 +18,7 @@ const char prec_table[TABLE_SIZE][TABLE_SIZE] = {
     { '-', '-', '-', '<' , '>', '<', '>', '<', '>' }, // ..
     { '<', '<', '<', '<' , '-', '<', '>', '<', '>' }, // r ( < <= > >= )
     { '<', '<', '<', '<' , '<', '<', '=', '<', '-' }, // (
-    { '>', '>', '>', '>' , '>', '-', '>', '-', '>' }, // )
+    { '>', '>', '>', '>' , '>', '-', '>', '>', '>' }, // )
     { '-', '>', '>', '>' , '>', '-', '>', '>', '>' }, // id
     { '<', '<', '<', '<' , '<', '<', '-', '<', '-' }, // $
 };
@@ -150,7 +150,7 @@ int reduce(stack_t *stack)
                 // Generate binary operation
                 generate_push_operator(top->next->data);
             }
-        } else if (top->data == RIGHT_BR && top->next->next->data == RIGHT_BR) {
+        } else if (top->data == RIGHT_BR && top->next->next->data == LEFT_BR) {
             if (!(top->next->data == NON_TERM)) {
                 return ERROR_SYNTAX;
             }
@@ -220,7 +220,7 @@ int expression(token_t **return_token)
                 break;
 
             case '>':
-                if (symbol == ID && top_term->data == ID) {
+                if (symbol == ID && (top_term->data == ID || top_term->data == RIGHT_BR)) {
                     // loaded two IDs, possible multiple assignmemts on one line
                     // continue reducing
                     symbol = DOLLAR;
