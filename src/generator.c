@@ -50,9 +50,13 @@ void generate_decimal(string_t *insert_to, double number)
 
 void generate_name(string_t *output, string_t name)
 {
+    local_symtab_t *symtab = local_symtab_find(local_tab, name);
+    if (symtab == NULL)
+        return;
+
     str_insert(output, local_tab->key.str);
     str_insert(output, "$");
-    str_insert_int(output, local_tab->depth);
+    str_insert_int(output, symtab->depth);
     str_insert(output, "$");
     str_insert(output, name.str);
 }
@@ -290,7 +294,36 @@ void generate_write(token_t *token)
     str_free(&value);
 }
 
-void generate_push_operator(prec_table_term_t op)
+void generate_push_compare(prec_table_term_t op)
+{
+    switch (op)
+    {
+    case EQ:
+        break;
+    
+    case NOT_EQ:
+        break;
+
+    case LESS:
+        ADD_INST_N("lts");
+        break;
+
+    case LESS_EQ:
+        break;
+        
+    case GREAT:
+        ADD_INST_N("gts");
+        break;
+
+    case GREAT_EQ:
+        break;
+
+    default:
+        break;
+    }
+}
+
+void generate_push_arithmetic(prec_table_term_t op)
 {
     switch (op)
     {
@@ -312,6 +345,32 @@ void generate_push_operator(prec_table_term_t op)
         
     case DIV_INT:
         ADD_INST_N("idivs");
+        break;
+
+    default:
+        break;
+    }
+}
+
+void generate_push_operator(prec_table_term_t op)
+{
+    switch (op)
+    {
+    case MINUS:
+    case PLUS:
+    case MUL:
+    case DIV:
+    case DIV_INT:
+        generate_push_arithmetic(op);
+        break;
+    
+    case EQ:
+    case NOT_EQ:
+    case LESS:
+    case LESS_EQ:
+    case GREAT:
+    case GREAT_EQ:
+        generate_push_compare(op);
         break;
 
     default:
@@ -370,4 +429,24 @@ void generate_assign(string_t name)
     ADD_INST_N("clears");
 
     str_free(&id_name);
+}
+
+void generate_if_label(string_t *insert_to)
+{
+    str_add_char(insert_to, '_');
+    str_insert(insert_to, local_tab->key.str);
+    str_add_char(insert_to, '_');
+    str_insert_int(insert_to, local_tab->if_cnt);
+}
+
+void generate_then()
+{
+    string_t label_name;
+    str_init(&label_name);
+
+    ADD_INST("label ");
+    generate_if_label(&label_name);
+    str_insert(&label_name, "_then");
+    strcat(INST, label_name.str);
+    ADD_NEWLINE();
 }

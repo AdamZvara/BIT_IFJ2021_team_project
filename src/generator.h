@@ -58,11 +58,12 @@ void generate_call(func_def_t *f_helper);
 
 void generate_write(token_t *token);
 
+void generate_push_compare(prec_table_term_t op);
 void generate_push_operator(prec_table_term_t op);
 void generate_push_operand(token_t *token);
+
 void generate_assign(string_t name);
 
-
-
+void generate_then();
 
 #endif // _GENERATOR_H
