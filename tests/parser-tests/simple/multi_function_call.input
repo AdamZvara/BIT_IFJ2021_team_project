@@ -1,0 +1,16 @@
+require "ifj21" --toto je hlavicka 
+
+function bar()
+	write("funkce bar\n")
+end
+
+function foo(num : number)
+	write(num)
+	write(
+	"\n"
+		 )
+	bar()
+end
+
+foo(5.2)
+bar()

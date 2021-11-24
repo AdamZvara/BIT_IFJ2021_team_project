@@ -1,0 +1,12 @@
+-- segfault v body po tom co projde expression
+require "ifj21"
+
+function bar(num : integer)
+	if num > 1 then
+		write(num,"\n")
+	else
+		write("Cislo je mensi")
+	end
+end
+
+bar(2)
