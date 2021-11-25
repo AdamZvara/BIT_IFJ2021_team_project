@@ -17,8 +17,8 @@
 #ifndef _SYMTABLE_H_
 #define _SYMTABLE_H_
 
-#define GLOBAL_SYM_SIZE 20
-#define LOCAL_SYM_SIZE	20
+#define GLOBAL_SYM_SIZE 1873
+#define LOCAL_SYM_SIZE	1873
 
 #include <stdlib.h>
 #include <string.h>
