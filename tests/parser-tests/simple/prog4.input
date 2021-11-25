@@ -1,0 +1,22 @@
+require "ifj21"
+
+global foo : function(integer)
+
+function bar(n : integer, s : string)
+	local str : string = s
+	write(str,"\n")
+	if 10 > 5 then
+		write("Bigger")
+	else
+		write("smaller")
+	end
+	foo(n)
+end
+
+function foo(n : integer)
+	write(n,"\n")
+	n = n + 2
+	write(n)
+	write("\n")
+end
+bar(5,"ahoj")

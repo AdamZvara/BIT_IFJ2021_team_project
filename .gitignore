@@ -1,4 +1,10 @@
 tests/scanner-tests/*.diff
 tests/scanner-tests/*.output
 tests/scanner-helper
-doc/
+tests/parser
+tests/parser-tests/*/*.diff
+tests/parser-tests/*/*.output
+tests/parser-tests/*/*.result
+doc/warning*
+doc/html
+.idea/

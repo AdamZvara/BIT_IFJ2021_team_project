@@ -1,0 +1,20 @@
+require "ifj21"
+
+global f : function(integer)
+
+function f(x : integer)
+	local a : integer = x + 2
+	write(a," ", x,"\n")
+	if a ~= x + 2 then
+		write("NOT EQUAL\n")
+	else write("EQUAL\n")
+	end
+	if a == x + 2 then
+		write("EQUAL\n")
+		local a : number = 2.21
+		write(a,"\n")
+	else end
+	if a > x then else end
+end
+
+f(2)

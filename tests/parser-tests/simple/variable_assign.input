@@ -1,0 +1,9 @@
+-- Zacykli se v expresion
+require "ifj21"
+
+function foo()
+	local a : integer = 5
+	write(a)
+	write("\n")
+end
+foo()

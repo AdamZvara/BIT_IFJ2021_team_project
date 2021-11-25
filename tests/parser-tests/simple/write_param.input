@@ -1,0 +1,8 @@
+require "ifj21"
+
+function foo(text:string)
+	write(text,"\n")
+end
+
+foo("IFJ2021")
+

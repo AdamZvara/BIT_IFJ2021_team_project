@@ -12,3 +12,11 @@ For scanner testing:
     compilation of scanner-helper is needed and mentioned in scanner-helper.c
     do not start .input file with error token!
     
+For parser testing:
+    normal, simple folder:
+        Create your-test.input, your-test.expected
+        run ./parser_tests.sh
+
+        .expected file should contain output of program
+    error:
+        Name of file ending with error code of compilator

@@ -1,0 +1,13 @@
+require "ifj21"
+
+function foo(s : string, n : integer)
+
+	local a : string = s.."wordl\n"
+	local res : integer = #s
+	res = 5 * n n = n * res
+	write(res)
+	write("\n")
+	write(n,"\n")
+end
+
+foo("hello",4)

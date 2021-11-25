@@ -1,0 +1,12 @@
+require "ifj21"
+
+function foo(num : integer)
+	local a : integer = 6
+	a = a + 6
+	if a == num then write("equal \n")
+	else local a : integer = 2
+	write(a)
+	end
+end
+
+foo(12)

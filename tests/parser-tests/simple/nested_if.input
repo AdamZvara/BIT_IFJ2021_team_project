@@ -1,0 +1,18 @@
+require "ifj21"
+
+function foo(s : string)
+	local str : integer
+	str = #(s)
+	write(str)
+	if (str > 5) then
+		write("OUTER\n")
+		if (str > 2) then
+			write("INNER\n")
+		else end
+	else end
+	if 1 then 
+		write("Another\n")
+	else end
+end
+
+foo("hello")

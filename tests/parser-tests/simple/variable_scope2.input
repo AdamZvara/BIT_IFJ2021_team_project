@@ -1,0 +1,15 @@
+require "ifj21"
+
+function foo()
+	local a : string = "ano"
+	write(a,"\n")
+	if 1>0 then 
+		local a : string = "ne"
+		write(a,"\n")
+		a = "nevim"
+		write(a,"\n")
+	else end
+	write(a,"\n")
+end
+
+foo()

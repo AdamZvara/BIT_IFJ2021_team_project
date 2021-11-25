@@ -1,0 +1,23 @@
+require "ifj21"
+
+
+function foo()
+	local a : string = "Ahoj\n"
+	local b : integer = 5
+	b = 5 * 2
+	write(b,"\n")
+	write(a)
+	if b >= 10 then
+		
+	else
+		write("sem by ses nemel dostat\n")
+	end
+	if b <= 10 then
+		local b : integer = 1
+		write("toto je jine b",b,"\n")
+	else end
+end
+
+foo()
+write("konec programu\n")
+

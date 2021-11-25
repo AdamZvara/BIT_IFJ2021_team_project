@@ -1,0 +1,2 @@
+require "ifj21"
+write("Hello","world","\n")

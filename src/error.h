@@ -5,7 +5,7 @@
  *
  * @brief Error return codes definition.
  *
- * @author Vojtěch Eichler 
+ * @author Vojtěch Eichler
  * @author Václav Korvas
  * @author Tomáš Matuš
  * @author Adam Zvara

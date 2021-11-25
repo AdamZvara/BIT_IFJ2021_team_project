@@ -1,3 +1,15 @@
+/**
+ * VUT IFJ Project 2021.
+ *
+ * @file scanner.h
+ *
+ * @brief Definition of scanner
+ *
+ * @author Vojtěch Eichler 
+ * @author Václav Korvas
+ * @author Tomáš Matuš
+ * @author Adam Zvara
+ */
 
 #ifndef _SCANNER_H_
 #define _SCANNER_H_
@@ -7,7 +19,6 @@
 typedef enum {
 	TOK_ID,				// Identifier
 	TOK_KEYWORD,		        // Keyword
-	TOK_EOL,			// EOL
 	TOK_EOF,			// EOF
 	TOK_NOTHING,	
 

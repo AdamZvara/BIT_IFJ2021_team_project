@@ -1,0 +1,22 @@
+require "ifj21"
+
+global foo : function(integer)
+
+function bar(par : integer)
+	local 
+	a : integer = 5
+	if a > 2 
+		then
+	foo(a)
+	write(par,"\n")
+	else
+	end
+end
+
+function foo(par : integer)
+	if par < 100 then
+		write(par," ", "funkce foo\n")
+	else
+	end end
+
+bar(2)

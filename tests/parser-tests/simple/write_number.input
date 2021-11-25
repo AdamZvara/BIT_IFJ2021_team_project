@@ -1,0 +1,8 @@
+-- cislo 1.0 by to melo podle tl prekladace vytisknout takto 0x1p+0
+-- ale interpret co jsme dostali od skoly tak z toho float cisla udela 1
+-- ale nemyslim si ze je chyba na nasi strane
+
+require "ifj21"
+
+write(1.0)
+write(" ", 2.25)

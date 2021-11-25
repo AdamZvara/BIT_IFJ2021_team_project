@@ -1,0 +1,73 @@
+<require>   -> REQUIRE STRING_LIT <prog>
+-------------------------------------------------------------------
+<prog>      -> GLOBAL ID : FUNCTION (<params>) <ret_params> <prog>
+<prog>      -> FUNCTION ID (<params_2>) <ret_params> <body> <prog>
+#tu by sa teoreticky mohlo stat, ze niekto bude volat funkciu z hlavnej casti s indentifikatorom -> semanticka chyba
+<prog>      -> ID (<args>  <prog>
+<prog>      -> EOF
+-------------------------------------------------------------------
+<params>    -> <types-keyword> <params_n>
+<params>    -> eps
+<params_n>  -> , <types-keyword> <params_n>
+<params_n>  -> eps
+-------------------------------------------------------------------
+<params_2>   -> ID : <types-keyword> <params2_n>
+<params_2>   -> eps
+<params_2_n> -> , ID : <types-keyword> <params2_n>
+<params_2_n> -> eps
+-------------------------------------------------------------------
+<ret_params>   -> : <types-keyword> <ret_params_n>
+<ret_params>   -> eps
+<ret_params_n> -> , <types-keyword> <ret_params_n>
+<ret_params_n> -> eps
+-------------------------------------------------------------------
+<body> -> LOCAL ID : <types-keyword> <init> <body>
+<body> -> IF <expr> THEN <body> ELSE <body> END <body>
+<body> -> WHILE <expr> DO <body> END <body>
+<body> -> ID <body_n> <body>
+<body> -> END
+<body> -> RETURN <R_side> <body>
+------------------------------------------------------------------
+<body_n> -> (<args>                        #volanie funkcie
+<body_n> -> = <assign_single>               #priradenie 1 hodnoty
+<body_n> -> , ID <assign_multi> <R_side>  #priradenie viac hodnot
+
+#v tomto pripade sa najprv skusi priamo spracovat expression
+<assign_single> -> <expr>
+<assign_single> -> <func>
+
+<assign_multi> -> , ID <assign_multi>
+<assign_multi> -> =
+
+<R_side> -> <expr> <R_side_n>
+<R_side> -> <func> <R_side_n>
+<R_side_n> -> , <R_side>
+<R_side_n> -> eps
+-------------------------------------------------------------------
+<func> -> <args>
+-------------------------------------------------------------------
+<init> -> = <init_n>
+<init> -> eps
+#najprv sa zavola vyhodnotenie expression
+<init_n> -> <expr>
+<init_n> -> <func>
+-------------------------------------------------------------------
+#pri spracovani <expr> prejdeme do precedencnej analyzy -> v nej skontrolujeme
+#ci sa jedna o identifikator
+    #ak ano a dalsi znak je '(', jedna sa o funkciu a predame nacitane tokeny do RZ
+    #ak ano a dalsi znak nie je '(', jedna sa o vyraz
+    #ak nie, jedna sa o vyraz
+-------------------------------------------------------------------
+<args>   -> )
+<args>   -> <term> <args_n>
+<args_n> -> , <args>
+<args_n> -> )
+-------------------------------------------------------------------
+<term> -> ID
+<term> -> INT_LIT
+<term> -> NUM_LIT
+<term> -> STRING_LIT
+-------------------------------------------------------------------
+<types-keyword> -> STRING
+<types-keyword> -> NUMBER
+<types-keyword> -> INTEGER

@@ -1,0 +1,7 @@
+require "ifj21"
+
+function main(num : integer, double : number, text : string)
+	write(num," ",double," ", text, "\n")
+end
+
+main(1,1.1,"Test")

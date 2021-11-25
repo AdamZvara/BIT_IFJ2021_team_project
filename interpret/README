@@ -1,0 +1,11 @@
+ic21int - referencni interpret ciloveho jazyka IFJcode21
+verze 2021-10-04, 64-bitova
+
+Prubezne doplnovane informace najdete na Wiki predmetu IFJ na strance ic21int.
+
+CHANGES:
+  * 2021-10-04:
+    * zverejnena prvni verze interpretu (upravena kompatibilita s jazykem Teal hlavne u instrukci READ, WRITE, IDIV atd., podpora 64-bitoveho int)
+
+USAGE:
+  ./ic21int source.code < optional_input > optional_redirect

@@ -1,0 +1,14 @@
+require "ifj21"
+
+function main()
+local a : integer = 1
+local b : integer = 2
+if a < b then
+write(a, "<", b, "\n")
+else
+write(a, ">=", b, "\n")
+local a : integer = 666
+end
+write(a) --[[ prints 13 ]]
+end
+main()
