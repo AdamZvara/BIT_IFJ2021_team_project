@@ -23,7 +23,10 @@ int hash_function(string_t str)
 	const unsigned char *p;
 	for(p=(const unsigned char*)str.str; *p!='\0'; p++)
 		h = 65599*h + *p;
-	return h % GLOBAL_SYM_SIZE;
+    if (h < 0)
+        return -h % GLOBAL_SYM_SIZE;
+    else
+        return h % GLOBAL_SYM_SIZE;
 }
 
 global_symtab_t *global_create()
