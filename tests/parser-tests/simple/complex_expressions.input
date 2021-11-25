@@ -1,0 +1,18 @@
+-- pada na prvnim if expressionu
+require "ifj21"
+
+function foo(num : number, s : string)
+	local len : integer = #(s.."HELE")
+	if (len*2 >= #"alkohol") then
+		write(len,"\n")
+	else 
+		write("small\n")
+	end
+	local n : integer = (#s * 25)//5
+	if (n > ((((len))))) then
+		write("this\n")
+	else end
+
+end 
+
+foo(2.21,"hello")

@@ -1,0 +1,17 @@
+require "ifj21"
+
+
+function foo(n : number)
+	local s : string = "ahoj"
+	local num : number = 2.21 + 3.5
+	write(num,"\n")
+	num = 2.19 * n
+	num = num - n
+	if (((((1))))) then
+		write(num,"\n")
+
+	else end
+
+end
+
+foo(2.4e2)
