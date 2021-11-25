@@ -53,8 +53,8 @@ void generate_identifier(string_t id_name);
 
 void generate_call_prep(func_def_t *f_helper);
 void generate_call_params(token_t *token, func_def_t *f_helper);
-//void generate_params_id();
 void generate_call(func_def_t *f_helper);
+void generate_return_value(int ret_counter);
 
 void generate_write(token_t *token);
 
@@ -65,6 +65,11 @@ void generate_push_operand(token_t *token);
 void generate_assign(string_t name);
 
 void generate_else();
+void generate_if_else();
 void generate_if_end();
+
+void generate_while_start();
+void generate_while_skip();
+void generate_while_end();
 
 #endif // _GENERATOR_H

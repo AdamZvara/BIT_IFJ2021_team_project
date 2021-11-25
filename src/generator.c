@@ -273,6 +273,19 @@ void generate_call(func_def_t *f_helper)
     ADD_NEWLINE();
 }
 
+void generate_return_value(int ret_counter)
+{
+    string_t retval_num;
+    str_init(&retval_num);
+
+    ADD_INST("pops LF@%retval");
+    str_insert_int(&retval_num, ret_counter);
+    strcat(INST, retval_num.str);
+    ADD_NEWLINE();
+
+    str_free(&retval_num);
+}
+
 void generate_write(token_t *token)
 {
     string_t value;
@@ -352,6 +365,19 @@ void generate_else()
     str_free(&label_name);
 }
 
+void generate_if_else()
+{
+    string_t label_name;
+    str_init(&label_name);
+
+    generate_if_label(&label_name, "jumpifneq ");
+    str_insert(&label_name, "_else GF@bool bool@true");
+    strcat(INST, label_name.str);
+    ADD_NEWLINE();
+
+    str_free(&label_name);
+}
+
 void generate_if_end()
 {
     string_t label_name;
@@ -359,6 +385,62 @@ void generate_if_end()
 
     generate_if_label(&label_name, "label ");
     str_insert(&label_name, "_end");
+    strcat(INST, label_name.str);
+    ADD_NEWLINE();
+    
+    str_free(&label_name);
+}
+
+void generate_while_label(string_t *insert_to, char *label_or_jump)
+{
+    str_insert(insert_to, label_or_jump);
+    str_add_char(insert_to, '_');
+    str_insert(insert_to, local_tab->key.str);
+    str_add_char(insert_to, '_');
+    str_insert_int(insert_to, local_tab->while_cnt);
+}
+
+void generate_while_start()
+{
+    string_t label_name;
+    str_init(&label_name);
+
+    generate_while_label(&label_name, "label ");
+    str_insert(&label_name, "_start");
+    strcat(INST, label_name.str);
+    ADD_NEWLINE();
+    
+    str_free(&label_name);
+}
+
+void generate_while_skip()
+{
+    string_t label_name;
+    str_init(&label_name);
+
+    generate_while_label(&label_name, "jumpifneq ");
+    str_insert(&label_name, "_skip GF@bool bool@true");
+    strcat(INST, label_name.str);
+    ADD_NEWLINE();
+
+    str_free(&label_name);
+}
+
+
+void generate_while_end()
+{
+    string_t label_name;
+    str_init(&label_name);
+
+    generate_while_label(&label_name, "jump ");
+    str_insert(&label_name, "_start");
+    strcat(INST, label_name.str);
+    ADD_NEWLINE();
+
+    str_clear(&label_name);
+
+    generate_while_label(&label_name, "label ");
+    str_insert(&label_name, "_skip");
     strcat(INST, label_name.str);
     ADD_NEWLINE();
     
@@ -447,16 +529,6 @@ void generate_push_compare(prec_table_term_t op)
     }
 
     ADD_INST_N("pops GF@bool");
-
-    string_t label_name;
-    str_init(&label_name);
-
-    generate_if_label(&label_name, "jumpifneq ");
-    str_insert(&label_name, "_else GF@bool bool@true");
-    strcat(INST, label_name.str);
-    ADD_NEWLINE();
-
-    str_free(&label_name);
 }
 
 void generate_push_arithmetic(prec_table_term_t op)
