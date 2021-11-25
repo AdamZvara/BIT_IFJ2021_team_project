@@ -4,11 +4,13 @@ CFLAGS = -std=c99 -g -Wall -Wextra
 TESTS_DIR = tests/
 
 #files for scanner
-SCANNER = src/scanner.c src/scanner.h src/str.c src/str.h src/error.h
+SCANNER = scanner.c scanner.h str.c str.h error.h
 SCANNER_T = $(TESTS_DIR)scanner-helper.c
-PARSER = src/*.c src/*.h
+PARSER = *.c *.h
 
-.PHONY: doc test run
+.PHONY: doc test run pack compiler
+compiler: $(PARSER)
+	@$(CC) $(CFLAGS) $^ -o ifj2021_compiler
 
 #run all tests
 test: scanner-test parser-test
@@ -25,13 +27,16 @@ parser-test: $(PARSER)
 
 #parser
 parser: $(PARSER)
-	@$(CC) $(CFLAGS) $^ -o src/parser
+	@$(CC) $(CFLAGS) $^ -o parser
 
 #generate doxygen documentation
 doc: Doxyfile
 	doxygen
 	mv warning_doxygen.txt doc/
 
+pack:
+	zip xeichl01.zip *.c *.h Makefile rozdeleni
+
 run: parser
-	@./src/parser < prog.tl > test.code
+	@./parser < prog.tl > test.code
 	@./interpret/ic21int test.code

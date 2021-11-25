@@ -17,7 +17,7 @@ for f in $PARSER_DIR; do
         echo "Testing: $TEST_NAME"
         if [ $PARSER_TEST_DIR == "parser-tests/error" ]; then
             # Run tests
-            ../src/parser < $PARSER_TEST_DIR/$f >>/dev/null 2>&1
+            ../ifj2021_compiler < $PARSER_TEST_DIR/$f >>/dev/null 2>&1
             if [ "$?" == $RETURN ]; then
                 echo "PASS"
             else
@@ -25,7 +25,7 @@ for f in $PARSER_DIR; do
             fi
         else
             # Run tests
-            ../src/parser < $PARSER_TEST_DIR/$f > $OUTPUT
+            ../ifj2021_compiler < $PARSER_TEST_DIR/$f > $OUTPUT
             ./../interpret/ic21int $OUTPUT > $RESULT
             diff $RESULT $EXPECTED > $DIFF
             if [ $? -eq 0 ]; then

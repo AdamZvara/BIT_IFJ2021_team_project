@@ -864,10 +864,3 @@ int args_n(func_def_t *f_helper) {
     }
 
 }
-
-
-int main() {
-    int ret_main = parse();
-    fprintf(stderr, "%d", ret_main);
-    return ret_main;
-}
