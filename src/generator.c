@@ -79,6 +79,15 @@ void generate_start()
     ADD_INST_N("defvar GF@adv_comp1");
     ADD_INST_N("defvar GF@adv_comp2");
 
+    // global variable for strlen operator (#)
+    ADD_INST_N("defvar GF@strlen_string");
+    ADD_INST_N("defvar GF@strlen");
+
+    // global variables for concat operator (..)
+    ADD_INST_N("defvar GF@concat_str1");
+    ADD_INST_N("defvar GF@concat_str2");
+    ADD_INST_N("defvar GF@concat");
+
     ADD_INST_N("jump _start_");
 }
 
@@ -356,6 +365,23 @@ void generate_if_end()
     str_free(&label_name);
 }
 
+void generate_strlen()
+{
+    // pop operand into GF@strlen
+    ADD_INST_N("pops GF@strlen_string");
+    ADD_INST_N("strlen GF@strlen GF@strlen_string");
+    ADD_INST_N("pushs GF@strlen");
+}
+
+void generate_concat()
+{
+    // pop operands into GF@concat_str1 GF@concat_str2
+    ADD_INST_N("pops GF@concat_str2");
+    ADD_INST_N("pops GF@concat_str1");
+    ADD_INST_N("concat GF@concat GF@concat_str1 GF@concat_str2");
+    ADD_INST_N("pushs GF@concat");
+}
+
 
 void generate_push_compare(prec_table_term_t op)
 {
@@ -481,6 +507,14 @@ void generate_push_operator(prec_table_term_t op)
     case GREAT:
     case GREAT_EQ:
         generate_push_compare(op);
+        break;
+
+    case STR_LEN:
+        generate_strlen();
+        break;
+
+    case CONCAT:
+        generate_concat();
         break;
 
     default:

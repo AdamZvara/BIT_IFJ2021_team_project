@@ -139,7 +139,7 @@ int reduce(stack_t *stack)
     } else if (count == 2 ) {
         if (top->data == NON_TERM && top->next->data == STR_LEN){
             // unary operator #
-            // Generate unary operation #
+            generate_push_operator(top->next->data);
         } else {
             return ERROR_SYNTAX;
         }
@@ -147,7 +147,6 @@ int reduce(stack_t *stack)
         if (top->data == NON_TERM && top->next->next->data == NON_TERM) {
             if (top->next->data >= MUL && top->next->data <= GREAT_EQ) {
                 // binary operators
-                // Generate binary operation
                 generate_push_operator(top->next->data);
             }
         } else if (top->data == RIGHT_BR && top->next->next->data == LEFT_BR) {
