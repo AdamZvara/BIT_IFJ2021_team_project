@@ -1,0 +1,12 @@
+require "ifj21"
+
+function bar(s : string)
+	local len : integer = #s
+	if len < 2*len then
+		write("Nevim\n")
+	else
+	end
+
+end
+
+bar("Hello")

@@ -1,0 +1,8 @@
+require "ifj21"
+
+function foo()
+  local x : integer = #"abcdef"+3
+  write(x)
+end
+
+foo()
