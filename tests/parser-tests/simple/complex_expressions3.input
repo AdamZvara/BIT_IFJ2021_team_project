@@ -1,0 +1,18 @@
+require "ifj21"
+
+
+function foo()
+	local a : string = "abc".."efd"
+	local n1 : number = 2.1E-12
+	local n2 : number = 002E1
+	local res : number = n1 * n2
+	write(res)
+	write("\n")
+	if ((5*2)-12) ~= (((2+2)*1)+11) then
+		n1 = 2.5
+		write(n1)
+	else end
+
+end
+
+foo()

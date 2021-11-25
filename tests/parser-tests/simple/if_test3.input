@@ -1,0 +1,10 @@
+require "ifj21"
+
+function fcuk()
+	local s : string = "kokotek"
+	if (#s*2) > 5 then
+		write("BIGGER\n")
+	else end
+end
+
+fcuk()

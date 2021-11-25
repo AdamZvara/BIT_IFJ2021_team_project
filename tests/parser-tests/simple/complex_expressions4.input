@@ -1,0 +1,14 @@
+require "ifj21"
+
+function foo()
+	local a : integer = 12
+	if (a >= #"ahoj") then
+		write("nothing\n")
+	else end
+	if(a + 200 >= #("str".."lul"))then
+		a = 11
+	else end
+	write(a)
+end
+
+foo()

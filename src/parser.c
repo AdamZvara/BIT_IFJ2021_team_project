@@ -483,7 +483,7 @@ int body() {
                 curr_token = backup_token;
                 if (ret == EC_FUNC) {
                     return ERROR_SYNTAX;
-                } else if (ret != EC_SUCCESS)
+                } else if (ret != SUCCESS)
                     return ret;
 
                 generate_if_else();
@@ -536,7 +536,7 @@ int body() {
                 curr_token = backup_token;
                 if (ret == EC_FUNC) {
                     return ERROR_SYNTAX;
-                } else if (ret != EC_SUCCESS)
+                } else if (ret != SUCCESS)
                     return ret;
 
                 generate_while_skip();
@@ -657,7 +657,7 @@ int body_n(func_def_t *f_helper) {
 int assign_single(func_def_t *f_helper) {
     // call expression()
     ret = expression(&backup_token);
-    if (ret == EC_SUCCESS) {
+    if (ret == SUCCESS) {
         generate_assign(f_helper->id->name);
         FREE_TOK_STRING();
         free(curr_token);
@@ -669,6 +669,7 @@ int assign_single(func_def_t *f_helper) {
         FREE_TOK_STRING();
         free(curr_token);
         curr_token = backup_token;
+        backup_token = NULL;
 
         // perform function call
         f_helper->item = global_find(global_tab, GET_ID);
@@ -698,7 +699,7 @@ int assign_multi() {
 int r_side(func_def_t *f_helper) {
     // call expression()
     ret = expression(&backup_token);
-    if (ret == EC_SUCCESS) {
+    if (ret == SUCCESS) {
         generate_return_value(f_helper->par_counter);
         f_helper->par_counter++;
         FREE_TOK_STRING();
@@ -710,14 +711,16 @@ int r_side(func_def_t *f_helper) {
         FREE_TOK_STRING();
         free(curr_token);
         curr_token = backup_token;
+        backup_token = NULL;
 
         // perform function call
         f_helper->item = global_find(global_tab, GET_ID);
 
         builtin_used_update(builtin_used, f_helper->item->key);
         
-        backup_token = curr_token;
         ret = body_n(f_helper);
+
+        func_dispose(f_helper);
         if (ret)
             return ret;
 
@@ -769,7 +772,7 @@ int init(struct local_data *id) {
 int init_n(struct local_data *id) {
     // call expression()
     ret = expression(&backup_token);
-    if (ret == EC_SUCCESS) {
+    if (ret == SUCCESS) {
         generate_assign(id->name);
         FREE_TOK_STRING();
         free(curr_token);
@@ -780,6 +783,7 @@ int init_n(struct local_data *id) {
         FREE_TOK_STRING();
         free(curr_token);
         curr_token = backup_token;
+        backup_token = NULL;
 
         // perform functino call
         func_def_t f_helper;
@@ -788,7 +792,6 @@ int init_n(struct local_data *id) {
 
         builtin_used_update(builtin_used, f_helper.item->key);
         
-        backup_token = curr_token;
         ret = body_n(&f_helper);
 
         func_dispose(&f_helper);
