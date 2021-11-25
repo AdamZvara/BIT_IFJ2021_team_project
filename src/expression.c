@@ -1,3 +1,16 @@
+/**
+ * VUT IFJ Project 2021.
+ *
+ * @file expression.c
+ *
+ * @brief Implementation of bottom up parsing of expressions
+ *
+ * @author Vojtěch Eichler
+ * @author Václav Korvas
+ * @author Tomáš Matuš
+ * @author Adam Zvara
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 

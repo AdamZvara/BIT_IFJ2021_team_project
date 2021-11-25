@@ -1,3 +1,16 @@
+/**
+ * VUT IFJ Project 2021.
+ *
+ * @file expression.h
+ *
+ * @brief header file for expression.c
+ *
+ * @author Vojtěch Eichler
+ * @author Václav Korvas
+ * @author Tomáš Matuš
+ * @author Adam Zvara
+ */
+
 #ifndef _EXPRESSION_H_
 #define _EXPRESSION_H_
 
