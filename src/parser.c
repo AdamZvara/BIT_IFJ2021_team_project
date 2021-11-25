@@ -33,6 +33,8 @@ ibuffer_t *buffer = NULL;
 builtin_used_t *builtin_used = NULL;
 int ret = SUCCESS;
 
+typedef enum {NONE, IF, WHILE} if_while;
+
 void token_free() {
     FREE_TOK_STRING();
     free(curr_token);
@@ -431,6 +433,8 @@ int body() {
         backup_token = NULL;
     }
 
+    static if_while status = NONE; 
+
     // print out instruction buffer
     ibuffer_print(buffer);
     ibuffer_clear(buffer);
@@ -441,7 +445,7 @@ int body() {
                 NEXT_TOKEN();
                 if (GET_TYPE != TOK_ID)
                     return ERROR_SYNTAX;
-
+                
                 // add identifer to local symtable
                 struct local_data *id = local_add(local_tab, GET_ID, false);
                 generate_identifier(GET_ID);
@@ -466,6 +470,8 @@ int body() {
                 // update if counter
                 local_add_if(local_tab);
 
+                status = IF;
+
                 // call expression()
                 ret = expression(&backup_token);
                 FREE_TOK_STRING();
@@ -475,6 +481,8 @@ int body() {
                     return ERROR_SYNTAX;
                 } else if (ret != EC_SUCCESS)
                     return ret;
+
+                generate_if_else();
 
                 // THEN
                 if (GET_TYPE != TOK_KEYWORD || GET_KW != KW_THEN)
@@ -509,6 +517,12 @@ int body() {
             case KW_WHILE:
                 // add new depth so local variables can be recognized
                 local_new_depth(&local_tab);
+                // update if counter
+                local_add_while(local_tab);
+
+                status = WHILE;
+
+                generate_while_start();
 
                 // call expr()
                 ret = expression(&backup_token);
@@ -519,6 +533,8 @@ int body() {
                     return ERROR_SYNTAX;
                 } else if (ret != EC_SUCCESS)
                     return ret;
+
+                generate_while_skip();
 
                 // DO - already read by expression()
                 if (GET_TYPE != TOK_KEYWORD || GET_KW != KW_DO)
@@ -547,7 +563,10 @@ int body() {
                     local_destroy(local_tab);
                     local_tab = NULL;
                 } else {
-                    generate_if_end();
+                    if (status == IF)
+                        generate_if_end();
+                    else if (status == WHILE) 
+                        generate_while_end();
                 }
 
                 return ret;

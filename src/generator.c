@@ -352,6 +352,19 @@ void generate_else()
     str_free(&label_name);
 }
 
+void generate_if_else()
+{
+    string_t label_name;
+    str_init(&label_name);
+
+    generate_if_label(&label_name, "jumpifneq ");
+    str_insert(&label_name, "_else GF@bool bool@true");
+    strcat(INST, label_name.str);
+    ADD_NEWLINE();
+
+    str_free(&label_name);
+}
+
 void generate_if_end()
 {
     string_t label_name;
@@ -359,6 +372,62 @@ void generate_if_end()
 
     generate_if_label(&label_name, "label ");
     str_insert(&label_name, "_end");
+    strcat(INST, label_name.str);
+    ADD_NEWLINE();
+    
+    str_free(&label_name);
+}
+
+void generate_while_label(string_t *insert_to, char *label_or_jump)
+{
+    str_insert(insert_to, label_or_jump);
+    str_add_char(insert_to, '_');
+    str_insert(insert_to, local_tab->key.str);
+    str_add_char(insert_to, '_');
+    str_insert_int(insert_to, local_tab->while_cnt);
+}
+
+void generate_while_start()
+{
+    string_t label_name;
+    str_init(&label_name);
+
+    generate_while_label(&label_name, "label ");
+    str_insert(&label_name, "_start");
+    strcat(INST, label_name.str);
+    ADD_NEWLINE();
+    
+    str_free(&label_name);
+}
+
+void generate_while_skip()
+{
+    string_t label_name;
+    str_init(&label_name);
+
+    generate_while_label(&label_name, "jumpifneq ");
+    str_insert(&label_name, "_skip GF@bool bool@true");
+    strcat(INST, label_name.str);
+    ADD_NEWLINE();
+
+    str_free(&label_name);
+}
+
+
+void generate_while_end()
+{
+    string_t label_name;
+    str_init(&label_name);
+
+    generate_while_label(&label_name, "jump ");
+    str_insert(&label_name, "_start");
+    strcat(INST, label_name.str);
+    ADD_NEWLINE();
+
+    str_clear(&label_name);
+
+    generate_while_label(&label_name, "label ");
+    str_insert(&label_name, "_skip");
     strcat(INST, label_name.str);
     ADD_NEWLINE();
     
@@ -447,16 +516,6 @@ void generate_push_compare(prec_table_term_t op)
     }
 
     ADD_INST_N("pops GF@bool");
-
-    string_t label_name;
-    str_init(&label_name);
-
-    generate_if_label(&label_name, "jumpifneq ");
-    str_insert(&label_name, "_else GF@bool bool@true");
-    strcat(INST, label_name.str);
-    ADD_NEWLINE();
-
-    str_free(&label_name);
 }
 
 void generate_push_arithmetic(prec_table_term_t op)
