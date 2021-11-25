@@ -692,7 +692,6 @@ int r_side() {
 
         builtin_used_update(builtin_used, f_helper.item->key);
         
-        backup_token = curr_token;
         ret = body_n(&f_helper);
 
         func_dispose(&f_helper);
@@ -767,7 +766,6 @@ int init_n(struct local_data *id) {
 
         builtin_used_update(builtin_used, f_helper.item->key);
         
-        backup_token = curr_token;
         ret = body_n(&f_helper);
 
         func_dispose(&f_helper);
