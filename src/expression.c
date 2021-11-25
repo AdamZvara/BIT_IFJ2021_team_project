@@ -94,7 +94,7 @@ prec_table_index_t symbol_to_index(int symbol)
             rv = I_PLUS_MINUS;
             break;
 
-        case TOK_CONCAT:
+        case CONCAT:
             rv = I_CONCAT;
             break;
 
