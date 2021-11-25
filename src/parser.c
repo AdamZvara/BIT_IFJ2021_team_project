@@ -433,6 +433,9 @@ int body() {
         backup_token = NULL;
     }
 
+    func_def_t f_helper;
+    func_init(&f_helper);
+
     static if_while status = NONE; 
 
     // print out instruction buffer
@@ -462,6 +465,7 @@ int body() {
                     if (ret)
                         return ret;
                 }
+                func_dispose(&f_helper);
                 return body();
                 break;
             case KW_IF: // IF <expr> THEN <body> ELSE <body> END <body>
@@ -512,6 +516,7 @@ int body() {
                 local_delete_top(&local_tab);
 
                 // <body>
+                func_dispose(&f_helper);
                 return body();
                 break;
             case KW_WHILE:
@@ -553,6 +558,7 @@ int body() {
                 local_delete_top(&local_tab);
 
                 // <body>
+                func_dispose(&f_helper);
                 return body();
                 break;
             case KW_END:
@@ -568,27 +574,28 @@ int body() {
                     else if (status == WHILE) 
                         generate_while_end();
                 }
-
+                func_dispose(&f_helper);
                 return ret;
                 break;
             case KW_ELSE:
                 generate_else();
+                func_dispose(&f_helper);
                 return ret;
                 break;
             case KW_RETURN:
-                ret = r_side();
+                ret = r_side(&f_helper);
                 if (ret)
                     return ret;
+
+                func_dispose(&f_helper);
                 return body();
                 break;
             default:
+                func_dispose(&f_helper);
                 return ERROR_SYNTAX;
                 break;
         }
     } else if (GET_TYPE == TOK_ID) { // ID <body_n> <body>
-        func_def_t f_helper;
-        func_init(&f_helper);
-
         // in case of function call
         f_helper.item = global_find(global_tab, GET_ID);
 
@@ -596,11 +603,11 @@ int body() {
         f_helper.id = local_find(local_tab, GET_ID);
 
         ret = body_n(&f_helper);
-
-        func_dispose(&f_helper);
-
         if (ret)
             return ret;
+
+        func_dispose(&f_helper);
+        
         return body();
     } else {
         return ERROR_SYNTAX;
@@ -641,7 +648,7 @@ int body_n(func_def_t *f_helper) {
             return ret;
 
 
-        return r_side();
+        return r_side(f_helper);
     } else {
         return ERROR_SYNTAX;
     }
@@ -688,14 +695,16 @@ int assign_multi() {
     }
 }
 
-int r_side() {
+int r_side(func_def_t *f_helper) {
     // call expression()
     ret = expression(&backup_token);
     if (ret == EC_SUCCESS) {
+        generate_return_value(f_helper->par_counter);
+        f_helper->par_counter++;
         FREE_TOK_STRING();
         free(curr_token);
         curr_token = backup_token;
-        return r_side_n();
+        return r_side_n(f_helper);
     } else if (ret == EC_FUNC) {
         // free curr_token and use token given by expression instead
         FREE_TOK_STRING();
@@ -703,26 +712,22 @@ int r_side() {
         curr_token = backup_token;
 
         // perform function call
-        func_def_t f_helper;
-        func_init(&f_helper);
-        f_helper.item = global_find(global_tab, GET_ID);
+        f_helper->item = global_find(global_tab, GET_ID);
 
-        builtin_used_update(builtin_used, f_helper.item->key);
+        builtin_used_update(builtin_used, f_helper->item->key);
         
         backup_token = curr_token;
-        ret = body_n(&f_helper);
-
-        func_dispose(&f_helper);
+        ret = body_n(f_helper);
         if (ret)
             return ret;
 
-        return r_side_n();
+        return r_side_n(f_helper);
     }
     else
         return ret;
 }
 
-int r_side_n() {
+int r_side_n(func_def_t *f_helper) {
     //TODO: not sure about this:
     // but I think this should solve that expression reads one more token after
     // the expression itself
@@ -733,7 +738,7 @@ int r_side_n() {
         NEXT_TOKEN();
 
     if (GET_TYPE == TOK_COMMA) {
-        return r_side();
+        return r_side(f_helper);
     } else {
         backup_token = curr_token;
         return ret;

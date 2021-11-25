@@ -273,6 +273,19 @@ void generate_call(func_def_t *f_helper)
     ADD_NEWLINE();
 }
 
+void generate_return_value(int ret_counter)
+{
+    string_t retval_num;
+    str_init(&retval_num);
+
+    ADD_INST("pops LF@%retval");
+    str_insert_int(&retval_num, ret_counter);
+    strcat(INST, retval_num.str);
+    ADD_NEWLINE();
+
+    str_free(&retval_num);
+}
+
 void generate_write(token_t *token)
 {
     string_t value;
