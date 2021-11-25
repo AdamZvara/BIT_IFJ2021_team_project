@@ -643,6 +643,7 @@ int assign_single(func_def_t *f_helper) {
         FREE_TOK_STRING();
         free(curr_token);
         curr_token = backup_token;
+        backup_token = NULL;
 
         // perform function call
         f_helper->item = global_find(global_tab, GET_ID);
@@ -682,6 +683,7 @@ int r_side() {
         FREE_TOK_STRING();
         free(curr_token);
         curr_token = backup_token;
+        backup_token = NULL;
 
         // perform function call
         func_def_t f_helper;
@@ -756,6 +758,7 @@ int init_n(struct local_data *id) {
         FREE_TOK_STRING();
         free(curr_token);
         curr_token = backup_token;
+        backup_token = NULL;
 
         // perform functino call
         func_def_t f_helper;

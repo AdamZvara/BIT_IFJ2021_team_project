@@ -212,6 +212,14 @@ int expression(token_t **return_token)
                 // push operand
                 if (new_token->type == TOK_ID  || new_token->type == TOK_STRING ||
                     new_token->type == TOK_INT || new_token->type == TOK_DECIMAL ) {
+
+                    if (new_token->type == TOK_ID && global_find(global_tab, new_token->attribute.s)) {
+                        // ID is a function
+                        // TODO cleanup
+                        *return_token = new_token;
+                        stack_dispose(&stack_prec);
+                        return EC_FUNC;
+                    }
                     generate_push_operand(new_token);
                 }
 
