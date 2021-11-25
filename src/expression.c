@@ -12,7 +12,7 @@
 const char prec_table[TABLE_SIZE][TABLE_SIZE] = {
     // ---> current token
     //| # |/*//| +- | .. |  r | (  |  ) |  id | $                | what is on stack_top
-    { '-', '-', '-', '-' , '-', '<', '-', '<', '>' }, // #       |
+    { '-', '>', '>', '-' , '>', '<', '-', '<', '>' }, // #       |
     { '<', '>', '>', '-' , '>', '<', '>', '<', '>' }, // /*//    v
     { '<', '<', '>', '-' , '>', '<', '>', '<', '>' }, // +-
     { '-', '-', '-', '<' , '>', '<', '>', '<', '>' }, // ..
@@ -23,7 +23,6 @@ const char prec_table[TABLE_SIZE][TABLE_SIZE] = {
     { '<', '<', '<', '<' , '<', '<', '-', '<', '-' }, // $
 };
 
-int ret_val = EC_SUCCESS;
 
 /**
  * @brief Converts token to a symbol
@@ -167,12 +166,13 @@ int reduce(stack_t *stack)
     }
 
     stack_push(stack, NON_TERM);
-    return EC_SUCCESS;
+    return SUCCESS;
 }
 
 int expression(token_t **return_token)
 {
     int end = 0;
+    int ret_val = SUCCESS;
 
     // init stack and push $
     stack_t stack_prec;
@@ -232,9 +232,7 @@ int expression(token_t **return_token)
                 break;
 
             default:
-                if (symbol == DOLLAR && top_term->data == DOLLAR) {
-                    end = 1;
-                }
+                end = 1;
                 break;
         }
 
@@ -247,11 +245,13 @@ int expression(token_t **return_token)
 
     if (!(stack_prec.top->data == NON_TERM && stack_prec.top->next->data == DOLLAR)) {
         // final state of stack is not $E
-        return ret_val = ERROR_SYNTAX;
+        ret_val = ERROR_SYNTAX;
+        *return_token = NULL;
+    } else {
+        *return_token = new_token;
     }
 
     stack_dispose(&stack_prec);
-    *return_token = new_token;
     return ret_val;
 }
 

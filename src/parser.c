@@ -473,7 +473,7 @@ int body() {
                 curr_token = backup_token;
                 if (ret == EC_FUNC) {
                     return ERROR_SYNTAX;
-                } else if (ret != EC_SUCCESS)
+                } else if (ret != SUCCESS)
                     return ret;
 
                 // THEN
@@ -517,7 +517,7 @@ int body() {
                 curr_token = backup_token;
                 if (ret == EC_FUNC) {
                     return ERROR_SYNTAX;
-                } else if (ret != EC_SUCCESS)
+                } else if (ret != SUCCESS)
                     return ret;
 
                 // DO - already read by expression()
@@ -631,7 +631,7 @@ int body_n(func_def_t *f_helper) {
 int assign_single(func_def_t *f_helper) {
     // call expression()
     ret = expression(&backup_token);
-    if (ret == EC_SUCCESS) {
+    if (ret == SUCCESS) {
         generate_assign(f_helper->id->name);
         FREE_TOK_STRING();
         free(curr_token);
@@ -672,7 +672,7 @@ int assign_multi() {
 int r_side() {
     // call expression()
     ret = expression(&backup_token);
-    if (ret == EC_SUCCESS) {
+    if (ret == SUCCESS) {
         FREE_TOK_STRING();
         free(curr_token);
         curr_token = backup_token;
@@ -745,7 +745,7 @@ int init(struct local_data *id) {
 int init_n(struct local_data *id) {
     // call expression()
     ret = expression(&backup_token);
-    if (ret == EC_SUCCESS) {
+    if (ret == SUCCESS) {
         generate_assign(id->name);
         FREE_TOK_STRING();
         free(curr_token);

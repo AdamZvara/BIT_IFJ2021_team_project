@@ -13,8 +13,7 @@
 
 #define TABLE_SIZE 9
 // return values
-#define EC_SUCCESS 0
-#define EC_FUNC 2
+#define EC_FUNC 4250
 
 #define FREE_STRING_TOKEN(token) \
     do { \
