@@ -82,7 +82,7 @@ typedef struct global_symtab {
  * @param key Key in string format
  * @return Index to hashtable based on key
  */
-int hash_function(string_t key);
+size_t hash_function(string_t key);
 
 /**
  * @brief Create global symtable with initialized values

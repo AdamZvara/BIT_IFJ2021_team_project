@@ -14,12 +14,13 @@
 /* Implementation of hash table was taken from Language C course,
  * original implementation was made by Vojtech Eichler (xeichl01) */
 
+#include <stdint.h>
 #include "symtable.h"
 #include "error.h"
 
-int hash_function(string_t str)
+size_t hash_function(string_t str)
 {
-	long long h=0;
+	uint32_t h=0;
 	const unsigned char *p;
 	for(p=(const unsigned char*)str.str; *p!='\0'; p++)
 		h = 65599*h + *p;
@@ -46,7 +47,7 @@ global_symtab_t *global_create()
 struct global_item *global_find(global_symtab_t *gs, string_t key)
 {
 	// finding index of key in hash table
-	int index = hash_function(key);
+	size_t index = hash_function(key);
 
 	// cycling through all records at index in hash table
 	struct global_item *item;
@@ -89,7 +90,7 @@ struct global_item *global_add(global_symtab_t *gs, string_t key)
 	}
 
 	// create new function and insert it at the beginning of list
-	int hash = hash_function(key);
+	size_t hash = hash_function(key);
 	struct global_item *new_func = global_create_fun(key);
 	if (new_func == NULL) {
 		return NULL;
