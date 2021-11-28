@@ -102,6 +102,22 @@ struct global_item *global_add(global_symtab_t *gs, string_t key)
 	return new_func;
 }
 
+bool global_check_declared(global_symtab_t *gs)
+{
+	struct global_item *tmp = NULL;
+	for (unsigned int i = 0; i < gs->size; i++) {
+		tmp = gs->func[i];
+		while (tmp != NULL) {
+			if (tmp->defined == false) {
+				return true;
+			}
+			tmp = tmp->next;
+		}
+	}
+
+	return false;
+}
+
 void global_destroy(global_symtab_t *gs)
 {
 	struct global_item *tmp, *del;
@@ -267,8 +283,8 @@ void local_add_if(local_symtab_t *local_tab)
 	// update if counter in all local_symtabs that belong to this function
 	local_symtab_t *tmp = local_tab;
 	tmp->if_cnt++;
-	
-	while (tmp->next != NULL) {	
+
+	while (tmp->next != NULL) {
 		// stop if next local symtab is from different function
 		if (!str_isequal(tmp->key, tmp->next->key)) {
 			break;
@@ -284,8 +300,8 @@ void local_add_while(local_symtab_t *local_tab)
 	// update while counter in all local_symtabs that belong to this function
 	local_symtab_t *tmp = local_tab;
 	tmp->while_cnt++;
-	
-	while (tmp->next != NULL) {	
+
+	while (tmp->next != NULL) {
 		// stop if next local symtab is from different function
 		if (!str_isequal(tmp->key, tmp->next->key)) {
 			break;

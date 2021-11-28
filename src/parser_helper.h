@@ -60,6 +60,8 @@ void p_helper_dispose(parser_helper_t *f);
 
 /**
  * @brief Set parameters of function in helper structure
+ * @details If function was not declared before, set them directly into
+ *  f->func parameters, otherwise set them into f->temp
  * @param f Pointer to helper structure
  * @param kw Which parameter should be added (string, number, integer)
  * @todo return values from str_add_char

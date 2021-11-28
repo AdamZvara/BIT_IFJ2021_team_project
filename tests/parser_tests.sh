@@ -13,14 +13,12 @@ for f in $PARSER_DIR; do
         RESULT=$PARSER_TEST_DIR/$(echo $f | cut -d'.' -f1).result
         EXPECTED=$PARSER_TEST_DIR/$(echo $f | cut -d'.' -f1).expected
         DIFF=$PARSER_TEST_DIR/$(echo $f | cut -d'.' -f1).diff
-         
+
         echo "Testing: $TEST_NAME"
         if [ $PARSER_TEST_DIR == "parser-tests/error" ]; then
             # Run tests
             ../src/parser < $PARSER_TEST_DIR/$f >>/dev/null 2>&1
-            if [ "$?" == $RETURN ]; then
-                echo "PASS"
-            else
+            if [ "$?" != $RETURN ]; then
                 echo "FAIL"
             fi
         else
@@ -28,9 +26,7 @@ for f in $PARSER_DIR; do
             ../src/parser < $PARSER_TEST_DIR/$f > $OUTPUT
             ./../interpret/ic21int $OUTPUT > $RESULT
             diff $RESULT $EXPECTED > $DIFF
-            if [ $? -eq 0 ]; then
-                echo "PASS"
-            else
+            if [ $? -ne 0 ]; then
                 echo "FAIL - CHECK .diff FILE"
             fi
         fi

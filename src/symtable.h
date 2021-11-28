@@ -107,6 +107,13 @@ struct global_item *global_find(global_symtab_t *gs, string_t key);
 struct global_item *global_add(global_symtab_t *gs, string_t key);
 
 /**
+ * @brief Check if all functions in global symtable were defined
+ * @param gs Pointer to global symtable
+ * @return true if all functions were defined, otherwise false
+*/
+bool global_check_declared(global_symtab_t *gs);
+
+/**
  * @brief Destroy global symtable and free all its resources
  * @param gs Pointer to global symtable
  */

@@ -80,6 +80,11 @@ int parse()
 
     ret = require();
 
+    // check if all functions were defined - ret has higher priority
+    if (!ret && global_check_declared(global_tab)) {
+        return ERROR_SEMANTIC;
+    }
+
     ibuffer_print(buffer);
     ibuffer_destroy(buffer);
     global_destroy(global_tab);
@@ -188,7 +193,15 @@ int prog()
                 if ((p_helper->func = global_add(global_tab, GET_ID)) == NULL) {
                     return ERROR_INTERNAL;
                 }
+                // function was not found in global symtable
+                p_helper->func->defined = true;
             } else {
+                // function was found, check if it is already defined
+                if (p_helper->func->defined) {
+                    // function is in global symtable -> redefinition
+                    return ERROR_SEMANTIC;
+                }
+                p_helper->func->defined = true;
                 p_helper->func_found = true;
             }
 
@@ -865,6 +878,6 @@ int args_n() {
 
 int main() {
     int ret_main = parse();
-    fprintf(stderr, "%d", ret_main);
+    //fprintf(stderr, "%d", ret_main);
     return ret_main;
 }

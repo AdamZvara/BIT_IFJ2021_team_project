@@ -55,7 +55,6 @@ void p_helper_dispose(parser_helper_t *f)
 int p_helper_set_params(parser_helper_t *f, keyword_t kw)
 {
     switch (kw) {
-
     case KW_STRING:
         if (f->func_found) {
                 str_add_char(&f->temp, 's');
