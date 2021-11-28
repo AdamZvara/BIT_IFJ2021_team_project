@@ -462,6 +462,7 @@ int body() {
         backup_token = NULL;
     }
 
+    // clear helper structure
     p_helper_clear(p_helper);
 
     // print out instruction buffer
@@ -654,11 +655,18 @@ int body_n() {
 
         return args(p_helper);
     } else if (GET_TYPE == TOK_ASSIGN) {
+        if (p_helper->id == NULL) {
+            return ERROR_SEMANTIC;
+        }
         return assign_single(p_helper);
     } else if (GET_TYPE == TOK_COMMA) {
         NEXT_TOKEN();
         if (GET_TYPE != TOK_ID)
             return ERROR_SYNTAX;
+
+        if (p_helper->id == NULL) {
+            return ERROR_SEMANTIC;
+        }
 
         ret = assign_multi();
         if (ret)
