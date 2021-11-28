@@ -98,18 +98,10 @@ void generate_start()
     // global variable to store results of comparisons in expressions
     ADD_INST_N("defvar GF@bool");
 
-    // global variables to store operands of advanced comparisons in expressions
-    ADD_INST_N("defvar GF@adv_comp1");
-    ADD_INST_N("defvar GF@adv_comp2");
-
-    // global variable for strlen operator (#)
-    ADD_INST_N("defvar GF@strlen_string");
-    ADD_INST_N("defvar GF@strlen");
-
-    // global variables for concat operator (..)
-    ADD_INST_N("defvar GF@concat_str1");
-    ADD_INST_N("defvar GF@concat_str2");
-    ADD_INST_N("defvar GF@concat");
+    // global variables to store operands of advanced comparisons/strlen/concat in expressions
+    ADD_INST_N("defvar GF@arg1");
+    ADD_INST_N("defvar GF@arg2");
+    ADD_INST_N("defvar GF@output");
 
     ADD_INST_N("jump _start_");
 }
@@ -478,19 +470,19 @@ void generate_while_end()
 /*          EXPRESSION              */
 void generate_strlen()
 {
-    // pop operand into GF@strlen
-    ADD_INST_N("pops GF@strlen_string");
-    ADD_INST_N("strlen GF@strlen GF@strlen_string");
-    ADD_INST_N("pushs GF@strlen");
+    // pop operand into GF@output
+    ADD_INST_N("pops GF@arg1");
+    ADD_INST_N("strlen GF@output GF@arg1");
+    ADD_INST_N("pushs GF@output");
 }
 
 void generate_concat()
 {
-    // pop operands into GF@concat_str1 GF@concat_str2
-    ADD_INST_N("pops GF@concat_str2");
-    ADD_INST_N("pops GF@concat_str1");
-    ADD_INST_N("concat GF@concat GF@concat_str1 GF@concat_str2");
-    ADD_INST_N("pushs GF@concat");
+    // pop operands into GF@arg1 GF@arg2
+    ADD_INST_N("pops GF@arg2");
+    ADD_INST_N("pops GF@arg1");
+    ADD_INST_N("concat GF@output GF@arg1 GF@arg2");
+    ADD_INST_N("pushs GF@output");
 }
 void generate_push_compare(prec_table_term_t op)
 {
@@ -511,17 +503,17 @@ void generate_push_compare(prec_table_term_t op)
 
     case LESS_EQ:
         // store variables
-        ADD_INST_N("pops GF@adv_comp2");
-        ADD_INST_N("pops GF@adv_comp1");
+        ADD_INST_N("pops GF@arg2");
+        ADD_INST_N("pops GF@arg1");
 
         // compare < only
-        ADD_INST_N("pushs GF@adv_comp1");
-        ADD_INST_N("pushs GF@adv_comp2");
+        ADD_INST_N("pushs GF@arg1");
+        ADD_INST_N("pushs GF@arg2");
         ADD_INST_N("lts");
 
         // compare ==
-        ADD_INST_N("pushs GF@adv_comp1");
-        ADD_INST_N("pushs GF@adv_comp2");
+        ADD_INST_N("pushs GF@arg1");
+        ADD_INST_N("pushs GF@arg2");
         ADD_INST_N("eqs");
 
         // compare <=
@@ -534,17 +526,17 @@ void generate_push_compare(prec_table_term_t op)
 
     case GREAT_EQ:
         // store variables
-        ADD_INST_N("pops GF@adv_comp2");
-        ADD_INST_N("pops GF@adv_comp1");
+        ADD_INST_N("pops GF@arg2");
+        ADD_INST_N("pops GF@arg1");
 
         // compare > only
-        ADD_INST_N("pushs GF@adv_comp1");
-        ADD_INST_N("pushs GF@adv_comp2");
+        ADD_INST_N("pushs GF@arg1");
+        ADD_INST_N("pushs GF@arg2");
         ADD_INST_N("gts");
 
         // compare ==
-        ADD_INST_N("pushs GF@adv_comp1");
-        ADD_INST_N("pushs GF@adv_comp2");
+        ADD_INST_N("pushs GF@arg1");
+        ADD_INST_N("pushs GF@arg2");
         ADD_INST_N("eqs");
 
         // compare >=
