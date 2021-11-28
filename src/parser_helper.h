@@ -1,9 +1,9 @@
 /**
  * VUT IFJ Project 2021.
  *
- * @file func_helper.h
+ * @file p_helper_helper.h
  *
- * @brief Header file for func_helper.c
+ * @brief Header file for p_helper_helper.c
  *
  * @author Vojtěch Eichler
  * @author Václav Korvas
@@ -11,8 +11,8 @@
  * @author Adam Zvara
  */
 
-#ifndef _FUNC_HELPER_
-#define _FUNC_HELPER_
+#ifndef _p_helper_HELPER_
+#define _p_helper_HELPER_
 
 #include "symtable.h"   // ID TYPE, LOCAL SYMTAB
 #include "str.h"        // DYNAMIC STRING
@@ -20,34 +20,43 @@
 
 extern local_symtab_t *local_tab;
 
+typedef enum {NONE, IF, WHILE} if_while;
+
 /**
  * @brief Helper structure to do semantic checks when declaring/defining new function
  */
-typedef struct func_def {
-    struct local_data *id;      // Pointer to identificator in local symtab
-    struct global_item *item;   // Pointer to function in global symtab
+typedef struct parser_helper {
+    struct global_item *func;   // Pointer to function in global symtab
     bool func_found;            // Whether function was already found in global symtab
-    string_t temp;              // Temporary string to fill retvals/parameters of function
+    struct local_data *id;      // Pointer to identificator in local symtab
     int par_counter;            // Counter of parameters
-} func_def_t;
+    string_t temp;              // Temporary string to fill retvals/parameters of function
+    if_while status;          // Bool to determine whether we are in if or while statement
+} parser_helper_t;
 
 /**
  * @brief Initialize helper structure
  * @param f Pointer to helper structure
  */
-int func_init(func_def_t *f);
+parser_helper_t *p_helper_create();
 
 /**
- * @brief Clear string in helper structure
+ * @brief Clear whole helper structure
  * @param f Pointer to helper structure
  */
-void func_clear(func_def_t *f);
+void p_helper_clear(parser_helper_t *f);
+
+/**
+ * @brief Clear string in parser helper
+ * @param f Pointer to helper structure
+ */
+void p_helper_clear_string(parser_helper_t *f);
 
 /**
  * @brief Free helper structure
  * @param f Pointer to helper structure
  */
-void func_dispose(func_def_t *f);
+void p_helper_dispose(parser_helper_t *f);
 
 /**
  * @brief Set parameters of function in helper structure
@@ -55,7 +64,7 @@ void func_dispose(func_def_t *f);
  * @param kw Which parameter should be added (string, number, integer)
  * @todo return values from str_add_char
  */
-int func_set_params(func_def_t *f, keyword_t kw);
+int p_helper_set_params(parser_helper_t *f, keyword_t kw);
 
 /**
  * @brief Set retvals of function in helper structure
@@ -63,7 +72,7 @@ int func_set_params(func_def_t *f, keyword_t kw);
  * @param kw Which retval should be added (string, number, integer)
  * @todo return values from str_add_char
  */
-int func_set_retvals(func_def_t *f, keyword_t kw);
+int p_helper_set_retvals(parser_helper_t *f, keyword_t kw);
 
 /**
  * @brief Fill helper temporary string when function is called
@@ -71,7 +80,7 @@ int func_set_retvals(func_def_t *f, keyword_t kw);
  * @param type Parameter type
  * @todo return values from str_add_char
  */
-int func_call_params_const(func_def_t *f, token_type_t type);
+int p_helper_call_params_const(parser_helper_t *f, token_type_t type);
 
 /**
  * @brief Get type of identifier into helper structure params
@@ -80,6 +89,6 @@ int func_call_params_const(func_def_t *f, token_type_t type);
  * @return 0 if ID was found and added, otherwise 1
  * @todo return values from str_add_char
  */
-int func_call_params_id(func_def_t *f, string_t name);
+int p_helper_call_params_id(parser_helper_t *f, string_t name);
 
 #endif

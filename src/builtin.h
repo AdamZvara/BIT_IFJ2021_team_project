@@ -46,7 +46,7 @@ void builtin_used_update(builtin_used_t *bu, string_t name);
  * @brief Generate used builtin functions
  * @param bu Pointer to buildin_used structure
  */
-void builtin_used_generate(builtin_used_t *bu);
+void generate_builtin(builtin_used_t *bu);
 
 /**
  * @brief Add builtin functions to global symtab
@@ -61,5 +61,6 @@ void generate_chr();
 void generate_ord();
 void generate_substr();
 void generate_tointeger();
+
 
 #endif // _BUILTIN_H

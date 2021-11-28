@@ -37,50 +37,6 @@ builtin_used_t *builtin_used_create()
     return bu;
 }
 
-void builtin_used_update(builtin_used_t *bu, string_t name)
-{
-    if (!strcmp(name.str, "reads")) {
-        bu->reads = true;
-    } else if (!strcmp(name.str, "readn")) {
-        bu->readn = true;
-    } else if (!strcmp(name.str, "readi")) {
-        bu->readi = true;
-    } else if (!strcmp(name.str, "tointeger")) {
-        bu->tointeger = true;
-    } else if (!strcmp(name.str, "substr")) {
-        bu->substr = true;
-    } else if (!strcmp(name.str, "ord")) {
-        bu->ord = true;
-    } else if (!strcmp(name.str, "chr")) {
-        bu->chr = true;
-    }
-}
-
-void builtin_used_generate(builtin_used_t *bu)
-{
-    if (bu->reads) {
-        generate_reads();
-    }
-    if (bu->readn) {
-        generate_readn();
-    }
-    if (bu->readi) {
-        generate_readi();
-    }
-    if (bu->tointeger) {
-        generate_tointeger();
-    }
-    if (bu->substr) {
-        generate_substr();
-    }
-    if (bu->ord) {
-        generate_ord();
-    }
-    if (bu->chr) {
-        generate_chr();
-    }
-}
-
 void add_builtin(global_symtab_t *gs)
 {
     string_t function_name;
@@ -145,6 +101,53 @@ void add_builtin(global_symtab_t *gs)
     str_add_char(&func->params, 'i');
     str_clear(&function_name);
 }
+
+
+
+void builtin_used_update(builtin_used_t *bu, string_t name)
+{
+    if (!strcmp(name.str, "reads")) {
+        bu->reads = true;
+    } else if (!strcmp(name.str, "readn")) {
+        bu->readn = true;
+    } else if (!strcmp(name.str, "readi")) {
+        bu->readi = true;
+    } else if (!strcmp(name.str, "tointeger")) {
+        bu->tointeger = true;
+    } else if (!strcmp(name.str, "substr")) {
+        bu->substr = true;
+    } else if (!strcmp(name.str, "ord")) {
+        bu->ord = true;
+    } else if (!strcmp(name.str, "chr")) {
+        bu->chr = true;
+    }
+}
+
+void generate_builtin(builtin_used_t *bu)
+{
+    if (bu->reads) {
+        generate_reads();
+    }
+    if (bu->readn) {
+        generate_readn();
+    }
+    if (bu->readi) {
+        generate_readi();
+    }
+    if (bu->tointeger) {
+        generate_tointeger();
+    }
+    if (bu->substr) {
+        generate_substr();
+    }
+    if (bu->ord) {
+        generate_ord();
+    }
+    if (bu->chr) {
+        generate_chr();
+    }
+}
+
 
 void generate_reads()
 {

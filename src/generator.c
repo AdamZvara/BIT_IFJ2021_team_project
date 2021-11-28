@@ -15,6 +15,7 @@
 #include "generator.h"
 #include "str.h"
 
+/* functions for converting constants into IFJcode21 constants */
 void generate_string(string_t *insert_to, string_t string)
 {
     str_insert(insert_to, "string@");
@@ -47,7 +48,10 @@ void generate_decimal(string_t *insert_to, double number)
     str_insert(insert_to, "float@");
     str_insert_double(insert_to, number);
 }
+/*             END IFJCODE21 constants                    */
 
+
+// Function to create mangled names of identifiers in function
 void generate_name(string_t *output, string_t name)
 {
     local_symtab_t *symtab = local_symtab_find(local_tab, name);
@@ -61,21 +65,18 @@ void generate_name(string_t *output, string_t name)
     str_insert(output, name.str);
 }
 
-void generate_entry()
-{
-    ADD_NEWLINE();
-    ADD_INST("label _start_");
-    ADD_NEWLINE();
-}
 
+/* Functions to generate entry points/ exit points of program */
+
+// generate prolog, global variables, jump to entry point
 void generate_start()
 {
     ADD_INST_N(".IFJcode21");
 
     // global variable to store results of comparisons in expressions
-    ADD_INST_N("defvar GF@bool"); 
+    ADD_INST_N("defvar GF@bool");
 
-    // global variables to store operands of advanced comparisons in expressions 
+    // global variables to store operands of advanced comparisons in expressions
     ADD_INST_N("defvar GF@adv_comp1");
     ADD_INST_N("defvar GF@adv_comp2");
 
@@ -91,6 +92,13 @@ void generate_start()
     ADD_INST_N("jump _start_");
 }
 
+// generate entry point - first call of function in main body of program
+void generate_entry()
+{
+    ADD_NEWLINE();
+    ADD_INST_N("label _start_");
+}
+
 void generate_end()
 {
     ADD_INST_N("jump _end_");
@@ -100,7 +108,9 @@ void generate_exit()
 {
     ADD_INST_N("label _end_");
 }
+/*            END IFJcode21 ENTRY                  */
 
+// generate label from given string
 void generate_label(string_t label_name)
 {
     ADD_NEWLINE();
@@ -109,6 +119,7 @@ void generate_label(string_t label_name)
     ADD_NEWLINE();
 }
 
+/*           FUNCTION ENTRY               */
 void generate_retvals()
 {
     // storage for converting number to string
@@ -178,8 +189,7 @@ void generate_function()
 
     // push previously set up temporary frame to frame stack
     // (TF@var becomes LF@var)
-    ADD_INST("pushframe");
-    ADD_NEWLINE();
+    ADD_INST_N("pushframe");
 
     generate_retvals();
     ADD_NEWLINE();
@@ -188,12 +198,13 @@ void generate_function()
 
 void generate_function_end()
 {
-    ADD_INST("popframe");
-    ADD_NEWLINE();
-    ADD_INST("return");
-    ADD_NEWLINE();
+    ADD_INST_N("popframe");
+    ADD_INST_N("return");
 }
 
+/*          END FUNCTION ENTRY             */
+
+// generate local identifers with mangled name
 void generate_identifier(string_t id_name)
 {
     string_t id_mangled;
@@ -207,7 +218,8 @@ void generate_identifier(string_t id_name)
     str_free(&id_mangled);
 }
 
-void generate_call_prep(func_def_t *f_helper)
+/*          FUNCTION CALL          */
+void generate_call_prep(parser_helper_t *f_helper)
 {
     ADD_INST("createframe");
     ADD_NEWLINE();
@@ -215,7 +227,7 @@ void generate_call_prep(func_def_t *f_helper)
     string_t param_name;
     str_init(&param_name);
     // generate generic names for function parameters
-    for (int i = 0; i < str_len(f_helper->item->params); i++) {
+    for (int i = 0; i < str_len(f_helper->func->params); i++) {
         ADD_INST("defvar TF@");
         str_insert(&param_name, "%");
         str_insert_int(&param_name, i);
@@ -226,7 +238,7 @@ void generate_call_prep(func_def_t *f_helper)
     str_free(&param_name);
 }
 
-void generate_call_params(token_t *token, func_def_t *f_helper)
+void generate_call_params(token_t *token, parser_helper_t *f_helper)
 {
     ADD_INST("move TF@");
 
@@ -266,10 +278,10 @@ void generate_call_params(token_t *token, func_def_t *f_helper)
     str_free(&param_name);
 }
 
-void generate_call(func_def_t *f_helper)
+void generate_call(parser_helper_t *f_helper)
 {
     ADD_INST("call ");
-    strcat(INST, f_helper->item->key.str);
+    strcat(INST, f_helper->func->key.str);
     ADD_NEWLINE();
 }
 
@@ -286,6 +298,9 @@ void generate_return_value(int ret_counter)
     str_free(&retval_num);
 }
 
+/*          END FUNCTION CALL             */
+
+// builtin write function
 void generate_write(token_t *token)
 {
     string_t value;
@@ -321,6 +336,7 @@ void generate_write(token_t *token)
     str_free(&value);
 }
 
+// single assign
 void generate_assign(string_t name)
 {
     string_t id_name;
@@ -336,6 +352,7 @@ void generate_assign(string_t name)
     str_free(&id_name);
 }
 
+/*          IF STATEMENT            */
 void generate_if_label(string_t *insert_to, char *label_or_jump)
 {
     str_insert(insert_to, label_or_jump);
@@ -361,7 +378,7 @@ void generate_else()
     str_insert(&label_name, "_else");
     strcat(INST, label_name.str);
     ADD_NEWLINE();
-    
+
     str_free(&label_name);
 }
 
@@ -387,10 +404,14 @@ void generate_if_end()
     str_insert(&label_name, "_end");
     strcat(INST, label_name.str);
     ADD_NEWLINE();
-    
+
     str_free(&label_name);
 }
 
+/*          END IF STATEMENT            */
+
+
+/*          WHILE STATEMENT             */
 void generate_while_label(string_t *insert_to, char *label_or_jump)
 {
     str_insert(insert_to, label_or_jump);
@@ -409,7 +430,7 @@ void generate_while_start()
     str_insert(&label_name, "_start");
     strcat(INST, label_name.str);
     ADD_NEWLINE();
-    
+
     str_free(&label_name);
 }
 
@@ -425,7 +446,6 @@ void generate_while_skip()
 
     str_free(&label_name);
 }
-
 
 void generate_while_end()
 {
@@ -443,10 +463,13 @@ void generate_while_end()
     str_insert(&label_name, "_skip");
     strcat(INST, label_name.str);
     ADD_NEWLINE();
-    
+
     str_free(&label_name);
 }
+/*          END WHILE STATEMENT             */
 
+
+/*          EXPRESSION              */
 void generate_strlen()
 {
     // pop operand into GF@strlen
@@ -463,8 +486,6 @@ void generate_concat()
     ADD_INST_N("concat GF@concat GF@concat_str1 GF@concat_str2");
     ADD_INST_N("pushs GF@concat");
 }
-
-
 void generate_push_compare(prec_table_term_t op)
 {
     switch (op)
@@ -472,7 +493,7 @@ void generate_push_compare(prec_table_term_t op)
     case EQ:
         ADD_INST_N("eqs");
         break;
-    
+
     case NOT_EQ:
         ADD_INST_N("eqs");
         ADD_INST_N("nots");
@@ -486,7 +507,7 @@ void generate_push_compare(prec_table_term_t op)
         // store variables
         ADD_INST_N("pops GF@adv_comp2");
         ADD_INST_N("pops GF@adv_comp1");
-        
+
         // compare < only
         ADD_INST_N("pushs GF@adv_comp1");
         ADD_INST_N("pushs GF@adv_comp2");
@@ -500,7 +521,7 @@ void generate_push_compare(prec_table_term_t op)
         // compare <=
         ADD_INST_N("ors");
         break;
-        
+
     case GREAT:
         ADD_INST_N("gts");
         break;
@@ -509,7 +530,7 @@ void generate_push_compare(prec_table_term_t op)
         // store variables
         ADD_INST_N("pops GF@adv_comp2");
         ADD_INST_N("pops GF@adv_comp1");
-        
+
         // compare > only
         ADD_INST_N("pushs GF@adv_comp1");
         ADD_INST_N("pushs GF@adv_comp2");
@@ -538,7 +559,7 @@ void generate_push_arithmetic(prec_table_term_t op)
     case MINUS:
         ADD_INST_N("subs");
         break;
-    
+
     case PLUS:
         ADD_INST_N("adds");
         break;
@@ -550,7 +571,7 @@ void generate_push_arithmetic(prec_table_term_t op)
     case DIV:
         ADD_INST_N("divs");
         break;
-        
+
     case DIV_INT:
         ADD_INST_N("idivs");
         break;
@@ -571,7 +592,7 @@ void generate_push_operator(prec_table_term_t op)
     case DIV_INT:
         generate_push_arithmetic(op);
         break;
-    
+
     case EQ:
     case NOT_EQ:
     case LESS:
@@ -606,7 +627,7 @@ void generate_push_operand(token_t *token)
     case TOK_STRING:
         generate_string(&name, token->attribute.s);
         break;
-        
+
     case TOK_DECIMAL:
         generate_decimal(&name, token->attribute.decimal);
         break;
@@ -619,7 +640,7 @@ void generate_push_operand(token_t *token)
         str_insert(&name, "LF@");
         generate_name(&name, token->attribute.s);
         break;
-    
+
     default:
         break;
     }
@@ -629,3 +650,4 @@ void generate_push_operand(token_t *token)
 
     str_free(&name);
 }
+/*          END EXPRESSION          */

@@ -1,9 +1,9 @@
 /**
  * VUT IFJ Project 2021.
  *
- * @file func_helper.c
+ * @file p_helper_helper.c
  *
- * @brief Helper structure when dealing with function declaration, definition, function call etc...
+ * @brief Helper structure when dealing with p_helpertion declaration, definition, p_helpertion call etc...
  *
  * @author Vojtěch Eichler
  * @author Václav Korvas
@@ -11,32 +11,48 @@
  * @author Adam Zvara
  */
 
-#include "func_helper.h"
+#include "parser_helper.h"
 #include "error.h"      // ERROR TYPES
 
-int func_init(func_def_t *f)
+parser_helper_t *p_helper_create()
 {
+    parser_helper_t *f = malloc(sizeof(*f));
+    if (f == NULL) {
+        return NULL;
+    }
+
     f->id = NULL;
-    f->item = NULL;
+    f->func = NULL;
     f->func_found = false;
     f->par_counter = 0;
     if (str_init(&f->temp)) {
-        return ERROR_INTERNAL;
+        return NULL;
     }
-    return SUCCESS;
+    f->status = NONE;
+
+    return f;
 }
 
-void func_clear(func_def_t *f)
+void p_helper_clear(parser_helper_t *f)
+{
+    f->id = NULL;
+    f->func = NULL;
+    f->func_found = false;
+    f->par_counter = 0;
+    str_clear(&f->temp);
+}
+
+void p_helper_clear_string(parser_helper_t *f)
 {
     str_clear(&f->temp);
 }
 
-void func_dispose(func_def_t *f)
+void p_helper_dispose(parser_helper_t *f)
 {
     str_free(&f->temp);
 }
 
-int func_set_params(func_def_t *f, keyword_t kw)
+int p_helper_set_params(parser_helper_t *f, keyword_t kw)
 {
     switch (kw) {
 
@@ -44,7 +60,7 @@ int func_set_params(func_def_t *f, keyword_t kw)
         if (f->func_found) {
                 str_add_char(&f->temp, 's');
             } else {
-                str_add_char(&f->item->params, 's');
+                str_add_char(&f->func->params, 's');
             }
         break;
 
@@ -52,7 +68,7 @@ int func_set_params(func_def_t *f, keyword_t kw)
         if (f->func_found) {
                 str_add_char(&f->temp, 'i');
             } else {
-                str_add_char(&f->item->params, 'i');
+                str_add_char(&f->func->params, 'i');
             }
         break;
 
@@ -60,7 +76,7 @@ int func_set_params(func_def_t *f, keyword_t kw)
         if (f->func_found) {
                 str_add_char(&f->temp, 'n');
             } else {
-                str_add_char(&f->item->params, 'n');
+                str_add_char(&f->func->params, 'n');
             }
         break;
 
@@ -71,14 +87,14 @@ int func_set_params(func_def_t *f, keyword_t kw)
     return 0;
 }
 
-int func_set_retvals(func_def_t *f, keyword_t kw)
+int p_helper_set_retvals(parser_helper_t *f, keyword_t kw)
 {
     switch (kw) {
     case KW_STRING:
         if (f->func_found) {
             str_add_char(&f->temp, 's');
         } else {
-            str_add_char(&f->item->retvals, 's');
+            str_add_char(&f->func->retvals, 's');
         }
         break;
 
@@ -86,7 +102,7 @@ int func_set_retvals(func_def_t *f, keyword_t kw)
         if (f->func_found) {
             str_add_char(&f->temp, 'i');
         } else {
-            str_add_char(&f->item->retvals, 'i');
+            str_add_char(&f->func->retvals, 'i');
         }
         break;
 
@@ -94,7 +110,7 @@ int func_set_retvals(func_def_t *f, keyword_t kw)
         if (f->func_found) {
             str_add_char(&f->temp, 'n');
         } else {
-            str_add_char(&f->item->retvals, 'n');
+            str_add_char(&f->func->retvals, 'n');
         }
         break;
 
@@ -105,7 +121,7 @@ int func_set_retvals(func_def_t *f, keyword_t kw)
     return 0;
 }
 
-int func_call_params_const(func_def_t *f, token_type_t type)
+int p_helper_call_params_const(parser_helper_t *f, token_type_t type)
 {
     switch (type) {
     case TOK_STRING:
@@ -127,7 +143,7 @@ int func_call_params_const(func_def_t *f, token_type_t type)
     return 0;
 }
 
-int func_call_params_id(func_def_t *f, string_t name)
+int p_helper_call_params_id(parser_helper_t *f, string_t name)
 {
     if (local_tab == NULL) {
         return 1;
