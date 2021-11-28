@@ -30,7 +30,7 @@ extern local_symtab_t *local_tab;   // local symtable from parser
 extern global_symtab_t *global_tab; // global symtable from parser
 extern ibuffer_t *buffer;           // instruction buffer from parser
 
-void generate_name(string_t *output, string_t name);
+void generate_name(string_t name);
 
 void generate_start();
 void generate_entry();

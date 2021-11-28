@@ -16,55 +16,77 @@
 #include "str.h"
 
 /* functions for converting constants into IFJcode21 constants */
-void generate_string(string_t *insert_to, string_t string)
+void generate_string(string_t string)
 {
-    str_insert(insert_to, "string@");
+    string_t generated;
+    str_init(&generated);
+    str_insert(&generated, "string@");
 
     // special cases for whitespaces, hashtag and backslash
     for (unsigned int i = 0; i < string.length; i++) {
         if (string.str[i] <= ' ') {
-            str_insert(insert_to, "\\0");
-            str_insert_int(insert_to, string.str[i]);
+            str_insert(&generated, "\\0");
+            str_insert_int(&generated, string.str[i]);
         } else if (string.str[i] == '#') {
-            str_insert(insert_to, "\\0");
-            str_insert_int(insert_to, string.str[i]);
+            str_insert(&generated, "\\0");
+            str_insert_int(&generated, string.str[i]);
         } else if (string.str[i] == '\\') {
-            str_insert(insert_to, "\\0");
-            str_insert_int(insert_to, string.str[i]);
+            str_insert(&generated, "\\0");
+            str_insert_int(&generated, string.str[i]);
         } else {
-            str_add_char(insert_to, string.str[i]);
+            str_add_char(&generated, string.str[i]);
         }
     }
+
+    strcat(INST, generated.str);
+    str_free(&generated);
 }
 
-void generate_int(string_t *insert_to, int number)
+void generate_int(int number)
 {
-    str_insert(insert_to, "int@");
-    str_insert_int(insert_to, number);
+    string_t generated;
+    str_init(&generated);
+
+    str_insert(&generated, "int@");
+    str_insert_int(&generated, number);
+
+    strcat(INST, generated.str);
+    str_free(&generated);
 }
 
-void generate_decimal(string_t *insert_to, double number)
+void generate_decimal(double number)
 {
-    str_insert(insert_to, "float@");
-    str_insert_double(insert_to, number);
+    string_t generated;
+    str_init(&generated);
+
+    str_insert(&generated, "float@");
+    str_insert_double(&generated, number);
+
+    strcat(INST, generated.str);
+    str_free(&generated);
 }
 /*             END IFJCODE21 constants                    */
 
 
 // Function to create mangled names of identifiers in function
-void generate_name(string_t *output, string_t name)
+void generate_name(string_t name)
 {
     local_symtab_t *symtab = local_symtab_find(local_tab, name);
     if (symtab == NULL)
         return;
 
-    str_insert(output, local_tab->key.str);
-    str_insert(output, "$");
-    str_insert_int(output, symtab->depth);
-    str_insert(output, "$");
-    str_insert(output, name.str);
-}
+    string_t generated;
+    str_init(&generated);
 
+    str_insert(&generated, local_tab->key.str);
+    str_insert(&generated, "$");
+    str_insert_int(&generated, symtab->depth);
+    str_insert(&generated, "$");
+    str_insert(&generated, name.str);
+
+    strcat(INST, generated.str);
+    str_free(&generated);
+}
 
 /* Functions to generate entry points/ exit points of program */
 
@@ -151,9 +173,8 @@ void generate_retvals()
 
 void generate_parameters()
 {
-    // define formal parameters of function
-    string_t id_mangled;
-    str_init(&id_mangled);
+    string_t num;
+    str_init(&num);
 
     // iterate through all identifiers
     // (at this point, only parameters are in local symtable)
@@ -161,25 +182,23 @@ void generate_parameters()
         // variable definition
         ADD_INST("defvar LF@");
         // create unique identificator name
-        generate_name(&id_mangled, local_tab->data[i]->name);
-        strcat(INST, id_mangled.str);
+        generate_name(local_tab->data[i]->name);
         ADD_NEWLINE();
 
         // assign value from function call
         ADD_INST("move LF@");
-        strcat(INST, id_mangled.str);
+        generate_name(local_tab->data[i]->name);
         strcat(INST, " LF@%");
-        // id_mangled is now used to convert iterator variable into string
-        str_clear(&id_mangled);
-        str_insert_int(&id_mangled, i);
-        strcat(INST, id_mangled.str);
+
+        str_insert_int(&num, i);
+        strcat(INST, num.str);
         ADD_NEWLINE();
 
-        str_clear(&id_mangled);
+        str_clear(&num);
         ADD_NEWLINE();
     }
 
-    str_free(&id_mangled);
+    str_free(&num);
 }
 
 void generate_function()
@@ -207,15 +226,9 @@ void generate_function_end()
 // generate local identifers with mangled name
 void generate_identifier(string_t id_name)
 {
-    string_t id_mangled;
-    str_init(&id_mangled);
-
-    generate_name(&id_mangled, id_name);
     ADD_INST("defvar LF@");
-    strcat(INST, id_mangled.str);
+    generate_name(id_name);
     ADD_NEWLINE();
-
-    str_free(&id_mangled);
 }
 
 /*          FUNCTION CALL          */
@@ -249,31 +262,31 @@ void generate_call_params(token_t *token, parser_helper_t *f_helper)
     str_insert_int(&param_name, f_helper->par_counter);
     str_add_char(&param_name, ' ');
     f_helper->par_counter++;
+    strcat(INST, param_name.str);
 
     switch (token->type)
     {
     case TOK_STRING:
-        generate_string(&param_name, token->attribute.s);
+        generate_string(token->attribute.s);
         break;
 
     case TOK_INT:
-        generate_int(&param_name, token->attribute.number);
+        generate_int(token->attribute.number);
         break;
 
     case TOK_DECIMAL:
-        generate_decimal(&param_name, token->attribute.decimal);
+        generate_decimal(token->attribute.decimal);
         break;
 
     case TOK_ID:
-        str_insert(&param_name, "LF@");
-        generate_name(&param_name, token->attribute.s);
+        strcat(INST, "LF@");
+        generate_name(token->attribute.s);
         break;
 
     default:
         break;
     }
 
-    strcat(INST, param_name.str);
     ADD_NEWLINE();
     str_free(&param_name);
 }
@@ -303,37 +316,31 @@ void generate_return_value(int ret_counter)
 // builtin write function
 void generate_write(token_t *token)
 {
-    string_t value;
-    str_init(&value);
-
     ADD_INST("write ");
 
     switch (token->type)
     {
     case TOK_STRING:
-        generate_string(&value, token->attribute.s);
+        generate_string(token->attribute.s);
         break;
 
     case TOK_INT:
-        generate_int(&value, token->attribute.number);
+        generate_int(token->attribute.number);
         break;
 
     case TOK_DECIMAL:
-        generate_decimal(&value, token->attribute.decimal);
+        generate_decimal(token->attribute.decimal);
         break;
 
     case TOK_ID:
-        str_insert(&value, "LF@");
-        generate_name(&value, token->attribute.s);
+        strcat(INST, "LF@");
+        generate_name(token->attribute.s);
 
     default:
         break;
     }
 
-    strcat(INST, value.str);
     ADD_NEWLINE();
-
-    str_free(&value);
 }
 
 // single assign
@@ -343,9 +350,8 @@ void generate_assign(string_t name)
     str_init(&id_name);
 
     // pop instruction to variable
-    ADD_INST("pops ");
-    str_insert(&id_name, "LF@");
-    generate_name(&id_name, name);
+    ADD_INST("pops LF@");
+    generate_name(name);
     strcat(INST, id_name.str);
     ADD_NEWLINE();
 
@@ -617,37 +623,31 @@ void generate_push_operator(prec_table_term_t op)
 
 void generate_push_operand(token_t *token)
 {
-    string_t name;
-    str_init(&name);
-
     ADD_INST("pushs ");
 
     switch (token->type)
     {
     case TOK_STRING:
-        generate_string(&name, token->attribute.s);
+        generate_string(token->attribute.s);
         break;
 
     case TOK_DECIMAL:
-        generate_decimal(&name, token->attribute.decimal);
+        generate_decimal(token->attribute.decimal);
         break;
 
     case TOK_INT:
-        generate_int(&name, token->attribute.number);
+        generate_int(token->attribute.number);
         break;
 
     case TOK_ID:
-        str_insert(&name, "LF@");
-        generate_name(&name, token->attribute.s);
+        strcat(INST, "LF@");
+        generate_name(token->attribute.s);
         break;
 
     default:
         break;
     }
 
-    strcat(INST, name.str);
     ADD_NEWLINE();
-
-    str_free(&name);
 }
 /*          END EXPRESSION          */
