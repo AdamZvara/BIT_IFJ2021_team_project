@@ -32,6 +32,13 @@ doc: Doxyfile
 	doxygen
 	mv warning_doxygen.txt doc/
 
+pdf: doc/dokumentace.tex
+	pdflatex -output-directory doc/ $<
+	pdflatex -output-directory doc/ $<
+
 run: parser
 	@./src/parser < prog.tl > test.code
 	@./interpret/ic21int test.code
+
+clean:
+	$(RM) doc/{*.log,*.aux,*.pdf}
