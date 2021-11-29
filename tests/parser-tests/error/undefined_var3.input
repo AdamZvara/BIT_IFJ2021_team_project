@@ -1,0 +1,8 @@
+require "ifj21"
+
+function bar(par : integer)
+	local a : integer = 5
+	b = 3
+end
+
+bar(2)
