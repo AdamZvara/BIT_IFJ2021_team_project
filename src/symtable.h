@@ -41,6 +41,7 @@ struct local_data {
 	string_t name;
 	type_t type;
 	bool init;
+    struct local_data *next;
 };
 
 /**
