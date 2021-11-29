@@ -337,7 +337,8 @@ int params_2() {
 
     } else if (GET_TYPE == TOK_ID) { // params start correctly with ID
         // add identifier to local symtable
-        p_helper->id = local_add(local_tab, GET_ID, true);
+        //p_helper->id = local_add(local_tab, GET_ID, true);
+        p_helper_add_identifier(p_helper, local_add(local_tab, GET_ID, true));
 
         // now check the rest of the syntax and go to params_2_n if everything is correct
         NEXT_TOKEN();
@@ -351,7 +352,7 @@ int params_2() {
             (GET_TYPE == TOK_KEYWORD && GET_KW == KW_INTEGER)) {
             // add parameters to global symtable
             p_helper_set_params(p_helper, GET_KW);
-            local_add_type(p_helper->id, GET_KW);
+            local_add_type(p_helper->id_first->data, GET_KW);
             return params_2_n();
         } else {
             return ERROR_SYNTAX;
@@ -380,7 +381,8 @@ int params_2_n() {
             return ERROR_SYNTAX;
 
         // add identifier to local symtable
-        p_helper->id = local_add(local_tab, GET_ID, true);
+        //p_helper->id = local_add(local_tab, GET_ID, true);
+        p_helper_add_identifier(p_helper, local_add(local_tab, GET_ID, true));
 
         NEXT_TOKEN();
         if (GET_TYPE != TOK_COLON)
@@ -393,7 +395,7 @@ int params_2_n() {
             (GET_TYPE == TOK_KEYWORD && GET_KW == KW_INTEGER)) {
             // add parameters to global symtable
             p_helper_set_params(p_helper, GET_KW);
-            local_add_type(p_helper->id, GET_KW);
+            local_add_type(p_helper->id_last->data, GET_KW);
             return params_2_n();
         } else {
             return ERROR_SYNTAX;
@@ -477,7 +479,8 @@ int body() {
                     return ERROR_SYNTAX;
 
                 // add identifer to local symtable
-                p_helper->id = local_add(local_tab, GET_ID, false);
+                //p_helper->id = local_add(local_tab, GET_ID, false);
+                p_helper_add_identifier(p_helper, local_add(local_tab, GET_ID, false));
                 generate_identifier(GET_ID);
 
                 NEXT_TOKEN();
@@ -487,7 +490,7 @@ int body() {
                 if ((GET_TYPE == TOK_KEYWORD && GET_KW == KW_STRING) ||
                    (GET_TYPE == TOK_KEYWORD && GET_KW == KW_NUMBER) ||
                    (GET_TYPE == TOK_KEYWORD && GET_KW == KW_INTEGER)) {
-                    local_add_type(p_helper->id, GET_KW);
+                    local_add_type(p_helper->id_first->data, GET_KW);
                     ret = init();
                     if (ret)
                         return ret;
@@ -620,7 +623,8 @@ int body() {
         p_helper->func = global_find(global_tab, GET_ID);
 
         // in case of ID assign
-        p_helper->id = local_find(local_tab, GET_ID);
+        //p_helper->id = local_find(local_tab, GET_ID);
+        p_helper_add_identifier(p_helper, local_find(local_tab, GET_ID));
 
         ret = body_n();
         if (ret)
@@ -655,18 +659,20 @@ int body_n() {
 
         return args(p_helper);
     } else if (GET_TYPE == TOK_ASSIGN) {
-        if (p_helper->id == NULL) {
+        if (p_helper->id_first->data == NULL) {
             return ERROR_SEMANTIC;
         }
+        p_helper->assign = true;
         return assign_single(p_helper);
     } else if (GET_TYPE == TOK_COMMA) {
         NEXT_TOKEN();
         if (GET_TYPE != TOK_ID)
             return ERROR_SYNTAX;
 
-        if (p_helper->id == NULL) {
-            return ERROR_SEMANTIC;
-        }
+        p_helper->assign = true;
+
+        // add loaded identifier into p_helper structure
+        p_helper_add_identifier(p_helper, local_find(local_tab, GET_ID));
 
         ret = assign_multi();
         if (ret)
@@ -683,7 +689,7 @@ int assign_single() {
     // call expression()
     ret = expression(&backup_token);
     if (ret == SUCCESS) {
-        generate_assign(p_helper->id->name);
+        generate_assign(p_helper->id_first->data->name);
         FREE_TOK_STRING();
         free(curr_token);
         curr_token = backup_token;
@@ -713,6 +719,7 @@ int assign_multi() {
         NEXT_TOKEN();
         if (GET_TYPE != TOK_ID)
             return ERROR_SYNTAX;
+        p_helper_add_identifier(p_helper, local_find(local_tab, GET_ID));
         return assign_multi();
     } else if (GET_TYPE == TOK_ASSIGN) {
         return ret;
@@ -784,7 +791,7 @@ int func() {
 int init() {
     NEXT_TOKEN();
     if (GET_TYPE == TOK_ASSIGN) {
-        p_helper->id->init = true;
+        p_helper->id_first->data->init = true;
         return init_n();
     } else {
         backup_token = curr_token;
@@ -796,7 +803,7 @@ int init_n() {
     // call expression()
     ret = expression(&backup_token);
     if (ret == SUCCESS) {
-        generate_assign(p_helper->id->name);
+        generate_assign(p_helper->id_first->data->name);
         FREE_TOK_STRING();
         free(curr_token);
         curr_token = backup_token;
@@ -832,7 +839,15 @@ int args() {
                 // function call does not match with definition params
                 return ERROR_SEMANTIC_PARAMS;
             }
+
         generate_call(p_helper);
+
+        if (p_helper->id_first != NULL) {
+            if (p_helper->id_first->data != NULL && p_helper->assign) {
+                // assign function return value into variable(s)
+                generate_assign_function(p_helper);
+            }
+        }
         return ret;
     }
 
@@ -876,6 +891,13 @@ int args_n() {
         }
 
         generate_call(p_helper);
+
+        if (p_helper->id_first != NULL) {
+            if (p_helper->id_first->data != NULL && p_helper->assign) {
+                // assign function return value into variable(s)
+                generate_assign_function(p_helper);
+            }
+        }
         return ret;
     } else {
         return ERROR_SYNTAX;

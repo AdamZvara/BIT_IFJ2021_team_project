@@ -156,6 +156,7 @@ void generate_retvals()
         ADD_INST("move LF@%retval");
         strcat(INST, retval_num.str);
         strcat(INST, " nil@nil");
+        ADD_NEWLINE();
 
         str_clear(&retval_num);
     }
@@ -224,7 +225,7 @@ void generate_identifier(string_t id_name)
 }
 
 /*          FUNCTION CALL          */
-void generate_call_prep(parser_helper_t *f_helper)
+void generate_call_prep(parser_helper_t *p_helper)
 {
     ADD_INST("createframe");
     ADD_NEWLINE();
@@ -232,7 +233,7 @@ void generate_call_prep(parser_helper_t *f_helper)
     string_t param_name;
     str_init(&param_name);
     // generate generic names for function parameters
-    for (int i = 0; i < str_len(f_helper->func->params); i++) {
+    for (int i = 0; i < str_len(p_helper->func->params); i++) {
         ADD_INST("defvar TF@");
         str_insert(&param_name, "%");
         str_insert_int(&param_name, i);
@@ -243,7 +244,7 @@ void generate_call_prep(parser_helper_t *f_helper)
     str_free(&param_name);
 }
 
-void generate_call_params(token_t *token, parser_helper_t *f_helper)
+void generate_call_params(token_t *token, parser_helper_t *p_helper)
 {
     ADD_INST("move TF@");
 
@@ -251,9 +252,9 @@ void generate_call_params(token_t *token, parser_helper_t *f_helper)
     str_init(&param_name);
 
     str_insert(&param_name, "%");
-    str_insert_int(&param_name, f_helper->par_counter);
+    str_insert_int(&param_name, p_helper->par_counter);
     str_add_char(&param_name, ' ');
-    f_helper->par_counter++;
+    p_helper->par_counter++;
     strcat(INST, param_name.str);
 
     switch (token->type)
@@ -283,10 +284,10 @@ void generate_call_params(token_t *token, parser_helper_t *f_helper)
     str_free(&param_name);
 }
 
-void generate_call(parser_helper_t *f_helper)
+void generate_call(parser_helper_t *p_helper)
 {
     ADD_INST("call ");
-    strcat(INST, f_helper->func->key.str);
+    strcat(INST, p_helper->func->key.str);
     ADD_NEWLINE();
 }
 
@@ -335,19 +336,36 @@ void generate_write(token_t *token)
     ADD_NEWLINE();
 }
 
-// single assign
+// single assign with expression
 void generate_assign(string_t name)
 {
-    string_t id_name;
-    str_init(&id_name);
-
     // pop instruction to variable
     ADD_INST("pops LF@");
     generate_name(name);
-    strcat(INST, id_name.str);
     ADD_NEWLINE();
+}
 
-    str_free(&id_name);
+// assign function return values to identifiers
+void generate_assign_function(parser_helper_t *p_helper)
+{
+    // counter for retvals
+    int counter = 0;
+    string_t counter_string;
+    str_init(&counter_string);
+
+    // iterate through identifiers and move value from retval into ID
+    struct identifiers *tmp = p_helper->id_first;
+    while (tmp != NULL) {
+        ADD_INST("move LF@");
+        generate_name(tmp->data->name);
+        strcat(INST, " TF@%retval");
+        str_insert_int(&counter_string, counter);
+        counter++;
+        strcat(INST, counter_string.str);
+        ADD_NEWLINE();
+        tmp = tmp->next;
+        str_clear(&counter_string);
+    }
 }
 
 /*          IF STATEMENT            */

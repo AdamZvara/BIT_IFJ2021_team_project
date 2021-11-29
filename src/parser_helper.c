@@ -21,10 +21,12 @@ parser_helper_t *p_helper_create()
         return NULL;
     }
 
-    f->id = NULL;
+    f->id_first = NULL;
+    f->id_last = NULL;
     f->func = NULL;
     f->func_found = false;
     f->par_counter = 0;
+    f->assign = false;
     if (str_init(&f->temp)) {
         return NULL;
     }
@@ -35,7 +37,10 @@ parser_helper_t *p_helper_create()
 
 void p_helper_clear(parser_helper_t *f)
 {
-    f->id = NULL;
+    // TODO: free identifier linked list
+    f->id_first = NULL;
+    f->id_last = NULL;
+    f->assign = false;
     f->func = NULL;
     f->func_found = false;
     f->par_counter = 0;
@@ -50,6 +55,27 @@ void p_helper_clear_string(parser_helper_t *f)
 void p_helper_dispose(parser_helper_t *f)
 {
     str_free(&f->temp);
+}
+
+int p_helper_add_identifier(parser_helper_t *f, struct local_data *id)
+{
+    struct identifiers *new_id = malloc(sizeof(*new_id));
+    if (new_id == NULL) {
+        return ERROR_INTERNAL;
+    }
+
+    new_id->next = NULL;
+    new_id->data = id;
+
+    // insert first id into empty list
+    if (f->id_first == NULL) {
+        f->id_first = f->id_last = new_id;
+    } else {
+        f->id_last->next = new_id;
+        f->id_last = new_id;
+    }
+
+    return SUCCESS;
 }
 
 int p_helper_set_params(parser_helper_t *f, keyword_t kw)

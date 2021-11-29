@@ -22,16 +22,23 @@ extern local_symtab_t *local_tab;
 
 typedef enum {NONE, IF, WHILE} if_while;
 
+struct identifiers {
+    struct local_data *data;
+    struct identifiers *next;
+};
+
 /**
  * @brief Helper structure to do semantic checks when declaring/defining new function
  */
 typedef struct parser_helper {
-    struct global_item *func;   // Pointer to function in global symtab
-    bool func_found;            // Whether function was already found in global symtab
-    struct local_data *id;      // Pointer to identificator in local symtab
-    int par_counter;            // Counter of parameters
-    string_t temp;              // Temporary string to fill retvals/parameters of function
-    if_while status;          // Bool to determine whether we are in if or while statement
+    struct global_item *func;           // Pointer to function in global symtab
+    bool func_found;                    // Whether function was already found in global symtab
+    bool assign;
+    struct identifiers *id_first;       // Pointer to first identificator in linked list
+    struct identifiers *id_last;        // Pointer to last identificator in linked list
+    int par_counter;                    // Counter of parameters
+    string_t temp;                      // Temporary string to fill retvals/parameters of function
+    if_while status;                    // Bool to determine whether we are in if or while statement
 } parser_helper_t;
 
 /**
@@ -57,6 +64,13 @@ void p_helper_clear_string(parser_helper_t *f);
  * @param f Pointer to helper structure
  */
 void p_helper_dispose(parser_helper_t *f);
+
+/**
+ * @brief Add identifer to linked list at last position
+ * @param f Pointer to helper structure
+ * @param id Identifier in local symtable to insert
+ */
+int p_helper_add_identifier(parser_helper_t *f, struct local_data *id);
 
 /**
  * @brief Set parameters of function in helper structure

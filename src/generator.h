@@ -45,9 +45,9 @@ void generate_function_end();
 
 void generate_identifier(string_t id_name);
 
-void generate_call_prep(parser_helper_t *f_helper);
-void generate_call_params(token_t *token, parser_helper_t *f_helper);
-void generate_call(parser_helper_t *f_helper);
+void generate_call_prep(parser_helper_t *p_helper);
+void generate_call_params(token_t *token, parser_helper_t *p_helper);
+void generate_call(parser_helper_t *p_helper);
 void generate_return_value(int ret_counter);
 
 void generate_write(token_t *token);
@@ -57,6 +57,7 @@ void generate_push_operator(prec_table_term_t op);
 void generate_push_operand(token_t *token);
 
 void generate_assign(string_t name);
+void generate_assign_function(parser_helper_t *p_helper);
 
 void generate_else();
 void generate_if_else();
