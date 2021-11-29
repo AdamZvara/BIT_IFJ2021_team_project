@@ -363,10 +363,9 @@ void local_delete_top(local_symtab_t **local_tab)
             struct local_data *tmp = del->data[i]->next;
             // free names of all identifiers
             str_free(&(del->data[i]->name));
+            free(del->data[i]);
             del->data[i] = tmp;
         }
-		// free local data structure
-		free(del->data[i]);
 	}
 	// free the local table itself
 	free(del);
