@@ -1,0 +1,16 @@
+require "ifj21"
+
+
+function foo()
+	local i : integer = 5
+	while i > 0 do
+		if i ~= 2 then
+			write(i," ")
+		else
+		end
+		i = i -1
+	end
+	write("\n")
+end
+
+foo()
