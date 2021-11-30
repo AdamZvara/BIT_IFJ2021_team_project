@@ -1,0 +1,9 @@
+require "ifj21"
+
+function main()
+	local a : string = "".."Hello\n"
+	write(a)
+	local s : string = "world\n"..""
+	write(s)
+end
+main()

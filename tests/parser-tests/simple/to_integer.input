@@ -1,7 +1,7 @@
 require "ifj21"
 
 function main(num : number)
-	local int : integer = tointeger(num);
+	local int : integer = tointeger(num)
 	write(num,"\n")
 	write(int,"\n")
 end 
