@@ -69,4 +69,6 @@ void generate_while_start();
 void generate_while_skip();
 void generate_while_end();
 
+void generate_num_conversion(unsigned index);
+
 #endif // _GENERATOR_H

@@ -674,3 +674,19 @@ void generate_push_operand(token_t *token)
     ADD_NEWLINE();
 }
 /*          END EXPRESSION          */
+
+void generate_num_conversion(unsigned index)
+{
+    string_t *s = malloc(sizeof(string_t));
+    str_init(s);
+    str_insert_int(s, index);
+    ADD_INST("int2float ");
+    strcat(INST, "TF@%");
+    strcat(INST, s->str);
+
+    strcat(INST, " TF@%");
+    strcat(INST, s->str);
+    ADD_NEWLINE();
+    str_free(s);
+    free(s);
+}

@@ -39,7 +39,8 @@ parser_helper_t *p_helper = NULL;
 
 int ret = SUCCESS;
 
-void token_free() {
+void token_free()
+{
     FREE_TOK_STRING();
     free(curr_token);
 }
@@ -288,7 +289,8 @@ int prog()
     }
 }
 
-int params() {
+int params()
+{
     NEXT_TOKEN();
     if (GET_TYPE == TOK_RBRACKET) {
         return ret;
@@ -304,7 +306,8 @@ int params() {
     }
 }
 
-int params_n() {
+int params_n()
+{
     NEXT_TOKEN();
     if (GET_TYPE == TOK_RBRACKET) {
         return ret;
@@ -323,7 +326,8 @@ int params_n() {
     }
 }
 
-int params_2() {
+int params_2()
+{
     // first check if params are empty or not
     NEXT_TOKEN();
     if (GET_TYPE == TOK_RBRACKET) {
@@ -366,7 +370,8 @@ int params_2() {
     }
 }
 
-int params_2_n() {
+int params_2_n()
+{
     // check for end of params
     NEXT_TOKEN();
     if (GET_TYPE == TOK_RBRACKET) {
@@ -413,7 +418,8 @@ int params_2_n() {
     }
 }
 
-int ret_params() {
+int ret_params()
+{
     NEXT_TOKEN();
     if (GET_TYPE != TOK_COLON) {
         // function is in global table, check if retvals match
@@ -440,7 +446,8 @@ int ret_params() {
     }
 }
 
-int ret_params_n() {
+int ret_params_n()
+{
     NEXT_TOKEN();
     if (GET_TYPE != TOK_COMMA) {
         // function is in global table, check if retvals match
@@ -464,7 +471,8 @@ int ret_params_n() {
     }
 }
 
-int body() {
+int body()
+{
     if (!backup_token) {
         NEXT_TOKEN();
     } else {
@@ -657,7 +665,8 @@ int body() {
     }
 }
 
-int body_n() {
+int body_n()
+{
     if (backup_token) {
         curr_token = backup_token;
         backup_token = NULL;
@@ -722,7 +731,8 @@ int body_n() {
     }
 }
 
-int assign_single() {
+int assign_single()
+{
     // call expression()
     ret = expression(&backup_token);
     if (ret == SUCCESS) {
@@ -750,7 +760,8 @@ int assign_single() {
         return ret;
 }
 
-int assign_multi() {
+int assign_multi()
+{
     NEXT_TOKEN();
     if (GET_TYPE == TOK_COMMA) {
         NEXT_TOKEN();
@@ -769,7 +780,8 @@ int assign_multi() {
     }
 }
 
-int r_side() {
+int r_side()
+{
     // call expression()
     generate_expr_start();
     ret = expression(&backup_token);
@@ -809,10 +821,8 @@ int r_side() {
         return ret;
 }
 
-int r_side_n() {
-    //TODO: not sure about this:
-    // but I think this should solve that expression reads one more token after
-    // the expression itself
+int r_side_n()
+{
     if (backup_token) {
         curr_token = backup_token;
         backup_token = NULL;
@@ -827,17 +837,8 @@ int r_side_n() {
     }
 }
 
-//TODO: remove this (probably useless?) function
-int func() {
-    // <args>
-    //ret = args(); TODO:
-    if (ret)
-        return ret;
-
-    return ret;
-}
-
-int init() {
+int init()
+{
     NEXT_TOKEN();
     if (GET_TYPE == TOK_ASSIGN) {
         p_helper->id_first->data->init = true;
@@ -848,7 +849,8 @@ int init() {
     }
 }
 
-int init_n() {
+int init_n()
+{
     // call expression()
     ret = expression(&backup_token);
     if (ret == SUCCESS) {
@@ -876,7 +878,8 @@ int init_n() {
         return ret;
 }
 
-int args() {
+int args()
+{
     NEXT_TOKEN();
     if (GET_TYPE == TOK_RBRACKET) {
         if (!strcmp(p_helper->func->key.str, "write")) {
@@ -885,11 +888,20 @@ int args() {
             return ret;
         }
 
-        if (!str_isequal(p_helper->func->params, p_helper->temp)) {
-                // function call does not match with definition params
+        //if (!str_isequal(p_helper->func->params, p_helper->temp)) {
+        //        // function call does not match with definition params
+        //        return ERROR_SEMANTIC_PARAMS;
+        //    }
+        if (p_helper->func->params.length != p_helper->temp.length)
+                return ERROR_SEMANTIC_PARAMS;
+        for (unsigned i = 0; i < p_helper->temp.length; i++) {
+            if ((p_helper->func->params.str[i] != p_helper->temp.str[i]) &&
+               ((p_helper->temp.str[i] == 'i') && (p_helper->func->params.str[i] == 'n'))) {
+                generate_num_conversion(i);
+            } else if ((p_helper->func->params.str[i] != p_helper->temp.str[i])) {
                 return ERROR_SEMANTIC_PARAMS;
             }
-
+        }
         generate_call(p_helper);
 
         if (p_helper->id_first != NULL) {
@@ -939,9 +951,19 @@ int args_n() {
             return ret;
         }
 
-        if (!str_isequal(p_helper->func->params, p_helper->temp)) {
-            // function call does not match with definition params
+        //if (!str_isequal(p_helper->func->params, p_helper->temp)) {
+        //    // function call does not match with definition params
+        //    return ERROR_SEMANTIC_PARAMS;
+        //}
+        if (p_helper->func->params.length != p_helper->temp.length)
             return ERROR_SEMANTIC_PARAMS;
+        for (unsigned i = 0; i < p_helper->temp.length; i++) {
+            if ((p_helper->func->params.str[i] != p_helper->temp.str[i]) &&
+               ((p_helper->temp.str[i] == 'i') && (p_helper->func->params.str[i] == 'n'))) {
+                generate_num_conversion(i);
+            } else if ((p_helper->func->params.str[i] != p_helper->temp.str[i])) {
+                return ERROR_SEMANTIC_PARAMS;
+            }
         }
 
         generate_call(p_helper);
