@@ -844,6 +844,7 @@ int init_n() {
         backup_token = NULL;
 
         p_helper->func = global_find(global_tab, GET_ID);
+        p_helper->assign = true;
 
         builtin_used_update(builtin_used, p_helper->func->key);
 
