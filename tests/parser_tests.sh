@@ -3,11 +3,12 @@
 RED='\033[0;31m'
 BLUE='\033[0;34m'
 NC='\033[0m'
-PARSER_DIR="error normal simple"
+ORANGE='\033[0;33m'
+PARSER_DIR="error failed_tests simple"
 for f in $PARSER_DIR; do
     PARSER_TEST_DIR=parser-tests/$f
     PARSER_INPUT_FILES=$(ls $PARSER_TEST_DIR | grep .input)
-
+	echo -e "${ORANGE}${f^^}:${NC}"
     for f in $PARSER_INPUT_FILES; do
         TEST_NAME=$(echo $f | cut -d'.' -f1)
         RETURN="${TEST_NAME: -1}"

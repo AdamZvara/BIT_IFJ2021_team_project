@@ -1,0 +1,9 @@
+require "ifj21"
+
+function foo()
+
+	local int : integer = tointeger(5.21)
+	write(int,"\n")
+end
+
+foo()

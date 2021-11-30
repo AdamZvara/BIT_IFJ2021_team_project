@@ -1,0 +1,19 @@
+require "ifj21"
+
+function foo(bar : integer) : integer
+	local a : integer = 2
+	if a > bar then
+		return a
+	else
+		return bar
+	end
+
+end
+
+function baz()
+	local res : integer = foo(1)
+	write(res,"\n")
+
+end
+
+baz()

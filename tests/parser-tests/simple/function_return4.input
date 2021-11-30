@@ -1,0 +1,16 @@
+require "ifj21"
+
+function foo(s : string) : integer
+	local result : integer = #s
+	return result * 2
+
+end
+
+function main()
+	local result : integer = 1
+	result = foo("HELL")
+	write(result,"\n")
+end
+
+
+main()

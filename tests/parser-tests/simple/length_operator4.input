@@ -1,0 +1,9 @@
+require "ifj21"
+
+function main(s : string)
+	local a : integer = #(s.."debilku")
+	write(a,"\n")
+
+end
+
+main("ahoj\065")
