@@ -659,6 +659,7 @@ int body_n() {
 
         return args(p_helper);
     } else if (GET_TYPE == TOK_ASSIGN) {
+        // check if variable was defined
         if (p_helper->id_first->data == NULL) {
             return ERROR_SEMANTIC;
         }
@@ -669,10 +670,20 @@ int body_n() {
         if (GET_TYPE != TOK_ID)
             return ERROR_SYNTAX;
 
+        // check if variable was defined
+        if (p_helper->id_first->data == NULL) {
+            return ERROR_SEMANTIC;
+        }
+
         p_helper->assign = true;
 
         // add loaded identifier into p_helper structure
         p_helper_add_identifier(p_helper, local_find(local_tab, GET_ID));
+
+        // check if other variable was defined
+        if (p_helper->id_last->data == NULL) {
+            return ERROR_SEMANTIC;
+        }
 
         ret = assign_multi();
         if (ret)
@@ -720,6 +731,10 @@ int assign_multi() {
         if (GET_TYPE != TOK_ID)
             return ERROR_SYNTAX;
         p_helper_add_identifier(p_helper, local_find(local_tab, GET_ID));
+        // check if last added variable was defined
+        if (p_helper->id_last->data == NULL) {
+            return ERROR_SEMANTIC;
+        }
         return assign_multi();
     } else if (GET_TYPE == TOK_ASSIGN) {
         return ret;
@@ -861,6 +876,10 @@ int args() {
         generate_call_params(curr_token, p_helper);
         return args_n();
     } else if (GET_TYPE == TOK_ID) {
+        if (local_find(local_tab, GET_ID) == NULL) {
+            return ERROR_SEMANTIC;
+        }
+
         if (!strcmp(p_helper->func->key.str, "write")) {
             // instructions are generated on spot
             generate_write(curr_token);

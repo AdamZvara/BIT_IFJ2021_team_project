@@ -1,0 +1,12 @@
+require "ifj21"
+
+function foo() : integer, integer, integer
+	return 5,5,5
+end
+
+function bar()
+	local a : integer
+	a,b,c = foo()
+end
+
+bar()
