@@ -1,0 +1,26 @@
+require "ifj21"
+
+function foo(s : string) : string
+	local str : string = ""
+	str = substr(s,1.0,5.0)
+	return str
+end
+
+function bar() : integer
+	local s : string = "Hello, wordl"
+	s = foo(s)
+	return #s
+end
+
+function main()
+	local i : integer = 0 
+	i = bar()
+	if (i < 2) then 
+	
+	else
+		write(i,"\n")
+	end
+
+end
+
+main()
