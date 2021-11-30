@@ -208,7 +208,6 @@ void generate_chr()
     ADD_INST_N("jumpifeq _chr_end LF@%bool bool@true");
 
     ADD_INST_N("int2char LF@%retval0 LF@%0");
-    ADD_INST_N("write LF@%retval0");
 
     ADD_INST_N("label _chr_end");
     ADD_INST_N("popframe");
@@ -249,7 +248,6 @@ void generate_ord()
     ADD_INST_N("jumpifeq _ord_end LF@%bool bool@true");
 
     ADD_INST_N("stri2int LF@%retval0 LF@%0 LF@%1");
-    ADD_INST_N("write LF@%retval0");
 
     ADD_INST_N("label _ord_end");
     ADD_INST_N("popframe");
@@ -261,7 +259,7 @@ void generate_substr()
     ADD_NEWLINE();
     ADD_INST_N("label substr");
     ADD_INST_N("pushframe");
-    ADD_INST_N("defvar LF@%substring");
+    ADD_INST_N("defvar LF@%retval0");
     ADD_INST_N("defvar LF@%iterator");
     ADD_INST_N("defvar LF@%begin");
     ADD_INST_N("defvar LF@%end");
@@ -286,8 +284,8 @@ void generate_substr()
 
     ADD_INST_N("label _substr_cont");
 
-    // initialize empty substring
-    ADD_INST_N("move LF@%substring string@");
+    // initialize empty retval0
+    ADD_INST_N("move LF@%retval0 string@");
 
     // convert given numbers into integers
     ADD_INST_N("float2int LF@%begin LF@%1");
@@ -327,15 +325,14 @@ void generate_substr()
     // get single char from string and store it in LF@char
     ADD_INST_N("getchar LF@%char LF@%0 LF@%iterator");
 
-    // concatenate substring with newly extracted char
-    ADD_INST_N("concat LF@%substring LF@%substring LF@%char");
+    // concatenate retval0 with newly extracted char
+    ADD_INST_N("concat LF@%retval0 LF@%retval0 LF@%char");
 
     ADD_INST_N("add LF@%iterator LF@%iterator int@1");
     ADD_INST_N("jump _substr_loop");
     // TODO: check if string is OK, index in range
 
     ADD_INST_N("label _substr_end");
-    ADD_INST_N("write LF@%substring");
 
     ADD_INST_N("popframe");
     ADD_INST_N("return");

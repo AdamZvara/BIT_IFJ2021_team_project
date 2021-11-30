@@ -693,7 +693,7 @@ int body_n() {
         if (ret)
             return ret;
 
-        ibuffer_revert_expression(buffer);
+        //ibuffer_revert_expression(buffer);
 
         return ret;
     } else {
