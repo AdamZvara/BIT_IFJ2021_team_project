@@ -336,6 +336,10 @@ int params_2() {
         return ret;
 
     } else if (GET_TYPE == TOK_ID) { // params start correctly with ID
+        // check if there is a function with the same name as variable
+        if (global_find(global_tab, GET_ID))
+            return ERROR_SEMANTIC;
+
         // add identifier to local symtable
         //p_helper->id = local_add(local_tab, GET_ID, true);
         p_helper_add_identifier(p_helper, local_add(local_tab, GET_ID, true));
@@ -379,6 +383,10 @@ int params_2_n() {
         NEXT_TOKEN();
         if (GET_TYPE != TOK_ID)
             return ERROR_SYNTAX;
+
+        // check if there is a function of the same name as variable
+        if (global_find(global_tab, GET_ID))
+            return ERROR_SEMANTIC;
 
         // add identifier to local symtable
         //p_helper->id = local_add(local_tab, GET_ID, true);
@@ -477,9 +485,22 @@ int body() {
                 NEXT_TOKEN();
                 if (GET_TYPE != TOK_ID)
                     return ERROR_SYNTAX;
+                
+                // if variable was defined in this block, return error
+                int index = hash_function(GET_ID);
+                struct local_data *current = local_tab->data[index];
+                while(current) {
+                    if (str_isequal(current->name, GET_ID))
+                        return ERROR_SEMANTIC;
+                    current = current->next;
+                }
+
+                // if variable has same name as function
+                if (global_find(global_tab, GET_ID))
+                    return ERROR_SEMANTIC;
 
                 // add identifer to local symtable
-                //p_helper->id = local_add(local_tab, GET_ID, false);
+                // p_helper->id = local_add(local_tab, GET_ID, false);
                 p_helper_add_identifier(p_helper, local_add(local_tab, GET_ID, false));
                 generate_identifier(GET_ID);
 
