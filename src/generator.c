@@ -164,37 +164,40 @@ void generate_retvals()
     str_free(&retval_num);
 }
 
-void generate_parameters()
+void generate_parameters(parser_helper_t *p_helper)
 {
     string_t num;
     str_init(&num);
 
-    // iterate through all identifiers
-    // (at this point, only parameters are in local symtable)
-    for (unsigned int i = 0; i < local_tab->size; i++) {
+    int par_cnt = 0;
+
+    // iterate through all identifiers in p_helper and create function parameters
+    struct identifiers *tmp = p_helper->id_first;
+    while (tmp != NULL) {
         // variable definition
         ADD_INST("defvar LF@");
         // create unique identificator name
-        generate_name(local_tab->data[i]->name);
+        generate_name(tmp->data->name);
         ADD_NEWLINE();
 
         // assign value from function call
         ADD_INST("move LF@");
-        generate_name(local_tab->data[i]->name);
+        generate_name(tmp->data->name);
         strcat(INST, " LF@%");
 
-        str_insert_int(&num, i);
+        str_insert_int(&num, par_cnt++);
         strcat(INST, num.str);
         ADD_NEWLINE();
 
         str_clear(&num);
         ADD_NEWLINE();
+        tmp = tmp->next;
     }
 
     str_free(&num);
 }
 
-void generate_function()
+void generate_function(parser_helper_t *p_helper)
 {
     ADD_NEWLINE();
     generate_label(local_tab->key);
@@ -205,7 +208,7 @@ void generate_function()
 
     generate_retvals();
     ADD_NEWLINE();
-    generate_parameters();
+    generate_parameters(p_helper);
 }
 
 void generate_function_end()
@@ -486,6 +489,16 @@ void generate_while_end()
 
 
 /*          EXPRESSION              */
+void generate_expr_start()
+{
+    ADD_INST_N("#EXPR START");
+}
+
+void generate_expr_end()
+{
+    ADD_INST_N("#EXPR END");
+}
+
 void generate_strlen()
 {
     // pop operand into GF@output

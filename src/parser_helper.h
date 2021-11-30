@@ -73,6 +73,12 @@ void p_helper_dispose(parser_helper_t *f);
 int p_helper_add_identifier(parser_helper_t *f, struct local_data *id);
 
 /**
+ * @brief Delete first identifier in linked list of identifiers
+ * @param f Pointer to helper structure
+ */
+void p_helper_delete_identifier(parser_helper_t *f);
+
+/**
  * @brief Set parameters of function in helper structure
  * @details If function was not declared before, set them directly into
  *  f->func parameters, otherwise set them into f->temp

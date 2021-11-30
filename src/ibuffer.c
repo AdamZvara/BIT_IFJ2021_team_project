@@ -64,6 +64,16 @@ void ibuffer_clear(ibuffer_t *buffer)
     buffer->length = 0;
 }
 
+void ibuffer_revert_expression(ibuffer_t *buffer)
+{
+    int skip_cnt = 0;
+    for (unsigned int i = 1; i < buffer->length; i++) {
+        if (!strcmp(*buffer->inst, "#EXPR START")) {
+            skip_cnt++;
+        }
+    }
+}
+
 void ibuffer_print(ibuffer_t *buffer)
 {
     // print all instructions

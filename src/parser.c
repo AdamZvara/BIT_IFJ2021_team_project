@@ -228,7 +228,7 @@ int prog()
                 return ret;
 
             // generate function label + retvals and parameters
-            generate_function();
+            generate_function(p_helper);
 
             ret = body();
             if (ret)
@@ -689,8 +689,13 @@ int body_n() {
         if (ret)
             return ret;
 
+        ret = r_side();
+        if (ret)
+            return ret;
 
-        return r_side();
+        ibuffer_revert_expression(buffer);
+
+        return ret;
     } else {
         return ERROR_SYNTAX;
     }
@@ -745,10 +750,18 @@ int assign_multi() {
 
 int r_side() {
     // call expression()
+    generate_expr_start();
     ret = expression(&backup_token);
+    generate_expr_end();
     if (ret == SUCCESS) {
-        generate_return_value(p_helper->par_counter);
-        p_helper->par_counter++;
+        if (p_helper->assign) {
+            // assign value to variable
+            generate_assign(p_helper->id_first->data->name);
+            p_helper_delete_identifier(p_helper);
+        } else {
+            generate_return_value(p_helper->par_counter);
+            p_helper->par_counter++;
+        }
         FREE_TOK_STRING();
         free(curr_token);
         curr_token = backup_token;

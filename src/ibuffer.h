@@ -69,6 +69,13 @@ ibuffer_t *ibuffer_create(size_t buffer_size, size_t inst_size);
 void ibuffer_clear(ibuffer_t *buffer);
 
 /**
+ * @brief Revert generated expression in buffer
+ *
+ * @param buffer Pointer to instruction buffer
+ */
+void ibuffer_revert_expression(ibuffer_t *buffer);
+
+/**
  * @brief Print out instructions stored in buffer
  *
  * @param buffer Pointer to instruction buffer

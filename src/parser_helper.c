@@ -78,6 +78,22 @@ int p_helper_add_identifier(parser_helper_t *f, struct local_data *id)
     return SUCCESS;
 }
 
+void p_helper_delete_identifier(parser_helper_t *f)
+{
+    struct identifiers *del = f->id_first;
+    if (del == NULL) {
+        return;
+    }
+
+    f->id_first = del->next;
+    free(del);
+
+    if (f->id_first == NULL) {
+        f->id_last = NULL;
+    }
+
+}
+
 int p_helper_set_params(parser_helper_t *f, keyword_t kw)
 {
     switch (kw) {

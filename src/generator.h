@@ -38,9 +38,9 @@ void generate_end();
 void generate_exit();
 
 void generate_label(string_t label_name);
-void generate_parameters();
+void generate_parameters(parser_helper_t *p_helper);
 void generate_retvals();
-void generate_function();
+void generate_function(parser_helper_t *p_helper);
 void generate_function_end();
 
 void generate_identifier(string_t id_name);
@@ -52,6 +52,8 @@ void generate_return_value(int ret_counter);
 
 void generate_write(token_t *token);
 
+void generate_expr_start();
+void generate_expr_end();
 void generate_push_compare(prec_table_term_t op);
 void generate_push_operator(prec_table_term_t op);
 void generate_push_operand(token_t *token);
