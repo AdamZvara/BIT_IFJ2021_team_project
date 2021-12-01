@@ -1,0 +1,11 @@
+require "ifj21"
+
+function foo()
+	local a : integer = 5
+	write(a)
+	if a > 2 then else end
+	local a : integer = 2
+
+end
+
+foo()

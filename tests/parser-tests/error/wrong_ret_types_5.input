@@ -1,0 +1,13 @@
+require "ifj21"
+
+function foo() : integer
+	return "hello"
+end
+
+function main()
+	local a : string
+	a = foo()
+
+end
+
+main()

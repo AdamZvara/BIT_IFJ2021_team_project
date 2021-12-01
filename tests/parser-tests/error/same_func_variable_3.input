@@ -1,0 +1,15 @@
+require "ifj21"
+
+global main : function()
+
+function bar()
+	local main : integer = 2
+	write(main)
+end
+
+function main()
+	bar()
+
+end
+
+main()
