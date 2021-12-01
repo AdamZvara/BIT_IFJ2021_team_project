@@ -5,7 +5,7 @@
  *
  * @brief Implementation of dynamic string.
  *
- * @author Vojtěch Eichler 
+ * @author Vojtěch Eichler
  * @author Václav Korvas
  * @author Tomáš Matuš
  * @author Adam Zvara
@@ -25,12 +25,12 @@ int str_init(string_t* s)
 	if (!s->str) {
 		return ERROR_INTERNAL;
 	}
-	
+
 	s->alloc_size = STR_LENGTH_INC;
 	s->length = 0;
 	s->str[s->length] = '\0';
-	
-	return SUCCESS; 
+
+	return SUCCESS;
 }
 
 void str_free(string_t* s)
@@ -139,4 +139,20 @@ int str_empty(const string_t src)
 int str_len(const string_t src)
 {
 	return src.length;
+}
+
+char str_getlast(const string_t src)
+{
+	if (src.length) {
+		return src.str[src.length-1];
+	}
+	return '\0';
+}
+
+void str_clearlast(string_t* src)
+{
+	// avoid the case when src_length is zero
+	if (src->length) {
+		src->str[src->length-1] = '\0';
+	}
 }
