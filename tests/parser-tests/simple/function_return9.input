@@ -1,0 +1,31 @@
+require "ifj21"
+
+global bar : function(integer) : integer, string
+
+function foo(i : integer, n : number, n2 : number) : integer
+		local ret : integer = n*n2
+		write(ret,"\n")
+		return i
+end
+
+function bar(i : integer) : integer, string
+	local s : string = "hello"
+	local y : integer = #s * i
+	local q : integer = 0
+	q = foo(2,2,2)
+	write(q,"\n")
+	if y > i then
+		return y,s
+	else end
+
+end
+
+function main()
+	local a : integer
+	local s : string
+	a,s = bar(2)
+	write(s,"\n")
+	write(a,"\n")
+end
+
+main()

@@ -1,0 +1,9 @@
+require "ifj21"
+
+function main()
+	local a : integer = 5
+	local a : string = "hello"
+
+end
+
+main()
