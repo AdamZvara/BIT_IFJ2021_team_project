@@ -1,0 +1,32 @@
+require "ifj21"
+
+global bar : function(integer) : string
+
+function foo(i : integer) : integer
+	local s : string
+	s = bar(i)
+	local int : integer
+	local z : integer
+	z = ord("z",1)
+	int = ord(s,1)
+	if int ~= z then
+		return int
+	else
+		i = i + 1
+		i = foo(i)
+	end
+end
+
+function bar(i : integer) : string
+	local s : string
+	s = chr(i)
+	return s
+end
+
+function main()
+	local i : integer
+	i = foo(65)
+	write(i,"\n")
+end
+
+main()

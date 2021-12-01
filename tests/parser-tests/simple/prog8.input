@@ -1,0 +1,32 @@
+require "ifj21"
+
+function foo() : integer, string
+	local s : string = "Najdi index, kde se vyskytuje prvni x"
+	local index : integer = 1
+	local letter : integer = 0
+	letter = ord(s,index)
+	while letter ~= 120 do
+		index = index + 1
+		letter = ord(s,index)
+		if index >= #s then
+			return 0, "NE"
+		else end
+	end
+	return index, "ANO"
+end
+
+
+function main()
+	local i : integer = 0
+	local s : string = ""
+	i,s = foo()
+	write("Vyskituje se x v zadanem textu? ",s,"\n")
+	if s == "ANO" then
+		write("vyskytuje se na indexu ",i,"\n")
+	else
+		write("NEVYSKYTUJE\n")
+	end
+
+end
+
+main()

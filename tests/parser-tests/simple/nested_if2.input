@@ -1,0 +1,30 @@
+require "ifj21"
+
+function foo(n : number) : number
+	local n1 : number = n
+	if n1 > 5.5 then
+		local n2 : number = n1
+		if n2 < 100.25 then
+			local n3 : number = n2
+			if n3 > 92.25 then
+				return n3
+			else
+				n1 = n3 + n3
+			end
+		else
+			n1 = n2 + n2 
+		end
+	else
+		n1 = n1 + n1
+	end
+	return n1
+end
+
+
+function main()
+	local n : number
+	n = foo(91.2)
+	write(n,"\n")
+end
+
+main()
