@@ -153,6 +153,7 @@ void str_clearlast(string_t* src)
 {
 	// avoid the case when src_length is zero
 	if (src->length) {
-		src->str[src->length-1] = '\0';
+		src->length--;
+		src->str[src->length] = '\0';
 	}
 }
