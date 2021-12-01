@@ -225,6 +225,10 @@ void generate_identifier(string_t id_name)
     ADD_INST("defvar LF@");
     generate_name(id_name);
     ADD_NEWLINE();
+    ADD_INST("move LF@");
+    generate_name(id_name);
+    strcat(INST, " nil@nil");
+    ADD_NEWLINE();
 }
 
 /*          FUNCTION CALL          */
