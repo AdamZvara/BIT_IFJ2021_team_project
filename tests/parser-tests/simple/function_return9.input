@@ -1,6 +1,6 @@
 require "ifj21"
 
-global bar(integer) : integer, string
+global bar : function(integer) : integer, string
 
 function foo(i : integer, n : number, n2 : number) : integer
 		local ret : integer = n*n2
@@ -14,7 +14,7 @@ function bar(i : integer) : integer, string
 	local q : integer = 0
 	q = foo(2,2,2)
 	write(q,"\n")
-	if s > i then
+	if y > i then
 		return y,s
 	else end
 
