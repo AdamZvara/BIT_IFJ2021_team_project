@@ -27,6 +27,10 @@
 #define TABLE_SIZE 9
 // return values
 #define EC_FUNC 4250
+#define T_INT 100
+#define T_NUM 101
+#define T_STR 102
+#define T_NONE 103
 
 #define FREE_STRING_TOKEN(token) \
     do { \
@@ -42,6 +46,16 @@
             return ret; \
         }    \
     } while(0);
+
+#define EXIT_ON_ERROR(ret) \
+    do { \
+        free(new_token); \
+        stack_dispose(&stack_prec); \
+        *return_token = NULL; \
+        return ret; \
+    } while(0);
+
+
 
 typedef enum
 {
@@ -76,14 +90,17 @@ typedef enum
 
     // id
     ID, // 15
+    INT, // 16
+    NUM, // 17
+    STR, // 18
 
     // $
-    DOLLAR, // 16
+    DOLLAR, // 19
 
     // <
-    HANDLE, // 17
+    HANDLE, // 20
 
-    NON_TERM // 18
+    NON_TERM // 21
 } prec_table_term_t;
 
 typedef enum
