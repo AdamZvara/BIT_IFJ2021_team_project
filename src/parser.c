@@ -453,7 +453,7 @@ int ret_params_n()
         // function is in global table, check if retvals match
         // retvals are not empty, compare them with p_helper temporary string
         if (p_helper->func_found) {
-            if (!str_isequal(p_helper->func->params, p_helper->temp)) {
+            if (!str_isequal(p_helper->func->retvals, p_helper->temp)) {
                 return ERROR_SEMANTIC;
             }
         }
@@ -493,7 +493,7 @@ int body()
                 NEXT_TOKEN();
                 if (GET_TYPE != TOK_ID)
                     return ERROR_SYNTAX;
-                
+
                 // if variable was defined in this block, return error
                 int index = hash_function(GET_ID);
                 struct local_data *current = local_tab->data[index];
@@ -783,9 +783,7 @@ int assign_multi()
 int r_side()
 {
     // call expression()
-    generate_expr_start();
     ret = expression(&backup_token);
-    generate_expr_end();
     if (ret == SUCCESS) {
         if (p_helper->assign) {
             // assign value to variable
