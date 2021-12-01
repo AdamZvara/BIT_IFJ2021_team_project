@@ -53,6 +53,7 @@ typedef struct local_symtab {
 	unsigned int size;				// Amount of stored variables
 	unsigned int alloc_size;		// Size of allocated space for variables
 	unsigned int if_cnt;			// Counter of if statements for unique label generation
+	unsigned int after_else;		// Number to create unique labels for nested ifs
 	unsigned int while_cnt;			// Counter of while statements for unique label generation
 	struct local_symtab *next;		// Pointer to next local TS (creating linked list)
 	struct local_data *data[];		// Variables inside function
@@ -67,7 +68,6 @@ struct global_item {
 	string_t retvals;			// Function return values in string format
 	string_t params;			// Parameters of function in string format
 	struct global_item *next;
-	//TODO: maybe add names of parameters with their types?
 };
 
 /**
@@ -133,6 +133,7 @@ local_symtab_t *local_create(string_t key);
 
 /**
  * @brief Create new depth of last function in local symtable
+ * @warning New depth does not keep track of if_counter
  * @param previous Pointer to local symtable
  * @return 0 if successful, otherwise ERROR_INTERNAL TODO: maybe change
  */
@@ -169,10 +170,16 @@ struct local_data *local_find(local_symtab_t *local_tab, string_t name);
 local_symtab_t *local_symtab_find(local_symtab_t *local_tab, string_t name);
 
 /**
- * @brief Increase if_cnt in local symtable
+ * @brief Increase if_cnt in current local symtable
  * @param local_tab Pointer to local symtable
  */
 void local_add_if(local_symtab_t *local_tab);
+
+/**
+ * @brief Increase identifier for nested if statements
+ * @param local_tab Pointer to local symtable
+ */
+void local_after_else(local_symtab_t *local_tab);
 
 /**
  * @brief Increase while_cnt in local symtable

@@ -527,10 +527,10 @@ int body()
                 return body();
                 break;
             case KW_IF: // IF <expr> THEN <body> ELSE <body> END <body>
+                // add if in previous tab, because name is created from if_counter in it
+                local_add_if(local_tab);
                 // add new depth so local variables can be recognized
                 local_new_depth(&local_tab);
-                // update if counter
-                local_add_if(local_tab);
 
                 str_add_char(&p_helper->status, 'i');
 
@@ -562,6 +562,9 @@ int body()
                 // Delete if then scope and add new scope for else branch
                 local_delete_top(&local_tab);
                 local_new_depth(&local_tab);
+                // Update local if counter
+                local_add_if(local_tab);
+                local_after_else(local_tab);
 
                 // <body>
                 ret = body();

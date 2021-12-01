@@ -378,7 +378,13 @@ void generate_if_label(string_t *insert_to, char *label_or_jump)
     str_add_char(insert_to, '_');
     str_insert(insert_to, local_tab->key.str);
     str_add_char(insert_to, '_');
-    str_insert_int(insert_to, local_tab->if_cnt);
+    str_insert_int(insert_to, local_tab->depth);
+    str_add_char(insert_to, '_');
+    // create counter based on previous if counter
+    str_insert_int(insert_to, local_tab->next->if_cnt);
+    str_add_char(insert_to, '_');
+    // determine, whether this part is before or after else
+    str_insert_int(insert_to, local_tab->next->after_else);
 }
 
 void generate_else()

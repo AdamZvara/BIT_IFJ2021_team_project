@@ -151,6 +151,7 @@ local_symtab_t *local_create(string_t key)
 	if (str_init(&local->key)) return NULL;
 	if (str_copy(&key, &local->key)) return NULL;
 	local->if_cnt = 0;
+	local->after_else = 0;
 	local->while_cnt = 0;
 	local->depth = 0;
 	local->size = 0;
@@ -177,8 +178,8 @@ int local_new_depth(local_symtab_t **previous)
 	}
 
 	new_local->depth = (*previous)->depth+1;
-	new_local->if_cnt = (*previous)->if_cnt;
-	new_local->while_cnt = (*previous)->while_cnt;
+	//new_local->if_cnt = (*previous)->if_cnt;
+	//new_local->while_cnt = (*previous)->while_cnt;
 
 	new_local->next = *previous;
 	*previous = new_local;
@@ -280,7 +281,7 @@ local_symtab_t *local_symtab_find(local_symtab_t *local_tab, string_t name)
 
     size_t index = hash_function(name);
     struct local_data *current = NULL;
-    
+
 	// iterate through all local symtabs with the same key
 	while (true) {
 		// search through identifiers in this local symtable
@@ -316,16 +317,11 @@ void local_add_if(local_symtab_t *local_tab)
 	// update if counter in all local_symtabs that belong to this function
 	local_symtab_t *tmp = local_tab;
 	tmp->if_cnt++;
+}
 
-	while (tmp->next != NULL) {
-		// stop if next local symtab is from different function
-		if (!str_isequal(tmp->key, tmp->next->key)) {
-			break;
-		}
-		tmp->next->if_cnt++;
-		tmp = tmp->next;
-	}
-
+void local_after_else(local_symtab_t *local_tab)
+{
+	local_tab->after_else = 1;
 }
 
 void local_add_while(local_symtab_t *local_tab)
