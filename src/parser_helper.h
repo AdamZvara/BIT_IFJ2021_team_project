@@ -38,7 +38,7 @@ typedef struct parser_helper {
     struct identifiers *id_last;        // Pointer to last identificator in linked list
     int par_counter;                    // Counter of parameters
     string_t temp;                      // Temporary string to fill retvals/parameters of function
-    if_while status;                    // Bool to determine whether we are in if or while statement
+    string_t status;                    // String to determine whether we are in if or while statement
 } parser_helper_t;
 
 /**

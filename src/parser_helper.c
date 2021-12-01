@@ -30,7 +30,9 @@ parser_helper_t *p_helper_create()
     if (str_init(&f->temp)) {
         return NULL;
     }
-    f->status = NONE;
+    if (str_init(&f->status)) {
+        return NULL;
+    }
 
     return f;
 }

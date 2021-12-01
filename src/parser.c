@@ -532,7 +532,7 @@ int body()
                 // update if counter
                 local_add_if(local_tab);
 
-                p_helper->status = IF;
+                str_add_char(&p_helper->status, 'i');
 
                 // call expression()
                 ret = expression(&backup_token);
@@ -582,7 +582,7 @@ int body()
                 // update if counter
                 local_add_while(local_tab);
 
-                p_helper->status = WHILE;
+                str_add_char(&p_helper->status, 'w');
 
                 generate_while_start();
 
@@ -625,10 +625,12 @@ int body()
                     local_destroy(local_tab);
                     local_tab = NULL;
                 } else {
-                    if (p_helper->status == IF)
+                    if (str_getlast(p_helper->status) == 'i') {
                         generate_if_end();
-                    else if (p_helper->status == WHILE)
+                    } else if (str_getlast(p_helper->status) == 'w') {
                         generate_while_end();
+                    }
+                    str_clearlast(&p_helper->status);
                 }
                 return ret;
                 break;
