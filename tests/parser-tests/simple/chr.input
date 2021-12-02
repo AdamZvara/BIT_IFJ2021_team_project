@@ -1,7 +1,7 @@
 require "ifj21"
 
 function foo()
-	local a : integer = chr(65)
+	local a : string = chr(65)
 	write(a,"\n")
 end
 

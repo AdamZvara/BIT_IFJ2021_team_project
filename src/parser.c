@@ -872,6 +872,33 @@ int init_n()
         p_helper->func = global_find(global_tab, GET_ID);
         p_helper->assign = true;
 
+        // check if function returns any value
+        if (str_len(p_helper->func->retvals) != 0) {
+            switch (p_helper->id_first->data->type)
+            {
+            case STR_T:
+                if (p_helper->func->retvals.str[0] != 's')
+                    return ERROR_SEMANTIC_ASSIGN;
+                break;
+
+            case INT_T:
+                if (p_helper->func->retvals.str[0] != 'i')
+                    return ERROR_SEMANTIC_ASSIGN;
+                break;
+
+            case NUM_T:
+                if ((p_helper->func->retvals.str[0] != 'n') && (p_helper->func->retvals.str[0] != 'i')) {
+                    return ERROR_SEMANTIC_ASSIGN;
+                }
+                break;
+
+            default:
+                break;
+            }
+        } else {
+            return ERROR_SEMANTIC_PARAMS;
+        }
+
         builtin_used_update(builtin_used, p_helper->func->key);
 
         ret = body_n();
