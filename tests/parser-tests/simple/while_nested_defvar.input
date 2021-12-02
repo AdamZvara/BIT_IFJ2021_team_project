@@ -1,0 +1,19 @@
+require "ifj21"
+
+function foo()
+	local a : integer = 5
+	while (a > 3) do
+		local b : integer = 3
+		while (b < 5) do
+			local c : number
+			b = b + 1
+			write(b)
+		end
+
+
+		write(a)
+		a = a - 1
+	end
+end
+
+foo()
