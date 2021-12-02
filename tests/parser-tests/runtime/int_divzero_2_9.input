@@ -1,0 +1,13 @@
+require "ifj21"
+
+function bar() : integer
+    return 0
+end
+
+function main() -- uzivatelska funkce bez parametru
+  local b : integer = bar()
+  local a : integer = 5//b
+  write(a)
+end
+
+main()  -- prikaz hlavniho tela programu
