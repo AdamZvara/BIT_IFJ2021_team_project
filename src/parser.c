@@ -665,6 +665,8 @@ int body()
                 if (ret)
                     return ret;
 
+                generate_function_end();
+
                 return body();
                 break;
             default:
