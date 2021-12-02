@@ -1,0 +1,8 @@
+require "ifj21"
+
+function main() -- uzivatelska funkce bez parametru
+  local a : integer = 5//0
+  write(a)
+end
+
+main()  -- prikaz hlavniho tela programu
