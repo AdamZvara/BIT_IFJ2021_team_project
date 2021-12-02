@@ -1,0 +1,15 @@
+require "ifj21"
+
+function foo() : integer
+	local i : integer = 2
+	if i == 2 then
+		return i
+	else end
+	write(i)
+end
+
+function main()
+	local i : integer = foo()
+end
+
+main()

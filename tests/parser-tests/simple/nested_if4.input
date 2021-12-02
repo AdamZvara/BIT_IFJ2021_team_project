@@ -1,0 +1,29 @@
+require "ifj21"
+
+global bar : function(integer) : integer
+
+function bar(i : integer) : integer
+	
+	write("bar","\n")
+	return i
+end
+
+function main()
+	local i : integer = 0
+	while i < 15 do 
+		if i +  5 > 15 then
+			local a : integer = i
+			write(a," ")
+		else
+			if i < 10 then
+				i = bar(i)
+			else
+				i = i + 1
+			end
+		end
+
+		i = i + 1
+	end
+end
+
+main()

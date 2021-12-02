@@ -1,0 +1,18 @@
+require "ifj21"
+
+function main()
+	local i : integer = 0
+	while i < 5 do
+		write(i,"\n")
+		if (i == 3) then
+			return
+		else 
+			i = i + 1
+		end
+
+	end
+	write("TOTO UZ NEPIS\n")
+
+end
+
+main()

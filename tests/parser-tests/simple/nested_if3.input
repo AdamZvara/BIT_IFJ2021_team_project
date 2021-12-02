@@ -1,0 +1,38 @@
+require "ifj21"
+
+function foo(n : number) : number
+	if (n > 2.5) then
+		if (n < 25.56) then
+			local n3 : number = n*n
+			if (n3 > 300.25) then
+				n = n- 0.5*n
+			else 
+				n = n+n
+			end
+		else 
+			n = n * n
+		end
+	else
+		n = n + n
+	end
+	if (n > 2*13.28) then 
+		n = n + n
+	else
+		n = n*n
+	end
+	return n
+end
+
+
+function main()
+	local n1 : number = 2.24
+	while n1 < 248.25 do
+		local n : number = 0.0
+		n = foo(n1)
+		n1 = n
+	end
+	write(n1,"\n")
+end
+
+
+main()
