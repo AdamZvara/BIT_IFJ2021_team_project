@@ -33,6 +33,7 @@ global_symtab_t *global_tab = NULL;
 local_symtab_t *local_tab = NULL;
 
 ibuffer_t *buffer = NULL;
+ibuffer_t *defvar_buffer = NULL;
 builtin_used_t *builtin_used = NULL;
 
 parser_helper_t *p_helper = NULL;
@@ -70,6 +71,12 @@ int parse()
     // create ibuffer to store generated instructions
     buffer = ibuffer_create(IBUFFER_SIZE, INSTR_SIZE);
     if (buffer == NULL) {
+        return ERROR_INTERNAL;
+    }
+
+    // create ibuffer for defvar instruction inside while statement
+    defvar_buffer = ibuffer_create(IBUFFER_SIZE, INSTR_SIZE);
+    if (defvar_buffer == NULL) {
         return ERROR_INTERNAL;
     }
 
@@ -484,8 +491,12 @@ int body()
     p_helper_clear(p_helper);
 
     // print out instruction buffer
-    ibuffer_print(buffer);
-    ibuffer_clear(buffer);
+    if (!str_contains(p_helper->status, 'w')) {
+        ibuffer_print(defvar_buffer);
+        ibuffer_clear(defvar_buffer);
+        ibuffer_print(buffer);
+        ibuffer_clear(buffer);
+    }
 
     if (GET_TYPE == TOK_KEYWORD) {
         switch (GET_KW) {
@@ -508,9 +519,14 @@ int body()
                     return ERROR_SEMANTIC;
 
                 // add identifer to local symtable
-                // p_helper->id = local_add(local_tab, GET_ID, false);
                 p_helper_add_identifier(p_helper, local_add(local_tab, GET_ID, false));
-                generate_identifier(GET_ID);
+
+                // if we are in while statement, append to defvar buffer
+                if (str_contains(p_helper->status, 'w')) {
+                    generate_identifier(defvar_buffer, GET_ID);
+                } else {
+                    generate_identifier(buffer, GET_ID);
+                }
 
                 NEXT_TOKEN();
                 if (GET_TYPE != TOK_COLON)
@@ -580,10 +596,10 @@ int body()
                 return body();
                 break;
             case KW_WHILE:
+                // update while counter
+                local_add_while(local_tab);
                 // add new depth so local variables can be recognized
                 local_new_depth(&local_tab);
-                // update if counter
-                local_add_while(local_tab);
 
                 str_add_char(&p_helper->status, 'w');
 

@@ -69,7 +69,7 @@ void generate_decimal(double number)
 
 
 // Function to create mangled names of identifiers in function
-void generate_name(string_t name)
+void generate_name(ibuffer_t *buffer, string_t name)
 {
     local_symtab_t *symtab = local_symtab_find(local_tab, name);
     if (symtab == NULL)
@@ -177,12 +177,12 @@ void generate_parameters(parser_helper_t *p_helper)
         // variable definition
         ADD_INST("defvar LF@");
         // create unique identificator name
-        generate_name(tmp->data->name);
+        generate_name(buffer, tmp->data->name);
         ADD_NEWLINE();
 
         // assign value from function call
         ADD_INST("move LF@");
-        generate_name(tmp->data->name);
+        generate_name(buffer, tmp->data->name);
         strcat(INST, " LF@%");
 
         str_insert_int(&num, par_cnt++);
@@ -220,13 +220,13 @@ void generate_function_end()
 /*          END FUNCTION ENTRY             */
 
 // generate local identifers with mangled name
-void generate_identifier(string_t id_name)
+void generate_identifier(ibuffer_t *buffer, string_t id_name)
 {
     ADD_INST("defvar LF@");
-    generate_name(id_name);
+    generate_name(buffer, id_name);
     ADD_NEWLINE();
     ADD_INST("move LF@");
-    generate_name(id_name);
+    generate_name(buffer, id_name);
     strcat(INST, " nil@nil");
     ADD_NEWLINE();
 }
@@ -280,7 +280,7 @@ void generate_call_params(token_t *token, parser_helper_t *p_helper)
 
     case TOK_ID:
         strcat(INST, "LF@");
-        generate_name(token->attribute.s);
+        generate_name(buffer, token->attribute.s);
         break;
 
     default:
@@ -334,7 +334,7 @@ void generate_write(token_t *token)
 
     case TOK_ID:
         strcat(INST, "LF@");
-        generate_name(token->attribute.s);
+        generate_name(buffer, token->attribute.s);
 
     default:
         break;
@@ -348,7 +348,7 @@ void generate_assign(string_t name)
 {
     // pop instruction to variable
     ADD_INST("pops LF@");
-    generate_name(name);
+    generate_name(buffer, name);
     ADD_NEWLINE();
 }
 
@@ -364,7 +364,7 @@ void generate_assign_function(parser_helper_t *p_helper)
     struct identifiers *tmp = p_helper->id_first;
     while (tmp != NULL) {
         ADD_INST("move LF@");
-        generate_name(tmp->data->name);
+        generate_name(buffer, tmp->data->name);
         strcat(INST, " TF@%retval");
         str_insert_int(&counter_string, counter);
         counter++;
@@ -447,7 +447,9 @@ void generate_while_label(string_t *insert_to, char *label_or_jump)
     str_add_char(insert_to, '_');
     str_insert(insert_to, local_tab->key.str);
     str_add_char(insert_to, '_');
-    str_insert_int(insert_to, local_tab->while_cnt);
+    str_insert_int(insert_to, local_tab->depth);
+    str_add_char(insert_to, '_');
+    str_insert_int(insert_to, local_tab->next->while_cnt);
 }
 
 void generate_while_start()
@@ -674,7 +676,7 @@ void generate_push_operand(token_t *token)
 
     case TOK_ID:
         strcat(INST, "LF@");
-        generate_name(token->attribute.s);
+        generate_name(buffer, token->attribute.s);
         break;
 
     default:

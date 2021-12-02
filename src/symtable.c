@@ -314,7 +314,7 @@ local_symtab_t *local_symtab_find(local_symtab_t *local_tab, string_t name)
 
 void local_add_if(local_symtab_t *local_tab)
 {
-	// update if counter in all local_symtabs that belong to this function
+	// update if counter in current local_symtable
 	local_symtab_t *tmp = local_tab;
 	tmp->if_cnt++;
 }
@@ -326,18 +326,9 @@ void local_after_else(local_symtab_t *local_tab)
 
 void local_add_while(local_symtab_t *local_tab)
 {
-	// update while counter in all local_symtabs that belong to this function
+	// update while counter in current local_symtable
 	local_symtab_t *tmp = local_tab;
 	tmp->while_cnt++;
-
-	while (tmp->next != NULL) {
-		// stop if next local symtab is from different function
-		if (!str_isequal(tmp->key, tmp->next->key)) {
-			break;
-		}
-		tmp->next->while_cnt++;
-		tmp = tmp->next;
-	}
 }
 
 void local_delete_top(local_symtab_t **local_tab)

@@ -29,8 +29,9 @@
 extern local_symtab_t *local_tab;   // local symtable from parser
 extern global_symtab_t *global_tab; // global symtable from parser
 extern ibuffer_t *buffer;           // instruction buffer from parser
+extern ibuffer_t *defvar_buffer;    // buffer for declaring variables
 
-void generate_name(string_t name);
+void generate_name(ibuffer_t *buffer, string_t name);
 
 void generate_start();
 void generate_entry();
@@ -43,7 +44,7 @@ void generate_retvals();
 void generate_function(parser_helper_t *p_helper);
 void generate_function_end();
 
-void generate_identifier(string_t id_name);
+void generate_identifier(ibuffer_t *buffer, string_t id_name);
 
 void generate_call_prep(parser_helper_t *p_helper);
 void generate_call_params(token_t *token, parser_helper_t *p_helper);
