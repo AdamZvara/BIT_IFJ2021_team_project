@@ -38,6 +38,8 @@ void generate_entry();
 void generate_end();
 void generate_exit();
 
+void generate_div_by_zero();
+
 void generate_label(string_t label_name);
 void generate_parameters(parser_helper_t *p_helper);
 void generate_retvals();

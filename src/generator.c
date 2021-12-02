@@ -118,6 +118,12 @@ void generate_end()
     ADD_INST_N("jump _end_");
 }
 
+void generate_div_by_zero()
+{
+    ADD_INST_N("label _div_by_zero");
+    ADD_INST_N("exit int@9");
+}
+
 void generate_exit()
 {
     ADD_INST_N("label _end_");
@@ -610,10 +616,18 @@ void generate_push_arithmetic(prec_table_term_t op)
         break;
 
     case DIV:
+        // division by 0 check
+        ADD_INST_N("pops GF@arg1");
+        ADD_INST_N("pushs GF@arg1");
+        ADD_INST_N("jumpifeq _div_by_zero GF@arg1 float@0x0p+0");
         ADD_INST_N("divs");
         break;
 
     case DIV_INT:
+        // division by 0 check
+        ADD_INST_N("pops GF@arg1");
+        ADD_INST_N("pushs GF@arg1");
+        ADD_INST_N("jumpifeq _div_by_zero GF@arg1 int@0");
         ADD_INST_N("idivs");
         break;
 

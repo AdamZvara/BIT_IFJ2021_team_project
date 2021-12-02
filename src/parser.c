@@ -287,6 +287,9 @@ int prog()
         // generate used builtin functions
         generate_builtin(builtin_used);
 
+        // generate division by zero exit
+        generate_div_by_zero();
+
         // generate end label
         generate_exit();
 
