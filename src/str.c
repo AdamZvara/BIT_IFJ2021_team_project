@@ -157,3 +157,13 @@ void str_clearlast(string_t* src)
 		src->str[src->length] = '\0';
 	}
 }
+
+int str_contains(const string_t src, char c)
+{
+	for (unsigned int i = 0; i < src.length; i++) {
+		if (src.str[i] == c)
+			return 1;
+	}
+
+	return 0;
+}

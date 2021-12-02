@@ -138,4 +138,14 @@ char str_getlast(const string_t src);
  */
 void str_clearlast(string_t* src);
 
+/**
+ * @brief Look for a character in string
+ *
+ * @param src String
+ * @param c Character to look for
+ *
+ * @return 1 if string contains given character, otherwise 0
+ */
+int str_contains(const string_t src, char c);
+
 #endif //_STR_H_
