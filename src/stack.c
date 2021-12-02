@@ -128,3 +128,44 @@ int items_to_handle(stack_t *stack)
 
     return count;
 }
+
+int find_len_op(stack_t *stack) {
+    stack_item_t *curr = stack->top;
+
+    while (curr->data != DOLLAR) {
+        switch (curr->data) {
+            case CONCAT:
+            case LEFT_BR:
+            case RIGHT_BR:
+            case STR:
+            case HANDLE:
+            case NON_TERM:
+                curr = curr->next;
+                break;
+
+            case STR_LEN:
+                return 1;
+                break;
+
+            default:
+                return 0;
+        }
+    }
+
+    return 0;
+}
+
+stack_item_t *get_top_operator(stack_t *stack) {
+    stack_item_t *curr = stack->top;
+
+    while(curr->data != DOLLAR) {
+        if (curr->data >= STR_LEN && curr->data <= CONCAT) {
+            return curr;
+        } else {
+            curr = curr->next;
+        }
+    }
+
+    // DOLLAR
+    return curr;
+}
