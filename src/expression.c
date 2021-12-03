@@ -308,7 +308,7 @@ int check_semantic(token_t *token, stack_t *stack, int *type)
         case TOK_MINUS:
         case TOK_MUL:
             top = stack_top(stack);
-            if (top->data == STR || (top->data == NON_TERM && *type == T_STR)) {
+            if ((top->data == STR && !find_len_op(stack)) || (top->data == NON_TERM && *type == T_STR)) {
                 return ERROR_SEMANTIC_TYPE;
             } else if (top->data == NIL) {
                 return ERROR_NIL;
@@ -318,7 +318,7 @@ int check_semantic(token_t *token, stack_t *stack, int *type)
         case TOK_DIV:
             // div always yields 'number' result
             top = stack_top(stack);
-            if (top->data == STR || (top->data == NON_TERM && *type == T_STR)) {
+            if ((top->data == STR && find_len_op(stack)) || (top->data == NON_TERM && *type == T_STR)) {
                 return ERROR_SEMANTIC_TYPE;
             } else if (top->data == NIL) {
                 return ERROR_NIL;
