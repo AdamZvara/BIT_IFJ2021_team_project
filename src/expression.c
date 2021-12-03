@@ -290,12 +290,28 @@ int check_semantic(token_t *token, stack_t *stack, int *type)
             }
             break;
 
+        case TOK_KEYWORD:
+            if (token->attribute.keyword == KW_NIL) {
+                if (*type == T_NONE) {
+                    *type = T_NIL;
+                    break;
+                }
+                top = stack_top(stack);
+                if (!(top->data == DOLLAR || (top->data >= EQ && top->data <= GREAT_EQ))) {
+                    return ERROR_NIL;
+                }
+                break;
+            }
+            break;
+
         case TOK_PLUS:
         case TOK_MINUS:
         case TOK_MUL:
             top = stack_top(stack);
             if (top->data == STR || (top->data == NON_TERM && *type == T_STR)) {
                 return ERROR_SEMANTIC_TYPE;
+            } else if (top->data == NIL) {
+                return ERROR_NIL;
             }
             break;
 
@@ -304,6 +320,8 @@ int check_semantic(token_t *token, stack_t *stack, int *type)
             top = stack_top(stack);
             if (top->data == STR || (top->data == NON_TERM && *type == T_STR)) {
                 return ERROR_SEMANTIC_TYPE;
+            } else if (top->data == NIL) {
+                return ERROR_NIL;
             }
             *type = T_NUM;
             break;
@@ -313,7 +331,10 @@ int check_semantic(token_t *token, stack_t *stack, int *type)
             if (top->data == INT || top->data == NUM ||
                     (top->data == NON_TERM && *type != T_STR && !find_len_op(stack))) {
                 return ERROR_SEMANTIC_TYPE;
+            } else if (top->data == NIL) {
+                return ERROR_NIL;
             }
+
             break;
 
         case TOK_LEN:
