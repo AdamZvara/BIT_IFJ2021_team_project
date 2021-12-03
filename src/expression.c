@@ -450,6 +450,7 @@ int expression(token_t **return_token)
         *return_token = NULL;
     } else {
         *return_token = new_token;
+        ret_val = expr_type;
     }
 
     stack_dispose(&stack_prec);

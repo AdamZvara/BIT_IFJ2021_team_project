@@ -26,12 +26,12 @@
 
 #define TABLE_SIZE 9
 // return values
-#define EC_FUNC 4250
+#define EC_FUNC 99
 #define T_INT 100
 #define T_NUM 101
 #define T_STR 102
-#define T_NONE 103
-#define T_NIL 104
+#define T_NIL 103
+#define T_NONE 104
 
 #define FREE_STRING_TOKEN(token) \
     do { \
@@ -118,12 +118,53 @@ typedef enum
     I_DOLLAR
 } prec_table_index_t;
 
+/**
+ * @brief Converts token to expression type symbol
+ *
+ * @param token current token
+ *
+ * @return type symbol
+ */
 int token_to_symbol(token_t *token);
 
+/**
+ * @brief Converts symbol to index in precedence table
+ *
+ * @param symbol symbol
+ *
+ * @return index in precedence table
+ */
 prec_table_index_t symbol_to_index(int symbol);
 
+/**
+ * @brief Function to perform reduction following set rules
+ *
+ * @param stack Initialized stack
+ *
+ * @return Syntax error or success
+ */
 int reduce(stack_t *stack);
 
+/**
+ * @brief Function to perform semantic checks
+ *
+ * @param token current token
+ * @param stack Initialized stack
+ * @param type type of expression
+ *
+ * @return Semantic error or success
+ */
+int check_semantic(token_t *token, stack_t *stack, int *type);
+
+/**
+ * @brief performs syntactic and semantic analysis on expression
+ *
+ * @param return_token last read token
+ *
+ * @return Expression data type on success
+ * @return ERROR_SYNTAX, ERROR_SEMANTIC, ERROR_SEMANTIC_TYPE, ERROR_NIL on failure
+ * @return EC_FUNC when function ID is read
+ */
 int expression(token_t **return_token);
 
 #endif // _EXPRESSION_H_
