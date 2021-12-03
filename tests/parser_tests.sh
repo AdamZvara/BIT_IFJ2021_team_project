@@ -4,7 +4,7 @@ RED='\033[0;31m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 ORANGE='\033[0;33m'
-PARSER_DIR="error failed_tests simple"
+PARSER_DIR="error failed_tests simple need_to_fix"
 for f in $PARSER_DIR; do
     PARSER_TEST_DIR=parser-tests/$f
     PARSER_INPUT_FILES=$(ls $PARSER_TEST_DIR | grep .input)

@@ -1,0 +1,14 @@
+require "ifj21"
+
+function foo(i : integer) : integer
+	return i*i
+
+end
+
+function main()
+	local cnt : integer = 0
+	while cnt < 3 do
+		local i : integer = foo(cnt) 
+		write(i,"\n")
+	end
+end

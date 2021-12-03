@@ -1,0 +1,13 @@
+require "ifj21"
+
+function a() : integer
+        local foo:integer = 5
+        return foo
+end
+
+function foo()
+        local b:integer
+        b = a()
+        write(b)
+end
+foo()

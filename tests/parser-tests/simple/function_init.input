@@ -1,0 +1,14 @@
+require "ifj21"
+
+function foo(s1 : string, s2 : string) : string
+
+	return s1..s2
+
+end
+
+function main()
+	local s : string = foo("HELLO","WORLD\n")
+	write(s)
+end
+
+main()

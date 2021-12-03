@@ -1,3 +1,4 @@
+-- return in func with no return value
 require "ifj21"
 
 function foo(i : integer)
