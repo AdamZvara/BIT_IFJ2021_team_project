@@ -94,14 +94,15 @@ typedef enum
     INT, // 16
     NUM, // 17
     STR, // 18
+    NIL, // 19
 
     // $
-    DOLLAR, // 19
+    DOLLAR, // 20
 
     // <
-    HANDLE, // 20
+    HANDLE, // 21
 
-    NON_TERM // 21
+    NON_TERM // 22
 } prec_table_term_t;
 
 typedef enum

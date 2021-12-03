@@ -46,9 +46,9 @@ int token_to_symbol(token_t *token)
     switch (type) {
         case TOK_LEN:
             return STR_LEN;
-        case TOK_MUL: 
+        case TOK_MUL:
             return MUL;
-        case TOK_DIV: 
+        case TOK_DIV:
             return DIV;
         case TOK_INT_DIV:
             return DIV_INT;
@@ -82,6 +82,11 @@ int token_to_symbol(token_t *token)
             return NUM;
         case TOK_STRING:
             return STR;
+        case TOK_KEYWORD:
+            if (token->attribute.keyword == KW_NIL) {
+                return NIL;
+            }
+            return DOLLAR;
 
         default:
             // token doesn't belong to the expression
@@ -133,6 +138,7 @@ prec_table_index_t symbol_to_index(int symbol)
         case INT:
         case NUM:
         case STR:
+        case NIL:
             rv = I_ID;
             break;
 
@@ -150,7 +156,7 @@ int reduce(stack_t *stack)
     stack_item_t *top = stack_top(stack);
 
     if (count == 1) {
-        if (!(top->data == ID || top->data == INT || top->data == NUM || top->data == STR)) {
+        if (!(top->data >= ID && top->data <= NIL)) {
             return ERROR_SYNTAX;
         }
     } else if (count == 2 ) {
