@@ -43,47 +43,49 @@ const char prec_table[TABLE_SIZE][TABLE_SIZE] = {
 int token_to_symbol(token_t *token)
 {
     token_type_t type = token->type;
-    if (type == TOK_LEN) {
-        return STR_LEN;
-    } else if (type == TOK_MUL) {
-        return MUL;
-    } else if (type == TOK_DIV) {
-        return DIV;
-    } else if (type == TOK_INT_DIV) {
-        return DIV_INT;
-    } else if (type == TOK_PLUS) {
-        return PLUS;
-    } else if (type == TOK_MINUS) {
-        return MINUS;
-    } else if (type == TOK_CONCAT) {
-        return CONCAT;
-    } else if (type == TOK_EQ) {
-        return EQ;
-    } else if (type == TOK_NEQ) {
-        return NOT_EQ;
-    } else if (type == TOK_LES) {
-        return LESS;
-    } else if (type == TOK_LES_EQ) {
-        return LESS_EQ;
-    } else if (type == TOK_GR) {
-        return GREAT;
-    } else if (type == TOK_GR_EQ) {
-        return GREAT_EQ;
-    } else if (type == TOK_LBRACKET) {
-        return LEFT_BR;
-    } else if (type == TOK_RBRACKET) {
-        return RIGHT_BR;
-    } else if (type == TOK_ID) {
-        return ID;
-    } else if (type == TOK_INT) {
-        return INT;
-    } else if (type == TOK_DECIMAL) {
-        return NUM;
-    } else if (type == TOK_STRING) {
-        return STR;
-    } else {
-        // token doesn't belong to the expression
-        return DOLLAR;
+    switch (type) {
+        case TOK_LEN:
+            return STR_LEN;
+        case TOK_MUL: 
+            return MUL;
+        case TOK_DIV: 
+            return DIV;
+        case TOK_INT_DIV:
+            return DIV_INT;
+        case TOK_PLUS:
+            return PLUS;
+        case TOK_MINUS:
+            return MINUS;
+        case TOK_CONCAT:
+            return CONCAT;
+        case TOK_EQ:
+            return EQ;
+        case TOK_NEQ:
+            return NOT_EQ;
+        case TOK_LES:
+            return LESS;
+        case TOK_LES_EQ:
+            return LESS_EQ;
+        case TOK_GR:
+            return GREAT;
+        case TOK_GR_EQ:
+            return GREAT_EQ;
+        case TOK_LBRACKET:
+            return LEFT_BR;
+        case TOK_RBRACKET:
+            return RIGHT_BR;
+        case TOK_ID:
+            return ID;
+        case TOK_INT:
+            return INT;
+        case TOK_DECIMAL:
+            return NUM;
+        case TOK_STRING:
+            return STR;
+
+        default:
+            // token doesn't belong to the expression
+            return DOLLAR;
     }
 }
 
@@ -238,42 +240,44 @@ int check_semantic(token_t *token, stack_t *stack, int *type)
             if (!((top->data >= ID && top->data <= STR) || top->data == RIGHT_BR || top->data == NON_TERM)) {
                 check_id = local_find(local_tab, token->attribute.s);
                 if(check_id) {
+                    /* TODO
                     if (check_id->init == false) {
                         return ERROR_SEMANTIC;
+                    }*/
+
+                    if (*type == T_NONE) {
+                        if (check_id->type == INT_T) {
+                            *type = T_INT;
+                        } else if (check_id->type == NUM_T) {
+                            *type = T_NUM;
+                        } else if (check_id->type == STR_T) {
+                            *type = T_STR;
+                        }
+                        break;
                     }
-                }
-                if (*type == T_NONE) {
+                    top = get_top_operator(stack);
                     if (check_id->type == INT_T) {
-                        *type = T_INT;
-                    } else if (check_id->type == NUM_T) {
-                        *type = T_NUM;
-                    } else if (check_id->type == STR_T) {
-                        *type = T_STR;
-                    }
-                    break;
-                }
-                top = get_top_operator(stack);
-                if (check_id->type == INT_T) {
-                    if (top->data == STR_LEN || top->data == CONCAT) {
-                        return ERROR_SEMANTIC_TYPE;
-                    } else if (!(*type == T_INT || *type == T_NUM)) {
-                        return ERROR_SEMANTIC_TYPE;
-                    }
-                } else if (check_id->type == NUM_T) {
-                    if (*type == T_INT) {
-                        *type = T_NUM;
-                    }
-                    if (top->data == STR_LEN || top->data == CONCAT) {
-                        return ERROR_SEMANTIC_TYPE;
-                    } else if (!(*type == T_NUM)) {
-                        return ERROR_SEMANTIC_TYPE;
-                    }
-                } else if (check_id->type == STR_T) {
-                    if (top->data >= MUL && top->data <= MINUS) {
-                        return ERROR_SEMANTIC_TYPE;
-                    } else if (*type != T_STR) {
-                        if (!find_len_op(stack)) {
+                        if (top->data == STR_LEN || top->data == CONCAT) {
                             return ERROR_SEMANTIC_TYPE;
+                        } else if (!(*type == T_INT || *type == T_NUM)) {
+                            return ERROR_SEMANTIC_TYPE;
+                        }
+                    } else if (check_id->type == NUM_T) {
+                        if (*type == T_INT) {
+                            *type = T_NUM;
+                        }
+                        if (top->data == STR_LEN || top->data == CONCAT) {
+                            return ERROR_SEMANTIC_TYPE;
+                        } else if (!(*type == T_NUM)) {
+                            return ERROR_SEMANTIC_TYPE;
+                        }
+                    } else if (check_id->type == STR_T) {
+                        if (top->data >= MUL && top->data <= MINUS) {
+                            return ERROR_SEMANTIC_TYPE;
+                        } else if (*type != T_STR) {
+                            if (!find_len_op(stack)) {
+                                return ERROR_SEMANTIC_TYPE;
+                            }
                         }
                     }
                 }

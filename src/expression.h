@@ -31,6 +31,7 @@
 #define T_NUM 101
 #define T_STR 102
 #define T_NONE 103
+#define T_NIL 104
 
 #define FREE_STRING_TOKEN(token) \
     do { \
