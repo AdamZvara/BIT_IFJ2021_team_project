@@ -560,8 +560,12 @@ int body()
                 curr_token = backup_token;
                 if (ret == EC_FUNC) {
                     return ERROR_SYNTAX;
-                } else if (ret != SUCCESS)
+                } else if (ret >= T_INT && ret <= T_NIL) {
+                    // success
+                    ret = 0;
+                } else {
                     return ret;
+                }
 
                 generate_if_else();
 
@@ -615,8 +619,12 @@ int body()
                 curr_token = backup_token;
                 if (ret == EC_FUNC) {
                     return ERROR_SYNTAX;
-                } else if (ret != SUCCESS)
+                } else if (ret >= T_INT && ret <= T_NIL) {
+                    // success
+                    ret = 0;
+                } else {
                     return ret;
+                }
 
                 generate_while_skip();
 
