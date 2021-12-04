@@ -735,28 +735,29 @@ void generate_push_operator(prec_table_term_t op)
 
 void generate_push_operand(token_t *token)
 {
+    ADD_INST("pushs ");
 
     switch (token->type)
     {
     case TOK_STRING:
-        ADD_INST("pushs ");
         generate_string(token->attribute.s);
         break;
 
     case TOK_DECIMAL:
-        ADD_INST("pushs ");
         generate_decimal(token->attribute.decimal);
         break;
 
     case TOK_INT:
-        ADD_INST("pushs ");
         generate_int(token->attribute.number);
         break;
 
     case TOK_ID:
-        ADD_INST("pushs ");
         strcat(INST, "LF@");
         generate_name(buffer, token->attribute.s);
+        break;
+
+    case TOK_KEYWORD:
+        strcat(INST, "nil@nil");
         break;
 
     default:
