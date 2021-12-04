@@ -1,3 +1,4 @@
+-- after return cant be anything if it is not in if statement
 require "ifj21"
 
 global bar : function()

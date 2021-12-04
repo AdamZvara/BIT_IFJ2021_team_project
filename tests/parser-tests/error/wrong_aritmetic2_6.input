@@ -1,0 +1,11 @@
+require "ifj21"
+
+function main()
+	local a : integer = 2
+	local s : string = "ahoj"
+	if (a + s) then
+	else
+	end
+end
+
+main()

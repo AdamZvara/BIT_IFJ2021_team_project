@@ -1,14 +1,11 @@
--- testing 9
 require "ifj21"
 
 function foo() : integer
-	return "hello"
+	return a
 end
 
 function main()
-	local a : integer
-	a = foo()
-
+	local a : integer = foo()
 end
 
 main()

@@ -1,7 +1,7 @@
 require "ifj21"
 
-function foo (s : string, i : integer) : integer
-	return i + #s
+function foo (s : string, i : integer) : integer,integer
+	return i + #s, 5
 
 end
 
@@ -9,7 +9,7 @@ function main()
 	local i : integer = 5
 	local s : string = "AHOJ"
 	local y : integer
-	y,i = foo(s,i)
+	y = foo(s,i)
 	write(i," ",y,"\n")
 	
 

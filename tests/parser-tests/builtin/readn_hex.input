@@ -1,9 +1,8 @@
--- testing 3
 require "ifj21"
 
 function main()
-	local a : integer = "fuck"
+	local n : number = readn()
+	write(n,"\n")
 
 end
-
 main()

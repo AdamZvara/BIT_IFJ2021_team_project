@@ -1,0 +1,12 @@
+require "ifj21"
+
+function main()
+	local a : integer = 3
+	local b : string = "hele"
+	if a >= b then
+	else
+	end
+
+end
+
+main()

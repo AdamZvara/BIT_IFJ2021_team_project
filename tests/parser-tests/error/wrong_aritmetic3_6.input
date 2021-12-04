@@ -1,9 +1,9 @@
--- testing 3
 require "ifj21"
 
 function main()
-	local a : integer = "fuck"
-
+	if 3 > "hele" then
+	else
+	end
 end
 
 main()
