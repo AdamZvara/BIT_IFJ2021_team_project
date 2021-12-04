@@ -679,9 +679,9 @@ int body()
                 if (ret)
                     return ret;
 
-                //struct global_item *tmp = global_find(global_tab, local_tab->key);
-                //if ((int)tmp->retvals.length < p_helper->par_counter)
-                //        return ERROR_SEMANTIC_PARAMS;
+                struct global_item *tmp = global_find(global_tab, local_tab->key);
+                if ((int)tmp->retvals.length < p_helper->par_counter)
+                        return ERROR_SEMANTIC_PARAMS;
 
                 generate_function_end();
 
