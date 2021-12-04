@@ -26,7 +26,7 @@
 
 #define TABLE_SIZE 9
 // return values
-#define EC_FUNC 99
+#define EC_FUNC 98
 #define T_INT 100
 #define T_NUM 101
 #define T_STR 102

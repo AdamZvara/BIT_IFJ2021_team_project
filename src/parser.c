@@ -737,9 +737,12 @@ int body_n()
         if (p_helper->id_first->data == NULL) {
             return ERROR_SEMANTIC;
         }
+        // count the number of variables being initialized
+        p_helper->par_counter++;
         p_helper->assign = true;
         return assign_single(p_helper);
     } else if (GET_TYPE == TOK_COMMA) {
+        p_helper->par_counter++;
         NEXT_TOKEN();
         if (GET_TYPE != TOK_ID)
             return ERROR_SYNTAX;
@@ -753,6 +756,7 @@ int body_n()
 
         // add loaded identifier into p_helper structure
         p_helper_add_identifier(p_helper, local_find(local_tab, GET_ID));
+        p_helper->par_counter++;
 
         // check if other variable was defined
         if (p_helper->id_last->data == NULL) {
@@ -798,6 +802,12 @@ int assign_single()
         // perform function call
         p_helper->func = global_find(global_tab, GET_ID);
 
+        // check if function returns same number of values as
+        // there are variables being initialized
+        if ((int)p_helper->func->retvals.length < p_helper->par_counter)
+            return ERROR_SEMANTIC_PARAMS;
+        p_helper->par_counter = 0;
+
         ret = body_n();
 
         return ret;
@@ -814,6 +824,7 @@ int assign_multi()
         if (GET_TYPE != TOK_ID)
             return ERROR_SYNTAX;
         p_helper_add_identifier(p_helper, local_find(local_tab, GET_ID));
+        p_helper->par_counter++;
         // check if last added variable was defined
         if (p_helper->id_last->data == NULL) {
             return ERROR_SEMANTIC;
@@ -854,10 +865,16 @@ int r_side()
 
         // perform function call
         p_helper->func = global_find(global_tab, GET_ID);
+        
+        // Check if function returns less values than expected by assign
+        if ((int)p_helper->func->retvals.length < p_helper->par_counter)
+            return ERROR_SEMANTIC_PARAMS;
+
+        p_helper->par_counter = 0;
 
         builtin_used_update(builtin_used, p_helper->func->key);
 
-        ret = body_n();
+        return body_n();
         if (ret)
             return ret;
 
