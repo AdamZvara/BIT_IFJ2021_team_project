@@ -290,6 +290,9 @@ int prog()
         // generate division by zero exit
         generate_div_by_zero();
 
+        // generate nil with any operation
+        generate_nil_with_operator();
+
         // generate write nil
         generate_write_nil();
 

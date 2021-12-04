@@ -40,6 +40,7 @@ void generate_exit();
 
 void generate_div_by_zero();
 void generate_write_nil();
+void generate_nil_with_operator();
 
 void generate_label(string_t label_name);
 void generate_parameters(parser_helper_t *p_helper);

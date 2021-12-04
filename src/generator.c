@@ -124,6 +124,12 @@ void generate_div_by_zero()
     ADD_INST_N("exit int@9");
 }
 
+void generate_nil_with_operator()
+{
+    ADD_INST_N("label _nil_with_operator");
+    ADD_INST_N("exit int@8");
+}
+
 void generate_write_nil()
 {
     ADD_INST_N("label _write_nil");
@@ -375,7 +381,6 @@ void generate_write(token_t *token)
         ADD_INST("write ");
         strcat(INST, "LF@");
         generate_name(buffer, token->attribute.s);
-        ADD_NEWLINE();
 
         counter++;
     default:
@@ -681,6 +686,16 @@ void generate_push_operator(prec_table_term_t op)
     case MUL:
     case DIV:
     case DIV_INT:
+        // check both operands are not nil
+        ADD_INST_N("pops GF@arg1");
+        ADD_INST_N("pops GF@arg2");
+        ADD_INST_N("pushs GF@arg2");
+        ADD_INST_N("pushs GF@arg1");
+        ADD_INST_N("type GF@bool GF@arg1");
+        ADD_INST_N("jumpifeq _nil_with_operator GF@bool string@nil");
+        ADD_INST_N("type GF@bool GF@arg2");
+        ADD_INST_N("jumpifeq _nil_with_operator GF@bool string@nil");
+
         generate_push_arithmetic(op);
         break;
 
@@ -694,10 +709,22 @@ void generate_push_operator(prec_table_term_t op)
         break;
 
     case STR_LEN:
+        ADD_INST_N("pops GF@arg1");
+        ADD_INST_N("pushs GF@arg1");
+        ADD_INST_N("type GF@bool GF@arg1");
+        ADD_INST_N("jumpifeq _nil_with_operator GF@bool string@nil");
         generate_strlen();
         break;
 
     case CONCAT:
+        ADD_INST_N("pops GF@arg1");
+        ADD_INST_N("pops GF@arg2");
+        ADD_INST_N("pushs GF@arg2");
+        ADD_INST_N("pushs GF@arg1");
+        ADD_INST_N("type GF@bool GF@arg1");
+        ADD_INST_N("jumpifeq _nil_with_operator GF@bool string@nil");
+        ADD_INST_N("type GF@bool GF@arg2");
+        ADD_INST_N("jumpifeq _nil_with_operator GF@bool string@nil");
         generate_concat();
         break;
 
@@ -708,23 +735,26 @@ void generate_push_operator(prec_table_term_t op)
 
 void generate_push_operand(token_t *token)
 {
-    ADD_INST("pushs ");
 
     switch (token->type)
     {
     case TOK_STRING:
+        ADD_INST("pushs ");
         generate_string(token->attribute.s);
         break;
 
     case TOK_DECIMAL:
+        ADD_INST("pushs ");
         generate_decimal(token->attribute.decimal);
         break;
 
     case TOK_INT:
+        ADD_INST("pushs ");
         generate_int(token->attribute.number);
         break;
 
     case TOK_ID:
+        ADD_INST("pushs ");
         strcat(INST, "LF@");
         generate_name(buffer, token->attribute.s);
         break;
