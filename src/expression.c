@@ -401,8 +401,9 @@ int expression(token_t **return_token)
                 stack_push(&stack_prec, symbol);
 
                 // push operand
-                if (new_token->type == TOK_ID  || new_token->type == TOK_STRING ||
-                    new_token->type == TOK_INT || new_token->type == TOK_DECIMAL ) {
+                if (new_token->type == TOK_ID ||
+                        (new_token->type == TOK_KEYWORD && new_token->attribute.keyword == KW_NIL) ||
+                        (new_token->type >= TOK_INT && new_token->type <= TOK_STRING)) {
 
                     if (new_token->type == TOK_ID && global_find(global_tab, new_token->attribute.s)) {
                         // ID is a function
