@@ -286,6 +286,9 @@ int check_semantic(token_t *token, stack_t *stack, int *type)
                             }
                         }
                     }
+                } else if (!global_find(global_tab, token->attribute.s)) {
+                    // ID is not a function => variable doesn't exist
+                    return ERROR_SEMANTIC;
                 }
             }
             break;
