@@ -699,6 +699,25 @@ int body()
         //p_helper->id = local_find(local_tab, GET_ID);
         p_helper_add_identifier(p_helper, local_find(local_tab, GET_ID));
 
+        //TODO: append type of current_token ID to temp buffer
+        // Append type of variable being assigned to for later semantic checks
+        struct local_data *tmp = local_find(local_tab, curr_token->attribute.s);
+        if (tmp) {
+            switch (tmp->type) {
+                case STR_T:
+                    p_helper_call_params_const(p_helper, TOK_STRING);
+                    break;
+                case INT_T:
+                    p_helper_call_params_const(p_helper, TOK_INT);
+                    break;
+                case NUM_T:
+                    p_helper_call_params_const(p_helper, TOK_DECIMAL);
+                    break;
+                default:
+                    break;
+            }
+        }
+
         ret = body_n();
         if (ret)
             return ret;
@@ -719,6 +738,9 @@ int body_n()
     }
 
     if (GET_TYPE == TOK_LBRACKET) {
+        // Clear string which is used for storing parameter types
+        p_helper_clear_string(p_helper);
+
         // function is not found
         if (p_helper->func == NULL) {
             return ERROR_SEMANTIC;
@@ -742,6 +764,7 @@ int body_n()
         p_helper->assign = true;
         return assign_single(p_helper);
     } else if (GET_TYPE == TOK_COMMA) {
+        // count the number of variables being initialized
         p_helper->par_counter++;
         NEXT_TOKEN();
         if (GET_TYPE != TOK_ID)
@@ -750,6 +773,24 @@ int body_n()
         // check if variable was defined
         if (p_helper->id_first->data == NULL) {
             return ERROR_SEMANTIC;
+        }
+
+        // Append type of variable being assigned to for later semantic checks
+        struct local_data *tmp = local_find(local_tab, curr_token->attribute.s);
+        if (tmp) {
+            switch (tmp->type) {
+                case STR_T:
+                    p_helper_call_params_const(p_helper, TOK_STRING);
+                    break;
+                case INT_T:
+                    p_helper_call_params_const(p_helper, TOK_INT);
+                    break;
+                case NUM_T:
+                    p_helper_call_params_const(p_helper, TOK_DECIMAL);
+                    break;
+                default:
+                    break;
+            }
         }
 
         p_helper->assign = true;
@@ -806,6 +847,14 @@ int assign_single()
         // there are variables being initialized
         if ((int)p_helper->func->retvals.length < p_helper->par_counter)
             return ERROR_SEMANTIC_PARAMS;
+
+        // Check if return types match types of variables being assigned to
+        for (int i = 0; i < p_helper->par_counter; i++) {
+            //TODO: possibly do implicit conversion
+            if (p_helper->temp.str[i] != p_helper->func->retvals.str[i])
+                return ERROR_SEMANTIC_PARAMS;
+        }
+        p_helper_clear_string(p_helper);
         p_helper->par_counter = 0;
 
         ret = body_n();
@@ -824,7 +873,25 @@ int assign_multi()
         if (GET_TYPE != TOK_ID)
             return ERROR_SYNTAX;
         p_helper_add_identifier(p_helper, local_find(local_tab, GET_ID));
+        // Count number of variables being initialized
         p_helper->par_counter++;
+
+        // Append type of variable being assigned to for later semantic checks
+        struct local_data *tmp = local_find(local_tab, curr_token->attribute.s);
+        switch (tmp->type) {
+            case STR_T:
+                p_helper_call_params_const(p_helper, TOK_STRING);
+                break;
+            case INT_T:
+                p_helper_call_params_const(p_helper, TOK_INT);
+                break;
+            case NUM_T:
+                p_helper_call_params_const(p_helper, TOK_DECIMAL);
+                break;
+            default:
+                break;
+        }
+
         // check if last added variable was defined
         if (p_helper->id_last->data == NULL) {
             return ERROR_SEMANTIC;
@@ -870,6 +937,13 @@ int r_side()
         if ((int)p_helper->func->retvals.length < p_helper->par_counter)
             return ERROR_SEMANTIC_PARAMS;
 
+        // Check if return types match types of variables being assigned to
+        for (int i = 0; i < p_helper->par_counter; i++) {
+            //TODO: possibly do implicit conversion
+            if (p_helper->temp.str[i] != p_helper->func->retvals.str[i])
+                return ERROR_SEMANTIC_PARAMS;
+        }
+        p_helper_clear_string(p_helper);
         p_helper->par_counter = 0;
 
         builtin_used_update(builtin_used, p_helper->func->key);
@@ -1041,10 +1115,6 @@ int args_n() {
             return ret;
         }
 
-        //if (!str_isequal(p_helper->func->params, p_helper->temp)) {
-        //    // function call does not match with definition params
-        //    return ERROR_SEMANTIC_PARAMS;
-        //}
         if (p_helper->func->params.length != p_helper->temp.length)
             return ERROR_SEMANTIC_PARAMS;
         for (unsigned i = 0; i < p_helper->temp.length; i++) {
