@@ -1,0 +1,21 @@
+require "ifj21"
+
+function main(i : integer, i2 : integer, i3 : integer) : integer
+	i = 2
+	i2 = 3
+	i3 = 4
+	return i + i2 + i3
+
+end
+
+function foo()
+	local a : integer
+	local b : integer
+	local c : integer
+	local d : integer = main(a,b,c)
+	local e : integer
+	write(e,"\n")
+	write(d,"\n")
+end
+
+foo()
