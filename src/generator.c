@@ -124,6 +124,13 @@ void generate_div_by_zero()
     ADD_INST_N("exit int@9");
 }
 
+void generate_write_nil()
+{
+    ADD_INST_N("label _write_nil");
+    ADD_INST_N("write string@nil");
+    ADD_INST_N("return");
+}
+
 void generate_exit()
 {
     ADD_INST_N("label _end_");
@@ -322,26 +329,55 @@ void generate_return_value(int ret_counter)
 // builtin write function
 void generate_write(token_t *token)
 {
-    ADD_INST("write ");
+    static int counter = 0;
 
     switch (token->type)
     {
     case TOK_STRING:
+        ADD_INST("write ");
         generate_string(token->attribute.s);
         break;
 
     case TOK_INT:
+        ADD_INST("write ");
         generate_int(token->attribute.number);
         break;
 
     case TOK_DECIMAL:
+        ADD_INST("write ");
         generate_decimal(token->attribute.decimal);
         break;
 
     case TOK_ID:
+        // test if variable is nil
+        ADD_INST("type GF@bool ");
         strcat(INST, "LF@");
         generate_name(buffer, token->attribute.s);
+        ADD_NEWLINE();
 
+        string_t label_name;
+        str_init(&label_name);
+
+        str_insert(&label_name, "_write_not_nil");
+        str_insert_int(&label_name, counter);
+
+        ADD_INST("jumpifneq ");
+        strcat(INST, label_name.str);
+        strcat(INST, " GF@bool string@nil");
+        ADD_NEWLINE();
+
+        ADD_INST_N("call _write_nil");
+
+        ADD_INST("label ");
+        strcat(INST, label_name.str);
+        ADD_NEWLINE();
+
+        ADD_INST("write ");
+        strcat(INST, "LF@");
+        generate_name(buffer, token->attribute.s);
+        ADD_NEWLINE();
+
+        counter++;
     default:
         break;
     }

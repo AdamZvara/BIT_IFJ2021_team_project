@@ -290,6 +290,9 @@ int prog()
         // generate division by zero exit
         generate_div_by_zero();
 
+        // generate write nil
+        generate_write_nil();
+
         // generate end label
         generate_exit();
 
