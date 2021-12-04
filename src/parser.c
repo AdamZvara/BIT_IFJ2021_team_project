@@ -773,7 +773,9 @@ int assign_single()
 {
     // call expression()
     ret = expression(&backup_token);
-    if (ret == SUCCESS) {
+    if (ret >= T_INT && ret <= T_NIL) {
+        // success
+        ret = 0;
         generate_assign(p_helper->id_first->data->name);
         FREE_TOK_STRING();
         free(curr_token);
@@ -822,7 +824,9 @@ int r_side()
 {
     // call expression()
     ret = expression(&backup_token);
-    if (ret == SUCCESS) {
+    if (ret >= T_INT && ret <= T_NIL) {
+        // success
+        ret = 0;
         if (p_helper->assign) {
             // assign value to variable
             generate_assign(p_helper->id_first->data->name);
@@ -889,7 +893,9 @@ int init_n()
 {
     // call expression()
     ret = expression(&backup_token);
-    if (ret == SUCCESS) {
+    if (ret >= T_INT && ret <= T_NIL) {
+        // success
+        ret = 0;
         generate_assign(p_helper->id_first->data->name);
         FREE_TOK_STRING();
         free(curr_token);
