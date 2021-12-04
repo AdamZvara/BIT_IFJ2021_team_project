@@ -1,0 +1,11 @@
+require "ifj21"
+
+function main()
+	local a : string
+	if a == nil then
+		write(a,"\n")
+	else
+	end
+end
+
+main()

@@ -1,0 +1,9 @@
+require "ifj21"
+
+function main()
+	local f : integer
+	local a : integer = tointeger(f)
+	write(a,"\n")
+end
+
+main()

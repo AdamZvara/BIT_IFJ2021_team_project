@@ -1,0 +1,9 @@
+require "ifj21"
+
+function main()
+	local n : number
+	local s : string = substr("HELLo",2.0,n)
+	write(s,"\n")
+end
+
+main()

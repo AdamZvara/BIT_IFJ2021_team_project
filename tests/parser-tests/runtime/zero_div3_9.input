@@ -1,0 +1,9 @@
+require "ifj21"
+
+function main()
+	local a : integer = 42
+	local b : integer = a - 42
+	local c : integer = 2 // b
+end
+
+main()

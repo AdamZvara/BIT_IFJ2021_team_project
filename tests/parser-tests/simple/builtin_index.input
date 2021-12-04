@@ -1,0 +1,16 @@
+require "ifj21"
+
+function main()
+	local s : string = substr("HELLO",0,2)
+	write(s,"\n")
+	local s2 : string = substr("HELLO",1,20)
+	write(s2,"\n")
+	local s3 : string = substr("Hello",2,1)
+	write(s3,"\n")
+	local i : integer = ord("HELLO",0)
+	write(i,"\n")
+	local s4 : string = chr(256)
+	write(s4,"\n")
+end
+
+main()

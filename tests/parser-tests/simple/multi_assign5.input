@@ -1,0 +1,11 @@
+require "ifj21"
+
+function main()
+	local i : integer = 2
+	local j : integer = 3
+	local z : integer = 4
+	i, j, z = j+2,j*z, 2*3
+	write(i," ",j," ",z,"\n")
+end
+
+main()
