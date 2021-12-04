@@ -934,17 +934,6 @@ int init_n()
         p_helper->func = global_find(global_tab, GET_ID);
         p_helper->assign = true;
         
-        // Check if function call parameters match and
-        // generate implicit conversion if needed
-        for (unsigned i = 0; i < p_helper->temp.length; i++) {
-            if ((p_helper->func->params.str[i] != p_helper->temp.str[i]) &&
-               ((p_helper->temp.str[i] == 'i') && (p_helper->func->params.str[i] == 'n'))) {
-                generate_num_conversion(i);
-            } else if ((p_helper->func->params.str[i] != p_helper->temp.str[i])) {
-                return ERROR_SEMANTIC_PARAMS;
-            }
-        }
-
         // check if function returns any value
         if (str_len(p_helper->func->retvals) != 0) {
             switch (p_helper->id_first->data->type)
@@ -990,12 +979,11 @@ int args()
             // parameters are not checked
             return ret;
         }
-        
-        // the if below should be useless and taken care of by the for loop
-        // below it:
-
-        //if (p_helper->func->params.length != p_helper->temp.length)
-        //        return ERROR_SEMANTIC_PARAMS;
+       
+        // Check parameters of function call and perform implicit
+        // conversion if needed
+        if (p_helper->func->params.length != p_helper->temp.length)
+                return ERROR_SEMANTIC_PARAMS;
         for (unsigned i = 0; i < p_helper->temp.length; i++) {
             if ((p_helper->func->params.str[i] != p_helper->temp.str[i]) &&
                ((p_helper->temp.str[i] == 'i') && (p_helper->func->params.str[i] == 'n'))) {
