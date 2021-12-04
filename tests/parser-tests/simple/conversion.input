@@ -1,0 +1,13 @@
+require "ifj21"
+
+function foo(i : number) : number
+    return i
+end
+
+function main()
+    local f : integer
+    local a : number =  foo(5)
+    write(a,"\n")
+end
+
+main()

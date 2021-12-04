@@ -1,0 +1,11 @@
+require "ifj21"
+
+function foo(i : integer, s : string)
+
+end
+
+function main()
+	foo(2,"hello",3)
+end
+
+main()
