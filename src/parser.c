@@ -687,6 +687,12 @@ int body()
             case KW_RETURN:
                 p_helper->func = global_find(global_tab, local_tab->key);
 
+                // special case with return and no retval
+                if (str_empty(p_helper->func->retvals)) {
+                    generate_function_end();
+                    return body();
+                }
+
                 ret = r_side();
                 if (ret)
                     return ret;
