@@ -26,6 +26,9 @@ void generate_string(string_t string)
     for (unsigned int i = 0; i < string.length; i++) {
         if (string.str[i] <= ' ') {
             str_insert(&generated, "\\0");
+            if (string.str[i] < 10) {
+                str_add_char(&generated, '0');
+            }
             str_insert_int(&generated, string.str[i]);
         } else if (string.str[i] == '#') {
             str_insert(&generated, "\\0");
