@@ -1090,10 +1090,7 @@ int init_n()
                 generate_int_to_num();
             }
             break;
-        case T_NIL:
-            if (p_helper->id_first->data->type != T_NIL) {
-                return ERROR_SEMANTIC_ASSIGN;
-            }
+
         default:
             break;
         }
