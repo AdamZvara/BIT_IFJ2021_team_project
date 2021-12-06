@@ -770,7 +770,7 @@ void generate_push_operand(token_t *token)
 
 void generate_num_conversion(unsigned index)
 {
-    static int counter;
+    static int counter = 0;
 
     string_t s;
     str_init(&s);
@@ -794,11 +794,15 @@ void generate_num_conversion(unsigned index)
     strcat(INST, s.str);
     ADD_NEWLINE();
 
+    str_clear(&s);
+    str_insert_int(&s, counter);
     ADD_INST("label _conv_nil");
     strcat(INST, s.str);
     ADD_NEWLINE();
 
     str_free(&s);
+
+    counter++;
 }
 
 void generate_int_to_num()
