@@ -213,7 +213,10 @@ int check_semantic(token_t *token, stack_t *stack, int *type)
             break;
 
         case TOK_DECIMAL:
-            if (*type == T_NUM || *type == T_INT || *type == T_NONE) {
+            if (*type == T_NUM || *type == T_NONE) {
+                *type = T_NUM;
+            } else if (*type ==T_INT) {
+                generate_int_to_num();
                 *type = T_NUM;
             }
             top = get_top_operator(stack);
@@ -270,6 +273,7 @@ int check_semantic(token_t *token, stack_t *stack, int *type)
                         }
                     } else if (check_id->type == NUM_T) {
                         if (*type == T_INT) {
+                            generate_int_to_num();
                             *type = T_NUM;
                         }
                         if (top->data == STR_LEN || top->data == CONCAT) {
@@ -360,16 +364,6 @@ int check_semantic(token_t *token, stack_t *stack, int *type)
 void push_operand(token_t *token, int *type)
 {
     struct local_data *id = NULL;
-
-    if (token->type == TOK_DECIMAL && *type == T_INT) {
-        // convert previous token to number
-        generate_int_to_num();
-    } else if (token->type == TOK_ID) {
-        id = local_find(local_tab, token->attribute.s);
-        if (id->type == NUM_T && *type == T_INT) {
-            generate_int_to_num();
-        }
-    }
 
     generate_push_operand(token);
 
