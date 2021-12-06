@@ -357,6 +357,33 @@ int check_semantic(token_t *token, stack_t *stack, int *type)
     return SUCCESS;
 }
 
+void push_operand(token_t *token, int *type)
+{
+    struct local_data *id = NULL;
+
+    if (token->type == TOK_DECIMAL && *type == T_INT) {
+        // convert previous token to number
+        generate_int_to_num();
+    } else if (token->type == TOK_ID) {
+        id = local_find(local_tab, token->attribute.s);
+        if (id->type == NUM_T && *type == T_INT) {
+            generate_int_to_num();
+        }
+    }
+
+    generate_push_operand(token);
+
+    if (token->type == TOK_INT && *type == T_NUM) {
+        // convert current token to number
+        generate_int_to_num();
+    } else if (token->type == TOK_ID) {
+        id = local_find(local_tab, token->attribute.s);
+        if (id->type == INT_T && *type == T_NUM) {
+            generate_int_to_num();
+        }
+    }
+}
+
 int expression(token_t **return_token)
 {
     int end = 0;
@@ -414,7 +441,7 @@ int expression(token_t **return_token)
                         stack_dispose(&stack_prec);
                         return EC_FUNC;
                     }
-                    generate_push_operand(new_token);
+                    push_operand(new_token, &expr_type);
                 }
 
                 GET_NEW_TOKEN(new_token, ret_val);

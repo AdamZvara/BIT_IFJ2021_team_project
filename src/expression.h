@@ -156,6 +156,8 @@ int reduce(stack_t *stack);
  */
 int check_semantic(token_t *token, stack_t *stack, int *type);
 
+void push_operand(token_t *token, int *type);
+
 /**
  * @brief performs syntactic and semantic analysis on expression
  *
