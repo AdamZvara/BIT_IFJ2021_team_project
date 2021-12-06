@@ -53,17 +53,23 @@ Scanner provádí lexikální analýzu a načítání vstupního kódu, parser p
 Syntaktická analýza je implementována metodou rekurzivního sestupu. Překlad zdrojového kódu začíná zavolaním funkce 
 \texttt{parse} z funkce main ve zdrojovém souboru \texttt{main.c}. Následuje inicializace tokenu, do kterého lexikální analyzátor 
 zapisuje hodnoty, globální tabulky symbolů, paměti pro postupné ukládání generovaných instrukcí a také se nainicializuje pomocná struktura. 
+
 Během implementace jsme postupně zjišťovali,
 že bychom pro generování a sémentickou kontrolu potřebovali držet v paměti různé hodnoty jako například počty parametrů u volání funkce,
  ukazatel na funkci do globální tabulky symbolů a několik dalších hodnot. Z tohoto důvodu jsme si vytvořili pomocnou strukturu
- \texttt{parser\_helper} a funkce nad ní, implementovanou v souboru \texttt{parser\_helper.c}. Z funkce \texttt{parse} se 
+ \texttt{parser\_helper} a funkce nad ní, implementovanou v souboru \texttt{parser\_helper.c}.
+
+ Z funkce \texttt{parse} se 
  syntaktický analyzátor postupně rekurzivně zanořuje podle sekvence tokenů, které získavá od lexikálního analyzátoru. Po celou 
  dobu běhu se v globální proměnné \texttt{ret} udržuje aktuální stav a pokud analyzátor objeví chybu, nebo nastane interní chyba, 
- tato proměnná se nastaví na nenulovou hodnotu a začne vynořování z rekurze. Jedna z největších výzev byla absence ukončovacího 
+ tato proměnná se nastaví na nenulovou hodnotu a začne vynořování z rekurze. 
+
+ Jedna z největších výzev byla absence ukončovacího 
  znaku za příkazem, nebo pevně stanovené pravidla odsazování, což zkomplikovalo práci s načtenými tokeny. Proto analyzátor pracuje 
  s proměnnou \texttt{backup\_token}, která kromě role dočasného držení tokenu, plní roli při rozhodování, zda je nutné načítat 
  další token, nebo je potřeba pracovat s tokenem který už má načtený. Tímto způsobem jsme řešili situaci, kdy je při 
  vyhodnocování výrazů nevyhnutelně načten jeden token za koncem výrazu, jinak totiž nejsme schopní určit konec výrazu. 
+ 
  Syntaktická analýza pracuje se dvěma typy tabulky symbolů. První z nich je globální tabulka symbolů, do které jsou na začátku 
  syntaktické analýzy uloženy vestavěné funkce a postupně během překladu i uživatelem definované funkce. Druhý typ tabulky je lokální 
  tabulka symbolů, na začátku funkce se vytvoří první lokální tabulka a při dalším zanoření do cyklu, nebo v těle podmínky se vytvoří 
