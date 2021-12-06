@@ -48,6 +48,20 @@ Překladač je sestaven ze 3 hlavních částí a to scanner, parser a generáto
 Scanner provádí lexikální analýzu a načítání vstupního kódu, parser pak provádí syntaktickou a sémantickou analýzu.
 
 \subsection{Lexikální analýza}
+Lexikální analýza je implementována v souborech scanner.c a scanner.h. Hlavní funkce lexikálního analyzátoru je funkce \texttt{get\_token}, 
+která postupně čte znak po znaku ze stdin. Tyto znaky poté převádní na strukturu \texttt{token\_t}. Tato struktura obsahuje atribut a typ tokenu. 
+Jako typ tokenu může být identifikátor, řetězec, celé nebo desetinné číslo, EOF, aritmetické a porovnávací operátory nebo jiné znaky povolené v jazyce IFJ21. 
+Atribut mají pouze tokeny typu řetězec, identifikátor, klíčové slovo nebo čísla. Zda-li se jedná o klíčové slovo nebo identifikátor
+se stará pomocná funkce \texttt{check\_keyword}, která porovná danný řetězec se všemi klíčovými slovami, pokud se s žádným z nich neshoduje nastaví jako typ
+tokenu identifikátor. Funkce \texttt{get\_token} pak také využívá řadu dalších pomocných funkcí například pro převod řetězce na číslo.
+
+Lexikální analyzátor byl implementován na základě námi vytvořeného deterministického konečného automatu (DKA).
+Tento DKA je implementován jako jeden nekonečně se opakující switch, kde jednotlivé přípády case reprezentují jednotlivé stavy tohoto automatu.
+Pokud se automat dostane do jednoho z koncových stavů, tak se funkce ukončí a vrátí odpovídající token. Pokud ovšem
+automat skončí v nekoncovém stavu nebo je načten znak, který není povolen v jazyce IFJ21, tak nastává lexikální chyba a funkce je ukončena s návratovým kódem 1.
+
+Escape sekvence jsou řešeny za pomoci pole, do kterého se postupně ukládají znaky, které mohou být v rozsahu 0-9. Toto decimalní číslo jehož maximální
+hodnota je 255, je poté převedeno na korespondující ASCII hodnotu. 
 
 \subsection{Syntaktická analýza}
 Syntaktická analýza je implementována metodou rekurzivního sestupu. Překlad zdrojového kódu začíná zavolaním funkce 
