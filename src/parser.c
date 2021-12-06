@@ -551,7 +551,8 @@ int body()
                 NEXT_TOKEN();
                 if ((GET_TYPE == TOK_KEYWORD && GET_KW == KW_STRING) ||
                    (GET_TYPE == TOK_KEYWORD && GET_KW == KW_NUMBER) ||
-                   (GET_TYPE == TOK_KEYWORD && GET_KW == KW_INTEGER)) {
+                   (GET_TYPE == TOK_KEYWORD && GET_KW == KW_INTEGER) ||
+                   (GET_TYPE == TOK_KEYWORD && GET_KW == KW_NIL)) {
                     local_add_type(p_helper->id_first->data, GET_KW);
                     ret = init();
                     if (ret)
@@ -1089,7 +1090,10 @@ int init_n()
                 generate_int_to_num();
             }
             break;
-
+        case T_NIL:
+            if (p_helper->id_first->data->type != T_NIL) {
+                return ERROR_SEMANTIC_ASSIGN;
+            }
         default:
             break;
         }
