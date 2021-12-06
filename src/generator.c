@@ -704,10 +704,23 @@ void generate_push_operator(prec_table_term_t op)
 
     case EQ:
     case NOT_EQ:
+        generate_push_compare(op);
+        break;
+
     case LESS:
     case LESS_EQ:
     case GREAT:
     case GREAT_EQ:
+        // check both operands are not nil
+        ADD_INST_N("pops GF@arg1");
+        ADD_INST_N("pops GF@arg2");
+        ADD_INST_N("pushs GF@arg2");
+        ADD_INST_N("pushs GF@arg1");
+        ADD_INST_N("type GF@bool GF@arg1");
+        ADD_INST_N("jumpifeq _nil_with_operator GF@bool string@nil");
+        ADD_INST_N("type GF@bool GF@arg2");
+        ADD_INST_N("jumpifeq _nil_with_operator GF@bool string@nil");
+
         generate_push_compare(op);
         break;
 
