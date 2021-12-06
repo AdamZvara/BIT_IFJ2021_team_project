@@ -122,6 +122,13 @@ int p_helper_set_params(parser_helper_t *f, keyword_t kw)
                 str_add_char(&f->func->params, 'n');
             }
         break;
+    
+    case KW_NIL:
+        if (f->func_found) {
+            str_add_char(&f->temp, 'x');
+        } else {
+            str_add_char(&f->func->params, 'x');
+        }
 
     default:
         break;
@@ -157,6 +164,14 @@ int p_helper_set_retvals(parser_helper_t *f, keyword_t kw)
         }
         break;
 
+    case KW_NIL:
+        if (f->func_found) {
+            str_add_char(&f->temp, 'x');
+        } else {
+            str_add_char(&f->func->retvals, 'x');
+        }
+        break;
+
     default:
         break;
     }
@@ -177,6 +192,10 @@ int p_helper_call_params_const(parser_helper_t *f, token_type_t type)
 
     case TOK_DECIMAL:
         str_add_char(&f->temp, 'n');
+        break;
+
+    case TOK_KEYWORD:
+        str_add_char(&f->temp, 'x');
         break;
 
     default:
@@ -208,6 +227,10 @@ int p_helper_call_params_id(parser_helper_t *f, string_t name)
 
     case NUM_T:
         str_add_char(&f->temp, 'n');
+        break;
+
+    case NIL_T:
+        str_add_char(&f->temp, 'x');
         break;
 
     default:

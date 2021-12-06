@@ -322,7 +322,8 @@ int params()
 
     if ((GET_TYPE == TOK_KEYWORD && GET_KW == KW_STRING) ||
         (GET_TYPE == TOK_KEYWORD && GET_KW == KW_NUMBER) ||
-        (GET_TYPE == TOK_KEYWORD && GET_KW == KW_INTEGER)) {
+        (GET_TYPE == TOK_KEYWORD && GET_KW == KW_INTEGER) ||
+        (GET_TYPE == TOK_KEYWORD && GET_KW == KW_NIL)) {
         p_helper_set_params(p_helper, GET_KW);
         return params_n();
     } else {
@@ -339,7 +340,8 @@ int params_n()
         NEXT_TOKEN();
         if ((GET_TYPE == TOK_KEYWORD && GET_KW == KW_STRING) ||
             (GET_TYPE == TOK_KEYWORD && GET_KW == KW_NUMBER) ||
-            (GET_TYPE == TOK_KEYWORD && GET_KW == KW_INTEGER)) {
+            (GET_TYPE == TOK_KEYWORD && GET_KW == KW_INTEGER) ||
+            (GET_TYPE == TOK_KEYWORD && GET_KW == KW_NIL)) {
             p_helper_set_params(p_helper, GET_KW);
             return params_n();
         }  else {
@@ -381,7 +383,8 @@ int params_2()
 
         if ((GET_TYPE == TOK_KEYWORD && GET_KW == KW_STRING) ||
             (GET_TYPE == TOK_KEYWORD && GET_KW == KW_NUMBER) ||
-            (GET_TYPE == TOK_KEYWORD && GET_KW == KW_INTEGER)) {
+            (GET_TYPE == TOK_KEYWORD && GET_KW == KW_INTEGER) ||
+            (GET_TYPE == TOK_KEYWORD && GET_KW == KW_NIL)) {
             // add parameters to global symtable
             p_helper_set_params(p_helper, GET_KW);
             local_add_type(p_helper->id_first->data, GET_KW);
@@ -429,7 +432,8 @@ int params_2_n()
         NEXT_TOKEN();
         if ((GET_TYPE == TOK_KEYWORD && GET_KW == KW_STRING) ||
             (GET_TYPE == TOK_KEYWORD && GET_KW == KW_NUMBER) ||
-            (GET_TYPE == TOK_KEYWORD && GET_KW == KW_INTEGER)) {
+            (GET_TYPE == TOK_KEYWORD && GET_KW == KW_INTEGER) ||
+            (GET_TYPE == TOK_KEYWORD && GET_KW == KW_NIL)) {
             // add parameters to global symtable
             p_helper_set_params(p_helper, GET_KW);
             local_add_type(p_helper->id_last->data, GET_KW);
@@ -462,7 +466,8 @@ int ret_params()
 
     if ((GET_TYPE == TOK_KEYWORD && GET_KW == KW_STRING) ||
         (GET_TYPE == TOK_KEYWORD && GET_KW == KW_NUMBER) ||
-        (GET_TYPE == TOK_KEYWORD && GET_KW == KW_INTEGER)) {
+        (GET_TYPE == TOK_KEYWORD && GET_KW == KW_INTEGER) ||
+        (GET_TYPE == TOK_KEYWORD && GET_KW == KW_NIL)) {
         p_helper_set_retvals(p_helper, GET_KW);
         return ret_params_n();
     }  else {
@@ -487,7 +492,8 @@ int ret_params_n()
     NEXT_TOKEN();
     if ((GET_TYPE == TOK_KEYWORD && GET_KW == KW_STRING) ||
         (GET_TYPE == TOK_KEYWORD && GET_KW == KW_NUMBER) ||
-        (GET_TYPE == TOK_KEYWORD && GET_KW == KW_INTEGER)) {
+        (GET_TYPE == TOK_KEYWORD && GET_KW == KW_INTEGER) ||
+        (GET_TYPE == TOK_KEYWORD && GET_KW == KW_NIL)) {
         p_helper_set_retvals(p_helper, GET_KW);
         return ret_params_n();
     } else {
@@ -731,6 +737,9 @@ int body()
                 case NUM_T:
                     p_helper_call_params_const(p_helper, TOK_DECIMAL);
                     break;
+                case NIL_T:
+                    p_helper_call_params_const(p_helper, TOK_KEYWORD);
+                    break;
                 default:
                     break;
             }
@@ -806,6 +815,8 @@ int body_n()
                 case NUM_T:
                     p_helper_call_params_const(p_helper, TOK_DECIMAL);
                     break;
+                case NIL_T:
+                    p_helper_call_params_const(p_helper, TOK_KEYWORD);
                 default:
                     break;
             }
@@ -934,6 +945,9 @@ int assign_multi()
             case NUM_T:
                 p_helper_call_params_const(p_helper, TOK_DECIMAL);
                 break;
+            case NIL_T:
+                p_helper_call_params_const(p_helper, TOK_KEYWORD);
+                break;
             default:
                 break;
         }
@@ -1013,7 +1027,6 @@ int r_side()
 
         // Check if return types match types of variables being assigned to
         for (int i = 0; i < p_helper->par_counter; i++) {
-            //TODO: possibly do implicit conversion
             if (p_helper->temp.str[i] != p_helper->func->retvals.str[i])
                 return ERROR_SEMANTIC_PARAMS;
         }
@@ -1090,7 +1103,6 @@ int init_n()
                 generate_int_to_num();
             }
             break;
-
         default:
             break;
         }
@@ -1112,7 +1124,7 @@ int init_n()
 
         // check if function returns any value
         if (str_len(p_helper->func->retvals) != 0) {
-            switch (p_helper->id_first->data->type)
+        switch (p_helper->id_first->data->type)
             {
             case STR_T:
                 if (p_helper->func->retvals.str[0] != 's')
@@ -1164,7 +1176,7 @@ int args()
             if ((p_helper->func->params.str[i] != p_helper->temp.str[i]) &&
                ((p_helper->temp.str[i] == 'i') && (p_helper->func->params.str[i] == 'n'))) {
                 generate_num_conversion(i);
-            } else if ((p_helper->func->params.str[i] != p_helper->temp.str[i])) {
+            } else if ((p_helper->func->params.str[i] != p_helper->temp.str[i]) && (p_helper->temp.str[i] != 'x')) {
                 return ERROR_SEMANTIC_PARAMS;
             }
         }
@@ -1179,7 +1191,8 @@ int args()
         return ret;
     }
 
-    if (GET_TYPE == TOK_STRING || GET_TYPE == TOK_DECIMAL || GET_TYPE == TOK_INT) {
+    if (GET_TYPE == TOK_STRING || GET_TYPE == TOK_DECIMAL || GET_TYPE == TOK_INT || 
+            (GET_TYPE == TOK_KEYWORD && GET_KW == KW_NIL)) {
         if (!strcmp(p_helper->func->key.str, "write")) {
             // instructions are generated on spot
             generate_write(curr_token);
@@ -1223,7 +1236,7 @@ int args_n() {
             if ((p_helper->func->params.str[i] != p_helper->temp.str[i]) &&
                ((p_helper->temp.str[i] == 'i') && (p_helper->func->params.str[i] == 'n'))) {
                 generate_num_conversion(i);
-            } else if ((p_helper->func->params.str[i] != p_helper->temp.str[i])) {
+            } else if ((p_helper->func->params.str[i] != p_helper->temp.str[i]) && (p_helper->temp.str[i] != 'x')) {
                 return ERROR_SEMANTIC_PARAMS;
             }
         }

@@ -68,6 +68,17 @@ void generate_decimal(double number)
     strcat(INST, generated.str);
     str_free(&generated);
 }
+
+void generate_nil()
+{
+    string_t generated;
+    str_init(&generated);
+
+    str_insert(&generated, "nil@nil");
+
+    strcat(INST, generated.str);
+    str_free(&generated);
+}
 /*             END IFJCODE21 constants                    */
 
 
@@ -328,6 +339,10 @@ void generate_call_params(token_t *token, parser_helper_t *p_helper)
 
     case TOK_DECIMAL:
         generate_decimal(token->attribute.decimal);
+        break;
+
+    case TOK_KEYWORD:
+        generate_nil();
         break;
 
     case TOK_ID:
