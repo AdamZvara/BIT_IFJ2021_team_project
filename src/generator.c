@@ -783,3 +783,8 @@ void generate_num_conversion(unsigned index)
     str_free(s);
     free(s);
 }
+
+void generate_int_to_num()
+{
+    ADD_INST_N("int2floats");
+}

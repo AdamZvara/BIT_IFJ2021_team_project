@@ -75,5 +75,6 @@ void generate_while_skip();
 void generate_while_end();
 
 void generate_num_conversion(unsigned index);
+void generate_int_to_num();
 
 #endif // _GENERATOR_H

@@ -3,7 +3,7 @@ require "ifj21"
 global bar : function(integer) : integer, string
 
 function foo(i : integer, n : number, n2 : number) : integer
-		local ret : integer = n*n2
+		local ret : number = n*n2
 		write(ret,"\n")
 		return i
 end

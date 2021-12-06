@@ -932,7 +932,7 @@ int r_side()
 
         // perform function call
         p_helper->func = global_find(global_tab, GET_ID);
-        
+
         // Check if function returns less values than expected by assign
         if ((int)p_helper->func->retvals.length < p_helper->par_counter)
             return ERROR_SEMANTIC_PARAMS;
@@ -991,7 +991,35 @@ int init_n()
     // call expression()
     ret = expression(&backup_token);
     if (ret >= T_INT && ret <= T_NIL) {
-        // success
+        // success, check return type with variable type
+        switch (ret)
+        {
+        case T_STR:
+            if (p_helper->id_first->data->type != STR_T) {
+                return ERROR_SEMANTIC_ASSIGN;
+            }
+            break;
+
+        case T_NUM:
+            if (p_helper->id_first->data->type != NUM_T) {
+                return ERROR_SEMANTIC_ASSIGN;
+            }
+            break;
+
+        case T_INT:
+            if (p_helper->id_first->data->type != INT_T && p_helper->id_first->data->type != NUM_T) {
+                return ERROR_SEMANTIC_ASSIGN;
+            }
+
+            // special case when int needs to be converted
+            if (p_helper->id_first->data->type == NUM_T) {
+                generate_int_to_num();
+            }
+            break;
+
+        default:
+            break;
+        }
         ret = 0;
         generate_assign(p_helper->id_first->data->name);
         FREE_TOK_STRING();
@@ -1007,7 +1035,7 @@ int init_n()
 
         p_helper->func = global_find(global_tab, GET_ID);
         p_helper->assign = true;
-        
+
         // check if function returns any value
         if (str_len(p_helper->func->retvals) != 0) {
             switch (p_helper->id_first->data->type)
@@ -1053,7 +1081,7 @@ int args()
             // parameters are not checked
             return ret;
         }
-       
+
         // Check parameters of function call and perform implicit
         // conversion if needed
         if (p_helper->func->params.length != p_helper->temp.length)
