@@ -770,18 +770,35 @@ void generate_push_operand(token_t *token)
 
 void generate_num_conversion(unsigned index)
 {
-    string_t *s = malloc(sizeof(string_t));
-    str_init(s);
-    str_insert_int(s, index);
+    static int counter;
+
+    string_t s;
+    str_init(&s);
+
+    str_insert_int(&s, counter);
+    ADD_INST("jumpifeq _conv_nil");
+    strcat(INST, s.str);
+    strcat(INST, " TF@%");
+    str_clear(&s);
+    str_insert_int(&s, index);
+    strcat(INST, s.str);
+    strcat(INST, " nil@nil");
+    ADD_NEWLINE();
+
+
     ADD_INST("int2float ");
     strcat(INST, "TF@%");
-    strcat(INST, s->str);
+    strcat(INST, s.str);
 
     strcat(INST, " TF@%");
-    strcat(INST, s->str);
+    strcat(INST, s.str);
     ADD_NEWLINE();
-    str_free(s);
-    free(s);
+
+    ADD_INST("label _conv_nil");
+    strcat(INST, s.str);
+    ADD_NEWLINE();
+
+    str_free(&s);
 }
 
 void generate_int_to_num()
