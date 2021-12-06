@@ -33,7 +33,7 @@ struct identifiers {
 typedef struct parser_helper {
     struct global_item *func;           // Pointer to function in global symtab
     bool func_found;                    // Whether function was already found in global symtab
-    bool assign;
+    bool assign;                        // Whether p_helper is being used in assign statement
     struct identifiers *id_first;       // Pointer to first identificator in linked list
     struct identifiers *id_last;        // Pointer to last identificator in linked list
     int par_counter;                    // Counter of parameters

@@ -675,12 +675,13 @@ int body()
                 return ret;
                 break;
             case KW_RETURN:
+                p_helper->func = global_find(global_tab, local_tab->key);
+
                 ret = r_side();
                 if (ret)
                     return ret;
 
-                struct global_item *tmp = global_find(global_tab, local_tab->key);
-                if ((int)tmp->retvals.length < p_helper->par_counter)
+                if ((int)p_helper->func->retvals.length < p_helper->par_counter)
                         return ERROR_SEMANTIC_PARAMS;
 
                 generate_function_end();
@@ -909,16 +910,44 @@ int r_side()
     // call expression()
     ret = expression(&backup_token);
     if (ret >= T_INT && ret <= T_NIL) {
-        // success
-        ret = 0;
         if (p_helper->assign) {
             // assign value to variable
             generate_assign(p_helper->id_first->data->name);
             p_helper_delete_identifier(p_helper);
         } else {
+            switch (ret)
+            {
+            case T_STR:
+                if (p_helper->func->retvals.str[p_helper->par_counter] != 's') {
+                    return ERROR_SEMANTIC_PARAMS;
+                }
+                break;
+
+            case T_NUM:
+                if (p_helper->func->retvals.str[p_helper->par_counter] != 'n') {
+                    return ERROR_SEMANTIC_PARAMS;
+                }
+                break;
+
+            case T_INT:
+                if (p_helper->func->retvals.str[p_helper->par_counter] != 'i' &&
+                    p_helper->func->retvals.str[p_helper->par_counter] != 'n') {
+                    return ERROR_SEMANTIC_PARAMS;
+                }
+
+                if (p_helper->func->retvals.str[p_helper->par_counter] == 'n') {
+                    generate_int_to_num();
+                }
+                break;
+
+            default:
+                break;
+            }
             generate_return_value(p_helper->par_counter);
             p_helper->par_counter++;
         }
+        // success
+        ret = 0;
         FREE_TOK_STRING();
         free(curr_token);
         curr_token = backup_token;
