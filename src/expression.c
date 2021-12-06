@@ -261,8 +261,6 @@ int check_semantic(token_t *token, stack_t *stack, int *type)
                             *type = T_NUM;
                         } else if (check_id->type == STR_T) {
                             *type = T_STR;
-                        } else if (check_id->type == NIL_T) {
-                            *type = T_NIL;
                         }
                         break;
                     }
@@ -444,8 +442,8 @@ int expression(token_t **return_token)
                 break;
 
             case '>':
-                if ((symbol >= ID && symbol <= STR) &&
-                        ((top_term->data >= ID && top_term->data <= STR) || top_term->data == RIGHT_BR)) {
+                if ((symbol >= ID && symbol <= NIL) &&
+                        ((top_term->data >= ID && top_term->data <= NIL) || top_term->data == RIGHT_BR)) {
                     // loaded two IDs, possible multiple assignmemts on one line
                     // continue reducing
                     symbol = DOLLAR;
