@@ -47,6 +47,8 @@ void generate_parameters(parser_helper_t *p_helper);
 void generate_retvals();
 void generate_function(parser_helper_t *p_helper);
 void generate_function_end();
+void generate_function_skip_jump(string_t name);
+void generate_function_skip_label(string_t name);
 
 void generate_identifier(ibuffer_t *buffer, string_t id_name);
 

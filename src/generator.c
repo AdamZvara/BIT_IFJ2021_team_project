@@ -239,6 +239,36 @@ void generate_function_end()
     ADD_INST_N("return");
 }
 
+void generate_function_skip_jump(string_t name)
+{
+    string_t s;
+    str_init(&s);
+
+    str_add_char(&s, '_');
+    str_insert(&s, name.str);
+
+    ADD_INST("jump ");
+    strcat(INST, s.str);
+    ADD_NEWLINE();
+
+    str_free(&s);
+}
+
+void generate_function_skip_label(string_t name)
+{
+    string_t s;
+    str_init(&s);
+
+    str_add_char(&s, '_');
+    str_insert(&s, name.str);
+
+    ADD_INST("label ");
+    strcat(INST, s.str);
+    ADD_NEWLINE();
+
+    str_free(&s);
+}
+
 /*          END FUNCTION ENTRY             */
 
 // generate local identifers with mangled name
@@ -812,5 +842,27 @@ void generate_num_conversion(unsigned index)
 
 void generate_int_to_num()
 {
+    static int counter = 0;
+
+    string_t s;
+    str_init(&s);
+    str_insert_int(&s, counter);
+
+    ADD_INST_N("pops GF@bool");
+    ADD_INST_N("pushs GF@bool");
+
+    ADD_INST("jumpifeq _itn_nil");
+    strcat(INST, s.str);
+    strcat(INST, " GF@bool nil@nil");
+    ADD_NEWLINE();
+
     ADD_INST_N("int2floats");
+
+    ADD_INST("label _itn_nil");
+    strcat(INST, s.str);
+    ADD_NEWLINE();
+
+    str_free(&s);
+
+    counter++;
 }

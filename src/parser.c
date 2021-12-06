@@ -235,12 +235,20 @@ int prog()
             if (ret)
                 return ret;
 
+            if (entry) {
+                generate_function_skip_jump(p_helper->func->key);
+            }
+
             // generate function label + retvals and parameters
             generate_function(p_helper);
 
             ret = body();
             if (ret)
                  return ret;
+
+            if (entry) {
+                generate_function_skip_label(p_helper->func->key);
+            }
 
             return prog();
 
@@ -657,6 +665,8 @@ int body()
                 if (local_tab->depth == 0) {
                     // generate return code
                     generate_function_end();
+                    // preserve global function in p_helper
+                    p_helper->func = global_find(global_tab, local_tab->key);
                     // destroy local symtable for function
                     local_destroy(local_tab);
                     local_tab = NULL;
