@@ -680,6 +680,18 @@ void generate_push_arithmetic(prec_table_term_t op)
     }
 }
 
+void generate_check_nil()
+{
+    ADD_INST_N("pops GF@arg1");
+    ADD_INST_N("pops GF@arg2");
+    ADD_INST_N("pushs GF@arg2");
+    ADD_INST_N("pushs GF@arg1");
+    ADD_INST_N("type GF@bool GF@arg1");
+    ADD_INST_N("jumpifeq _nil_with_operator GF@bool string@nil");
+    ADD_INST_N("type GF@bool GF@arg2");
+    ADD_INST_N("jumpifeq _nil_with_operator GF@bool string@nil");
+}
+
 void generate_push_operator(prec_table_term_t op)
 {
     switch (op)
@@ -690,15 +702,7 @@ void generate_push_operator(prec_table_term_t op)
     case DIV:
     case DIV_INT:
         // check both operands are not nil
-        ADD_INST_N("pops GF@arg1");
-        ADD_INST_N("pops GF@arg2");
-        ADD_INST_N("pushs GF@arg2");
-        ADD_INST_N("pushs GF@arg1");
-        ADD_INST_N("type GF@bool GF@arg1");
-        ADD_INST_N("jumpifeq _nil_with_operator GF@bool string@nil");
-        ADD_INST_N("type GF@bool GF@arg2");
-        ADD_INST_N("jumpifeq _nil_with_operator GF@bool string@nil");
-
+        generate_check_nil();
         generate_push_arithmetic(op);
         break;
 
@@ -712,15 +716,7 @@ void generate_push_operator(prec_table_term_t op)
     case GREAT:
     case GREAT_EQ:
         // check both operands are not nil
-        ADD_INST_N("pops GF@arg1");
-        ADD_INST_N("pops GF@arg2");
-        ADD_INST_N("pushs GF@arg2");
-        ADD_INST_N("pushs GF@arg1");
-        ADD_INST_N("type GF@bool GF@arg1");
-        ADD_INST_N("jumpifeq _nil_with_operator GF@bool string@nil");
-        ADD_INST_N("type GF@bool GF@arg2");
-        ADD_INST_N("jumpifeq _nil_with_operator GF@bool string@nil");
-
+        generate_check_nil();
         generate_push_compare(op);
         break;
 
@@ -733,14 +729,7 @@ void generate_push_operator(prec_table_term_t op)
         break;
 
     case CONCAT:
-        ADD_INST_N("pops GF@arg1");
-        ADD_INST_N("pops GF@arg2");
-        ADD_INST_N("pushs GF@arg2");
-        ADD_INST_N("pushs GF@arg1");
-        ADD_INST_N("type GF@bool GF@arg1");
-        ADD_INST_N("jumpifeq _nil_with_operator GF@bool string@nil");
-        ADD_INST_N("type GF@bool GF@arg2");
-        ADD_INST_N("jumpifeq _nil_with_operator GF@bool string@nil");
+        generate_check_nil();
         generate_concat();
         break;
 
