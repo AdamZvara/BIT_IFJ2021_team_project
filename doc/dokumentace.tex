@@ -93,6 +93,45 @@ Během implementace jsme postupně zjišťovali,
  \texttt{symtable.c}.
 
 \subsubsection{Syntaktická analýza výrazů}
+Analýza výzazů se provadí metodou zdola nahoru.
+K tomuto bylo zapotřebí sestavit precedenční tabulku. Pro její zjednodušení jsme sloučili operátory
+se stejnou asociativitou a prioritou. Celá analýza výrazů je implementována v souboru \texttt{expression.c}
+a využívá stack implementovaný ve \texttt{stack.c}.
+
+Použitý algoritmus vychází z algoritmu představeného na přednášce IFJ.
+Po zavolání funkce \texttt{expression} se inicializuje stack a vloží se na něj pomocný znak \texttt{DOLLAR},
+který značí začátek výrazu. Načtený token se funkcí \texttt{token\_to\_symbol} převeda na vnitřní symbol,
+se kterým se dále pracuje na stacku. Pomocí funkce \texttt{symbol\_to\_index} se zjistí z vrcholu stacku
+a nového symbolu souřadnice precedenčního znaku tabulce.
+
+\begin{itemize}
+    \item Pro znak $=$ se uloží na zásobník načtený symbol a provede se načtení nového tokenu.
+    \item Pro znak $<$ se uloží na zásobník pomocný znak \texttt{HANDLE}, symbol načtený ze vstupu
+        a provede se načtení dalšího tokenu.
+    \item Pro znak $>$ se provede funkce \texttt{reduce},
+        která podle daných pravidel redukuje symboly uložené na zásobníku.
+        Funkce zjistí kolik symbolů se nachází před \texttt{HANDLE}a podle jejich typu deterministicky volí
+        redukční pravidlo. Pravidlo se provede odebráním potřebného počty symbolů ze zásobníku
+        a nahradíme je symbolem \texttt{NON\_TERM}.
+        Pokud neexistuje pravidlo pro redukci, tak funkce hlásí syntaktickou chybu.
+\end{itemize}
+
+Algoritmus se provádí dokud se nenarazí na ukončení. Nakonec se zkontroluje stav stacku a pokud se liší od \$E,
+funkce hlásí syntaktickou chybu.
+
+Dále se zde řeší přiřazení funkce, tzn. pokud narazí na identifikátor, který se nachází v globální tabulce,
+funkce končí a předává řízení zpět do parseru.
+
+\subsubsection{Stack pro syntaktickou analýzu}
+Pro precedenční analýzu se využívá stack, na který se ukládají vstupní symboly a provádí se na něm redukování
+výrazů podle pravidel.
+
+Implementace se nachází ve \texttt{stack.c}. Umožňuje všechny klasické operace nad zásobníkem a navíc
+umožňuje několik funkcí navíc pro zjednodušení kontroly pravidel. Funkce \texttt{push\_above\_term} slouží pro
+vložení symbolu za první terminál na stacku. Funkce \texttt{items\_to\_handle} vrací počet symbolů,
+které se nachází před \texttt{HANDLE} a využívá se pro vyhodnocení typu pravidla.
+Funkce \texttt{find\_len\_op} vyhledá na stacku operátor \# a funkce \texttt{get\_top\_operator} vrací operátor
+na vrcholu zásobníku. Obě funkce se používájí pro sémantickou kontrolu.
 
 \subsection{Sémantická analýza}
 
@@ -124,7 +163,7 @@ do které si ukládáme informace o použitých funkcích, které se pak generuj
 
 \subsection{Rozdělení práce}
 
-\begin{table}[ht]
+\begin{table}[H]
     \centering
     \begin{tabular}{|l|l|}
         \hline
