@@ -1,7 +1,7 @@
 require "ifj21"
 
 function fcuk()
-	local s : string = "kokotek"
+	local s : string = "IFJCOOL"
 	if (#s*2) > 5 then
 		write("BIGGER\n")
 	else end

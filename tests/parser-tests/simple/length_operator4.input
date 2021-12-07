@@ -1,7 +1,7 @@
 require "ifj21"
 
 function main(s : string)
-	local a : integer = #(s.."debilku")
+	local a : integer = #(s.."kamarade")
 	write(a,"\n")
 
 end

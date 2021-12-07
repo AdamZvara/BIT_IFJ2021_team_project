@@ -12,7 +12,7 @@ function bar(i : integer, n : number) : number, integer
 end
 
 function foo() : number, integer, string
-	local s : string = "KOKOTKO"
+	local s : string = "DLOUHESLOVO"
 	local n : number = 2.0*1.26
 	local i : integer = #s
 

@@ -1,4 +1,3 @@
--- segfault v body po tom co projde expression
 require "ifj21"
 
 function bar(num : integer)
