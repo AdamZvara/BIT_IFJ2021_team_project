@@ -730,7 +730,6 @@ int body()
         //p_helper->id = local_find(local_tab, GET_ID);
         p_helper_add_identifier(p_helper, local_find(local_tab, GET_ID));
 
-        //TODO: append type of current_token ID to temp buffer
         // Append type of variable being assigned to for later semantic checks
         struct local_data *tmp = local_find(local_tab, curr_token->attribute.s);
         if (tmp) {
@@ -914,7 +913,6 @@ int assign_single()
 
         // Check if return types match types of variables being assigned to
         for (int i = 0; i < p_helper->par_counter; i++) {
-            //TODO: possibly do implicit conversion
             if (p_helper->temp.str[i] != p_helper->func->retvals.str[i])
                 return ERROR_SEMANTIC_PARAMS;
         }
