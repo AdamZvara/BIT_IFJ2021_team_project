@@ -84,13 +84,7 @@ ukazatel na funkci do globální tabulky symbolů a několik dalších hodnot. Z
  další token, nebo je potřeba pracovat s tokenem který už má načtený. Tímto způsobem jsme řešili situaci, kdy je při
  vyhodnocování výrazů nevyhnutelně načten jeden token za koncem výrazu, jinak totiž nejsme schopní určit konec výrazu.
 
- Syntaktická analýza pracuje se dvěma typy tabulek symbolů. První z nich je globální tabulka symbolů, do které jsou na začátku
- syntaktické analýzy uloženy vestavěné funkce a postupně během překladu i uživatelem definované funkce. Druhý typ tabulky je lokální
- tabulka symbolů, na začátku funkce se vytvoří první lokální tabulka a při dalším zanoření do cyklu, nebo v těle podmínky se vytvoří
- další, která se pomocí ukazatele napojí na ostatní lokální tabulky. Vznikne tak jednostranně vázaný seznam, na jehož začátku se nachází
- nejvíce zanořená tabulka a končí tabulkou vytvořenou při vstupu do těla funkce. Průchodem seznamem lokálních tabulek jsme tak
- schopni kontrolovat zda a případně v jakém bloku platnosti jsou proměnné definované. Obě tabulky jsou naimplementované v souboru
- \texttt{symtable.c}.
+
 
 \subsubsection{Syntaktická analýza výrazů}
 Analýza výzazů se provadí metodou zdola nahoru.
@@ -134,7 +128,18 @@ Funkce \texttt{find\_len\_op} vyhledá na stacku operátor \# a funkce \texttt{g
 na vrcholu zásobníku. Obě funkce se používájí pro sémantickou kontrolu.
 
 \subsection{Sémantická analýza}
+ Sémantická analýza pracuje se dvěma typy tabulek symbolů. První z nich je globální tabulka symbolů, do které jsou na začátku
+ syntaktické analýzy uloženy vestavěné funkce a postupně během překladu i uživatelem definované funkce. Druhý typ tabulky je lokální
+ tabulka symbolů, na začátku funkce se vytvoří první lokální tabulka a při dalším zanoření do cyklu, nebo v těle podmínky se vytvoří
+ další, která se pomocí ukazatele napojí na ostatní lokální tabulky. Vznikne tak jednostranně vázaný seznam, na jehož začátku se nachází
+ nejvíce zanořená tabulka a končí tabulkou vytvořenou při vstupu do těla funkce. Průchodem seznamem lokálních tabulek jsme tak
+ schopni kontrolovat zda a případně v jakém bloku platnosti jsou proměnné definované. Obě tabulky jsou naimplementované v souboru
+ \texttt{symtable.c}.
 
+Sémantická analýza ke své činnosti dále využívá řetězce na ukládání typů různých hodnot a strukturu \texttt{parser\_helper}, popsanou v kapitole o syntaktické analýze. 
+Do řetězců se ukládají například typy proměnných při inicializaci, které se pak porovnávají s hlavičkou funkce, nebo s typy hodnot, 
+kterými dané proměnné inicializujeme. Tímto způsobem jsme schopni kontrolovat nejen typy hodnot, ale i jejich počet, jelikož se do řetězce ukládajá 
+jen jeden znak pro každou hodnotu. Obdobně jsou řešené i parametry u volání funkce, nebo například návratové hodnoty u funkcí.
 \subsection{Generování kódu}
 Pro generování kódu jsme zvolili metodu přímého generování zásobníkových instrukcí během rekurzivního sestupu v syntaktické analýze.
 
