@@ -8,6 +8,7 @@
 \usepackage{float}
 \usepackage{multirow}
 \usepackage{boldline}
+\usepackage{longtable}
 
 \begin{document}
 
@@ -108,6 +109,7 @@ a nového symbolu souřadnice precedenčního znaku tabulce.
         redukční pravidlo. Pravidlo se provede odebráním potřebného počty symbolů ze zásobníku
         a nahradíme je symbolem \texttt{NON\_TERM}.
         Pokud neexistuje pravidlo pro redukci, tak funkce hlásí syntaktickou chybu.
+    \item Znak $-$ značí konec analýzy.
 \end{itemize}
 
 Algoritmus se provádí dokud se nenarazí na ukončení. Nakonec se zkontroluje stav stacku a pokud se liší od \$E,
@@ -198,7 +200,7 @@ Pro verzování jsme používali nástroj \texttt{git} a pro vzdálené sdílen�
     \label{figure:fsm_img}
 \end{figure}
 
-\begin{table}[]
+\begin{table}[H]
     \centering
     \begin{tabular}{|ll ll ll|}
         \hline
@@ -222,6 +224,85 @@ Pro verzování jsme používali nástroj \texttt{git} a pro vzdálené sdílen�
 \end{table}
 
 \section{LL\,-\,gramatika}
+\begin{table}[H]
+    \centering
+    \begin{enumerate}
+        \item \verb|<require> -> REQUIRE STRING\_LIT <prog>|
+
+        \item \verb|<prog> -> GLOBAL ID : FUNCTION (<params>) <ret\_params> <prog>|
+        \item \verb|<prog> -> FUNCTION ID (<params\_2>) <ret\_params> <body> <prog>|
+
+        \item \verb|<prog> -> ID (<args>  <prog>|
+        \item \verb|<prog> -> EOF|
+
+        \item \verb|<params> -> <types-keyword> <params\_n>|
+        \item \verb|<params> -> eps|
+        \item \verb|<params\_n> -> , <types-keyword> <params\_n>|
+        \item \verb|<params\_n> -> eps|
+
+        \item \verb|<params\_2> -> ID : <types-keyword> <params2\_n>|
+        \item \verb|<params\_2> -> eps|
+        \item \verb|<params\_2\_n> -> , ID : <types-keyword> <params2\_n>|
+        \item \verb|<params\_2\_n> -> eps|
+
+        \item \verb|<ret\_params> -> : <types-keyword> <ret\_params\_n>|
+        \item \verb|<ret\_params> -> eps|
+        \item \verb|<ret\_params\_n> -> , <types-keyword> <ret\_params\_n>|
+        \item \verb|<ret\_params\_n> -> eps|
+
+        \item \verb|<body> -> LOCAL ID : <types-keyword> <init> <body>|
+        \item \verb|<body> -> IF <expr> THEN <body> ELSE <body> END <body>|
+        \item \verb|<body> -> WHILE <expr> DO <body> END <body>|
+        \item \verb|<body> -> ID <body\_n> <body>|
+        \item \verb|<body> -> END|
+        \item \verb|<body> -> RETURN <R\_side> <body>|
+
+        \item \verb|<body\_n> -> ( <args>|
+        \item \verb|<body\_n> -> = <assign\_single>|
+        \item \verb|<body\_n> -> , ID <assign\_multi> <R\_side>|
+
+    \end{enumerate}
+    \caption{Gramatika řídící syntaktickou analýzu}
+    \label{tab:ll-gramatika}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{enumerate}
+        \setcounter{enumi}{27}
+        \item \verb|<assign\_single> -> <expr>|
+
+        \item \verb|<assign\_multi> -> , ID <assign\_multi>|
+        \item \verb|<assign\_multi> -> =|
+
+        \item \verb|<R\_side> -> <expr> <R\_side\_n>|
+        \item \verb|<R\_side\_n> -> , <R\_side>|
+        \item \verb|<R\_side\_n> -> eps|
+
+        \item \verb|<init> -> = <init\_n>|
+        \item \verb|<init> -> eps|
+        \item \verb|<init\_n> -> <expr>|
+
+        \item \verb|<args> -> )|
+        \item \verb|<args> -> <term> <args\_n>|
+        \item \verb|<args\_n> -> , <args>|
+        \item \verb|<args\_n> -> )|
+
+        \item \verb|<term> -> ID|
+        \item \verb|<term> -> INT\_LIT|
+        \item \verb|<term> -> NUM\_LIT|
+        \item \verb|<term> -> STRING\_LIT|
+
+        \item \verb|<types-keyword> -> STRING|
+        \item \verb|<types-keyword> -> NUMBER|
+        \item \verb|<types-keyword> -> INTEGER|
+
+        \item \verb|<expr> -> ID ( <args>|
+
+    \end{enumerate}
+    \caption{Gramatika řídící syntaktickou analýzu\,--\,pokračování}
+    \label{tab:ll-gramatika-pokracovani}
+\end{table}
 
 \section{LL\,-\,tabulka}
 
