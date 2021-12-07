@@ -28,29 +28,24 @@
 <body> -> END
 <body> -> RETURN <R_side> <body>
 ------------------------------------------------------------------
-<body_n> -> (<args>                        #volanie funkcie
+<body_n> -> ( <args>                        #volanie funkcie
 <body_n> -> = <assign_single>               #priradenie 1 hodnoty
 <body_n> -> , ID <assign_multi> <R_side>  #priradenie viac hodnot
 
 #v tomto pripade sa najprv skusi priamo spracovat expression
 <assign_single> -> <expr>
-<assign_single> -> <func>
 
 <assign_multi> -> , ID <assign_multi>
 <assign_multi> -> =
 
 <R_side> -> <expr> <R_side_n>
-<R_side> -> <func> <R_side_n>
 <R_side_n> -> , <R_side>
 <R_side_n> -> eps
--------------------------------------------------------------------
-<func> -> <args>
 -------------------------------------------------------------------
 <init> -> = <init_n>
 <init> -> eps
 #najprv sa zavola vyhodnotenie expression
 <init_n> -> <expr>
-<init_n> -> <func>
 -------------------------------------------------------------------
 #pri spracovani <expr> prejdeme do precedencnej analyzy -> v nej skontrolujeme
 #ci sa jedna o identifikator
@@ -71,3 +66,5 @@
 <types-keyword> -> STRING
 <types-keyword> -> NUMBER
 <types-keyword> -> INTEGER
+-------------------------------------------------------------------
+<expr> -> ID ( <args>
