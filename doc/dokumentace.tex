@@ -48,9 +48,9 @@ Překladač je sestaven ze 3 hlavních částí a to scanner, parser a generáto
 Scanner provádí lexikální analýzu a načítání vstupního kódu, parser pak provádí syntaktickou a sémantickou analýzu.
 
 \subsection{Lexikální analýza}
-Lexikální analýza je implementována v souborech scanner.c a scanner.h. Hlavní funkce lexikálního analyzátoru je funkce \texttt{get\_token}, 
-která postupně čte znak po znaku ze stdin. Tyto znaky poté převádní na strukturu \texttt{token\_t}. Tato struktura obsahuje atribut a typ tokenu. 
-Jako typ tokenu může být identifikátor, řetězec, celé nebo desetinné číslo, EOF, aritmetické a porovnávací operátory nebo jiné znaky povolené v jazyce IFJ21. 
+Lexikální analýza je implementována v souborech \texttt{scanner.c} a \texttt{scanner.h}. Hlavní funkce lexikálního analyzátoru je funkce \texttt{get\_token},
+která postupně čte znak po znaku ze stdin. Tyto znaky poté převádní na strukturu \texttt{token\_t}. Tato struktura obsahuje atribut a typ tokenu.
+Jako typ tokenu může být identifikátor, řetězec, celé nebo desetinné číslo, EOF, aritmetické a porovnávací operátory nebo jiné znaky povolené v jazyce IFJ21.
 Atribut mají pouze tokeny typu řetězec, identifikátor, klíčové slovo nebo čísla. Zda-li se jedná o klíčové slovo nebo identifikátor
 se stará pomocná funkce \texttt{check\_keyword}, která porovná danný řetězec se všemi klíčovými slovami, pokud se s žádným z nich neshoduje nastaví jako typ
 tokenu identifikátor. Funkce \texttt{get\_token} pak také využívá řadu dalších pomocných funkcí například pro převod řetězce na číslo.
@@ -61,34 +61,34 @@ Pokud se automat dostane do jednoho z koncových stavů, tak se funkce ukončí 
 automat skončí v nekoncovém stavu nebo je načten znak, který není povolen v jazyce IFJ21, tak nastává lexikální chyba a funkce je ukončena s návratovým kódem 1.
 
 Escape sekvence jsou řešeny za pomoci pole, do kterého se postupně ukládají znaky, které mohou být v rozsahu 0-9. Toto decimalní číslo jehož maximální
-hodnota je 255, je poté převedeno na korespondující ASCII hodnotu. 
+hodnota je 255, je poté převedeno na korespondující ASCII hodnotu.
 
 \subsection{Syntaktická analýza}
-Syntaktická analýza je implementována metodou rekurzivního sestupu. Překlad zdrojového kódu začíná zavolaním funkce 
-\texttt{parse} z funkce main ve zdrojovém souboru \texttt{main.c}. Následuje inicializace tokenu, do kterého lexikální analyzátor 
-zapisuje hodnoty, globální tabulky symbolů, paměti pro postupné ukládání generovaných instrukcí a také se nainicializuje pomocná struktura. 
+Syntaktická analýza je implementována metodou rekurzivního sestupu. Překlad zdrojového kódu začíná zavolaním funkce
+\texttt{parse} z funkce main ve zdrojovém souboru \texttt{main.c}. Následuje inicializace tokenu, do kterého lexikální analyzátor
+zapisuje hodnoty, globální tabulky symbolů, paměti pro postupné ukládání generovaných instrukcí a také se nainicializuje pomocná struktura.
 
 Během implementace jsme postupně zjišťovali,
 že bychom pro generování a sémentickou kontrolu potřebovali držet v paměti různé hodnoty jako například počty parametrů u volání funkce,
  ukazatel na funkci do globální tabulky symbolů a několik dalších hodnot. Z tohoto důvodu jsme si vytvořili pomocnou strukturu
  \texttt{parser\_helper} a funkce nad ní, implementovanou v souboru \texttt{parser\_helper.c}.
 
- Z funkce \texttt{parse} se 
- syntaktický analyzátor postupně rekurzivně zanořuje podle sekvence tokenů, které získavá od lexikálního analyzátoru. Po celou 
- dobu běhu se v globální proměnné \texttt{ret} udržuje aktuální stav a pokud analyzátor objeví chybu, nebo nastane interní chyba, 
- tato proměnná se nastaví na nenulovou hodnotu a začne vynořování z rekurze. 
+ Z funkce \texttt{parse} se
+ syntaktický analyzátor postupně rekurzivně zanořuje podle sekvence tokenů, které získavá od lexikálního analyzátoru. Po celou
+ dobu běhu se v globální proměnné \texttt{ret} udržuje aktuální stav a pokud analyzátor objeví chybu, nebo nastane interní chyba,
+ tato proměnná se nastaví na nenulovou hodnotu a začne vynořování z rekurze.
 
- Jedna z největších výzev byla absence ukončovacího 
- znaku za příkazem, nebo pevně stanovené pravidla odsazování, což zkomplikovalo práci s načtenými tokeny. Proto analyzátor pracuje 
- s proměnnou \texttt{backup\_token}, která kromě role dočasného držení tokenu, plní roli při rozhodování, zda je nutné načítat 
- další token, nebo je potřeba pracovat s tokenem který už má načtený. Tímto způsobem jsme řešili situaci, kdy je při 
- vyhodnocování výrazů nevyhnutelně načten jeden token za koncem výrazu, jinak totiž nejsme schopní určit konec výrazu. 
- 
- Syntaktická analýza pracuje se dvěma typy tabulky symbolů. První z nich je globální tabulka symbolů, do které jsou na začátku 
- syntaktické analýzy uloženy vestavěné funkce a postupně během překladu i uživatelem definované funkce. Druhý typ tabulky je lokální 
- tabulka symbolů, na začátku funkce se vytvoří první lokální tabulka a při dalším zanoření do cyklu, nebo v těle podmínky se vytvoří 
- další, která se pomocí ukazatele napojí na ostatní lokální tabulky. Vznikne tak jednostranně vázaný seznam, na jehož začátku se nachází 
- nejvíce zanořená tabulka a končí tabulkou vytvořenou při vstupu do těla funkce. Průchodem seznamem lokálních tabulek jsme tak 
+ Jedna z největších výzev byla absence ukončovacího
+ znaku za příkazem, nebo pevně stanovené pravidla odsazování, což zkomplikovalo práci s načtenými tokeny. Proto analyzátor pracuje
+ s proměnnou \texttt{backup\_token}, která kromě role dočasného držení tokenu, plní roli při rozhodování, zda je nutné načítat
+ další token, nebo je potřeba pracovat s tokenem který už má načtený. Tímto způsobem jsme řešili situaci, kdy je při
+ vyhodnocování výrazů nevyhnutelně načten jeden token za koncem výrazu, jinak totiž nejsme schopní určit konec výrazu.
+
+ Syntaktická analýza pracuje se dvěma typy tabulky symbolů. První z nich je globální tabulka symbolů, do které jsou na začátku
+ syntaktické analýzy uloženy vestavěné funkce a postupně během překladu i uživatelem definované funkce. Druhý typ tabulky je lokální
+ tabulka symbolů, na začátku funkce se vytvoří první lokální tabulka a při dalším zanoření do cyklu, nebo v těle podmínky se vytvoří
+ další, která se pomocí ukazatele napojí na ostatní lokální tabulky. Vznikne tak jednostranně vázaný seznam, na jehož začátku se nachází
+ nejvíce zanořená tabulka a končí tabulkou vytvořenou při vstupu do těla funkce. Průchodem seznamem lokálních tabulek jsme tak
  schopni kontrolovat zda a případně v jakém bloku platnosti jsou proměnné definované. Obě tabulky jsou naimplementované v souboru
  \texttt{symtable.c}.
 
