@@ -315,7 +315,7 @@ void local_delete_top(local_symtab_t **local_tab)
 
 	// free key of local symtable
 	str_free(&del->key);
-	for (unsigned int i = 0; i < del->size; i++) {
+	for (unsigned int i = 0; i < LOCAL_SYM_SIZE; i++) {
         while(del->data[i]) {
             struct local_data *tmp = del->data[i]->next;
             // free names of all identifiers
