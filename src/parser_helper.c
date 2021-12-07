@@ -39,8 +39,7 @@ parser_helper_t *p_helper_create()
 
 void p_helper_clear(parser_helper_t *f)
 {
-    // TODO: free identifier linked list
-    if (f->id_first != NULL) {
+    while (f->id_first != NULL) {
         p_helper_delete_identifier(f);
     }
 
@@ -60,6 +59,10 @@ void p_helper_clear_string(parser_helper_t *f)
 
 void p_helper_dispose(parser_helper_t *f)
 {
+    while (f->id_first != NULL) {
+        p_helper_delete_identifier(f);
+    }
+
     str_free(&f->temp);
     str_free(&f->status);
     free(f);

@@ -50,7 +50,6 @@ struct local_data {
 typedef struct local_symtab {
 	string_t key;
 	unsigned int depth;				// Level of depth (if, while ...)
-	unsigned int size;				// Amount of stored variables
 	unsigned int alloc_size;		// Size of allocated space for variables
 	unsigned int if_cnt;			// Counter of if statements for unique label generation
 	unsigned int after_else;		// Number to create unique labels for nested ifs

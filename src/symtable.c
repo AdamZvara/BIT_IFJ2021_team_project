@@ -154,7 +154,6 @@ local_symtab_t *local_create(string_t key)
 	local->after_else = 0;
 	local->while_cnt = 0;
 	local->depth = 0;
-	local->size = 0;
 	local->alloc_size = LOCAL_SYM_SIZE;
 	local->next = NULL;
 

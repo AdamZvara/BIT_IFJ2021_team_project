@@ -478,6 +478,8 @@ void generate_assign_function(parser_helper_t *p_helper)
         tmp = tmp->next;
         str_clear(&counter_string);
     }
+
+    str_free(&counter_string);
 }
 
 /*          IF STATEMENT            */
