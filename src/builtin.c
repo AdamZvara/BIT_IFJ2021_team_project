@@ -100,6 +100,8 @@ void add_builtin(global_symtab_t *gs)
     str_add_char(&func->retvals, 's');
     str_add_char(&func->params, 'i');
     str_clear(&function_name);
+
+    str_free(&function_name);
 }
 
 
@@ -121,6 +123,11 @@ void builtin_used_update(builtin_used_t *bu, string_t name)
     } else if (!strcmp(name.str, "chr")) {
         bu->chr = true;
     }
+}
+
+void builtin_destroy(builtin_used_t *bu)
+{
+    free(bu);
 }
 
 void generate_builtin(builtin_used_t *bu)

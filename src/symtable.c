@@ -178,8 +178,6 @@ int local_new_depth(local_symtab_t **previous)
 	}
 
 	new_local->depth = (*previous)->depth+1;
-	//new_local->if_cnt = (*previous)->if_cnt;
-	//new_local->while_cnt = (*previous)->while_cnt;
 
 	new_local->next = *previous;
 	*previous = new_local;
@@ -189,12 +187,7 @@ int local_new_depth(local_symtab_t **previous)
 
 struct local_data *local_add(local_symtab_t *local_tab, string_t name, bool init)
 {
-	// create pointer to data
-	//struct local_data **id = &(local_tab->data[local_tab->size]);
-	//*id = malloc(sizeof(struct local_data));
-	//if (id == NULL) {
-	//	return NULL;
-	//}
+
     struct local_data *id = malloc(sizeof(struct local_data));
     if (str_init(&(id->name))) return NULL;
     if (str_copy(&name, &(id->name))) return NULL;
@@ -204,16 +197,6 @@ struct local_data *local_add(local_symtab_t *local_tab, string_t name, bool init
     id->next = local_tab->data[index];
     local_tab->data[index] = id;
 
-
-	//// fill pointer with information
-	//if (str_init(&(*id)->name)) return NULL;
-	//if (str_copy(&name, &(*id)->name)) return NULL;
-	//(*id)->init = init;
-	//(*id)->type = NIL_T;
-
-	//local_tab->size++;
-
-	// TODO: realloc if table is full
 	return id;
 }
 
@@ -242,15 +225,8 @@ struct local_data *local_find(local_symtab_t *local_tab, string_t name)
     // with same hash in hash table
     struct local_data *current = NULL;
 
-	// iterate through all local symtabs with the same key
+	// iterate through all local symtabs
 	while (true) {
-		// search through identifiers in this local symtable
-		//for (unsigned int i = 0; i < tmp->size; i++) {
-		//	if (str_isequal(tmp->data[i]->name, name)) {
-		//		return tmp->data[i];
-		//	}
-		//}
-
         current = tmp->data[index];
 
         while(current) {
@@ -282,14 +258,8 @@ local_symtab_t *local_symtab_find(local_symtab_t *local_tab, string_t name)
     size_t index = hash_function(name);
     struct local_data *current = NULL;
 
-	// iterate through all local symtabs with the same key
+	// iterate through all local symtabs
 	while (true) {
-		// search through identifiers in this local symtable
-		//for (unsigned int i = 0; i < tmp->size; i++) {
-		//	if (str_isequal(tmp->data[i]->name, name)) {
-		//		return tmp;
-		//	}
-		//}
         current = tmp->data[index];
 
         while(current) {

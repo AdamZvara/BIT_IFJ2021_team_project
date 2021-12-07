@@ -438,6 +438,8 @@ void generate_write(token_t *token)
         strcat(INST, "LF@");
         generate_name(buffer, token->attribute.s);
 
+        str_free(&label_name);
+
         counter++;
     default:
         break;

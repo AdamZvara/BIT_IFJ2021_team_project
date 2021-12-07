@@ -54,6 +54,12 @@ void generate_builtin(builtin_used_t *bu);
  */
 void add_builtin(global_symtab_t *gs);
 
+/**
+ * @brief Destroy builtin structure
+ * @param bu Pointer to builtin structure
+ */
+void builtin_destroy(builtin_used_t *bu);
+
 void generate_reads();
 void generate_readi();
 void generate_readn();
