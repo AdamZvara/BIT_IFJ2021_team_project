@@ -51,7 +51,7 @@ Scanner provádí lexikální analýzu a načítání vstupního kódu, parser p
 Lexikální analýza je implementována v souborech \texttt{scanner.c} a \texttt{scanner.h}. Hlavní funkce lexikálního analyzátoru je funkce \texttt{get\_token},
 která postupně čte znak po znaku ze stdin. Tyto znaky poté převádní na strukturu \texttt{token\_t}. Tato struktura obsahuje atribut a typ tokenu.
 Jako typ tokenu může být identifikátor, řetězec, celé nebo desetinné číslo, EOF, aritmetické a porovnávací operátory nebo jiné znaky povolené v jazyce IFJ21.
-Atribut mají pouze tokeny typu řetězec, identifikátor, klíčové slovo nebo čísla. Zda-li se jedná o klíčové slovo nebo identifikátor
+Atribut mají pouze tokeny typu řetězec, identifikátor, klíčové slovo nebo čísla. Zda-li se jedná o~klíčové slovo nebo identifikátor
 se stará pomocná funkce \texttt{check\_keyword}, která porovná danný řetězec se všemi klíčovými slovami, pokud se s žádným z nich neshoduje nastaví jako typ
 tokenu identifikátor. Funkce \texttt{get\_token} pak také využívá řadu dalších pomocných funkcí například pro převod řetězce na číslo.
 
@@ -69,9 +69,9 @@ Syntaktická analýza je implementována metodou rekurzivního sestupu. Překlad
 zapisuje hodnoty, globální tabulky symbolů, paměti pro postupné ukládání generovaných instrukcí a také se nainicializuje pomocná struktura.
 
 Během implementace jsme postupně zjišťovali,
-že bychom pro generování a sémentickou kontrolu potřebovali držet v paměti různé hodnoty jako například počty parametrů u volání funkce,
- ukazatel na funkci do globální tabulky symbolů a několik dalších hodnot. Z tohoto důvodu jsme si vytvořili pomocnou strukturu
- \texttt{parser\_helper} a funkce nad ní, implementovanou v souboru \texttt{parser\_helper.c}.
+že bychom pro generování a sémentické kontroly potřebovali držet v paměti různé hodnoty jako například počty parametrů u volání funkce,
+ukazatel na funkci do globální tabulky symbolů a několik dalších hodnot. Z tohoto důvodu jsme vytvořili pomocnou strukturu
+\texttt{parser\_helper} a funkce nad ní, implementovanou v souboru \texttt{parser\_helper.c}.
 
  Z funkce \texttt{parse} se
  syntaktický analyzátor postupně rekurzivně zanořuje podle sekvence tokenů, které získavá od lexikálního analyzátoru. Po celou
@@ -138,18 +138,18 @@ na vrcholu zásobníku. Obě funkce se používájí pro sémantickou kontrolu.
 \subsection{Generování kódu}
 Pro generování kódu jsme zvolili metodu přímého generovaní zásobníkových instrukcí během rekurzivního sestupu v syntaktické analýze.
 
-Instrukce se generují na základe aktuální vykonávané funkce v syntaktické analýze a také na základe kontextu (informace uložené v struktuře
-\texttt{parser\_helper}). Vygenerované instrukce se ukládají do pomocné struktury \texttt{ibuffer} - struktura definována ve souboru \texttt{ibuffer.c}
-obsahující "flexible array member", do kterého se ukládají samotné instrukce, které se v průběhu parsování tisknou na standardní výstup.
+Instrukce se generují na základe aktuální vykonávané funkce v syntaktické analýze a také na základě kontextu (informace uložené ve struktuře
+\texttt{parser\_helper}). Vygenerované instrukce se ukládají do pomocné struktury \texttt{ibuffer}\,--\,struktura definována ve souboru \texttt{ibuffer.c}
+obsahující "flexible array member", do~kterého~se~ukládají samotné instrukce, které se v průběhu parsování tisknou na standardní výstup.
 
-
-Jeden z problémů je generovaní unikátních jmen identifikátorů mezi funkcemi nebo při vytvoření nového lokálního rámce ve funkci (podmínka/cyklus).
+Jeden z problémů je generovaní unikátních jmen identifikátorů mezi funkcemi nebo při vytvoření nového lokálního rámce ve funkci (podmínka\,/\,cyklus).
 Tento problém jsme vyřešili pomocí generovaní unikátního jména identifikátoru: \texttt{jméno\_funkce\$zanoření\$jméno\_identifikátoru} pro proměnné,
 které jsou v hlavním těle funkce. Jména proměnných v nových lokálních rámcích jsou navíc doplněna o \texttt{if\_counter} a \texttt{while\_counter},
-které představují počet aktuálních zanoření, aby se dali vytvářet stejná jména proměnných uvnitř více lokálních rámců. Tedy výsledný formát je:
+které představují počet aktuálních zanoření, aby se dala vytvářet stejná jména proměnných uvnitř více lokálních rámců. Tedy výsledný formát je:
 
-\texttt{jméno\_funkce\$zanoření\$if\_counter\$while\_counter\$jméno\_identifikátoru}
-
+\begin{quotation}
+    \texttt{jméno\_funkce\$zanoření\$if\_counter\$while\_counter\$jméno\_identifikátoru}
+\end{quotation}
 
 Další problém, na který jsme při generovaní narazili, je deklarace identifikátorů uvnitř cyklu. To jsme vyřešili použitím pomocné struktury
 \texttt{defvar\_buffer} a stavového řetězce v struktuře \texttt{parser\_helper}. Pokud stavový řetězec obsahuje informaci, že jsme v těle cyklu,
