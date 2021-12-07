@@ -249,11 +249,6 @@ int check_semantic(token_t *token, stack_t *stack, int *type)
             if (!((top->data >= ID && top->data <= STR) || top->data == RIGHT_BR || top->data == NON_TERM)) {
                 check_id = local_find(local_tab, token->attribute.s);
                 if(check_id) {
-                    /* TODO
-                    if (check_id->init == false) {
-                        return ERROR_SEMANTIC;
-                    }*/
-
                     if (*type == T_NONE) {
                         if (check_id->type == INT_T) {
                             *type = T_INT;
