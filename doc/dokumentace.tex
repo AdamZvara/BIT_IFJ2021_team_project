@@ -305,9 +305,41 @@ Pro verzování jsme používali nástroj \texttt{git} a pro vzdálené sdílen�
 \end{table}
 
 \section{LL\,-\,tabulka}
+\begin{table}[H]
+\centering
+\newcolumntype{?}{!{\vrule width 1pt}}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{?c?l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l?}
+\hlineB{3}
+                & REQUIRE & GLOBAL & FUNCTION & ID & EOF & STRING & NUMBER & INTEGER & ,  & ID & :  & LOCAL & IF & WHILE & END & RETURN & (  & $=$  & INT\_LIT & NUM\_LIT & STRING\_LIT \\\hlineB{3}
+reqire          & 1       &        &          &    &     &        &        &         &    &    &    &       &    &       &     &        &    &      &          &          &             \\\hline
+prog            &         & 2      & 3        & 4  & 5   &        &        &         &    &    &    &       &    &       &     &        &    &      &          &          &             \\\hline
+params          &         &        &          &    &     & 6      & 7      & 8       &    &    &    &       &    &       &     &        &    &      &          &          &             \\\hline
+params\_n       &         &        &          &    &     &        &        &         & 9  &    &    &       &    &       &     &        &    &      &          &          &             \\\hline
+params\_2       &         &        &          &    &     &        &        &         &    & 10 &    &       &    &       &     &        &    &      &          &          &             \\\hline
+params\_2\_n    &         &        &          &    &     &        &        &         & 11 &    &    &       &    &       &     &        &    &      &          &          &             \\\hline
+ret\_params     &         &        &          &    &     &        &        &         &    &    & 12 &       &    &       &     &        &    &      &          &          &             \\\hline
+ret\_params\_n  &         &        &          &    &     &        &        &         & 13 &    &    &       &    &       &     &        &    &      &          &          &             \\\hline
+body            &         &        &          & 14 &     &        &        &         &    &    &    & 15    & 16 & 17    & 18  & 19     &    &      &          &          &             \\\hline
+body\_n         &         &        &          &    &     &        &        &         & 20 &    &    &       &    &       &     &        & 21 & 22   &          &          &             \\\hline
+assign\_single  &         &        &          & 23 &     &        &        &         &    &    &    &       &    &       &     &        &    &      &          &          &             \\\hline
+assign\_multi   &         &        &          &    &     &        &        &         & 24 &    &    &       &    &       &     &        &    & 25   &          &          &             \\\hline
+r\_side         &         &        &          & 26 &     &        &        &         & 27 &    &    &       &    &       &     &        &    &      &          &          &             \\\hline
+r\_side\_n      &         &        &          & 28 &     &        &        &         & 29 &    &    &       &    &       &     &        &    &      &          &          &             \\\hline
+init            &         &        &          & 30 &     &        &        &         &    &    &    &       &    &       &     &        &    &      &          &          &             \\\hline
+init\_n         &         &        &          & 31 &     &        &        &         &    &    &    &       &    &       &     &        &    &      &          &          &             \\\hline
+args            &         &        &          & 32 &     &        &        &         &    &    &    &       &    &       &     &        &    &      & 33       & 34       & 35          \\\hline
+args\_n         &         &        &          &    &     &        &        &         & 36 &    &    &       &    &       &     &        &    &      &          &          &             \\\hline
+term            &         &        &          & 37 &     &        &        &         &    &    &    &       &    &       &     &        &    &      & 38       & 39       & 40          \\\hline
+types\_keyword  &         &        &          &    &     & 41     & 42     & 43      &    &    &    &       &    &       &     &        &    &      &          &          &             \\\hlineB{3}
+\end{tabular}%
+}
+\caption{LL\,--\,tabulka}
+\label{tab:ll_table}
+\end{table}
 
 \section{Precedenční taulka}
-\begin{table}[h]
+\begin{table}[ht]
     \catcode`\-=12
     \centering
     \newcolumntype{?}{!{\vrule width 1pt}}
