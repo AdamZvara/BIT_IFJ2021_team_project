@@ -8,3 +8,5 @@ tests/parser-tests/*/*.result
 doc/warning*
 doc/html
 .idea/
+*.aux
+*.log
