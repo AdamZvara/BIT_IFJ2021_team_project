@@ -567,11 +567,6 @@ int body()
                 return body();
                 break;
             case KW_IF: // IF <expr> THEN <body> ELSE <body> END <body>
-                // add if in previous tab, because name is created from if_counter in it
-                local_add_if(local_tab);
-                // add new depth so local variables can be recognized
-                local_new_depth(&local_tab);
-
                 str_add_char(&p_helper->status, 'i');
 
                 // call expression()
@@ -587,6 +582,11 @@ int body()
                 } else {
                     return ret;
                 }
+
+                // add if in previous tab, because name is created from if_counter in it
+                local_add_if(local_tab);
+                // add new depth so local variables can be recognized
+                local_new_depth(&local_tab);
 
                 generate_if_else();
 
@@ -1191,7 +1191,7 @@ int args()
         return ret;
     }
 
-    if (GET_TYPE == TOK_STRING || GET_TYPE == TOK_DECIMAL || GET_TYPE == TOK_INT || 
+    if (GET_TYPE == TOK_STRING || GET_TYPE == TOK_DECIMAL || GET_TYPE == TOK_INT ||
             (GET_TYPE == TOK_KEYWORD && GET_KW == KW_NIL)) {
         if (!strcmp(p_helper->func->key.str, "write")) {
             // instructions are generated on spot

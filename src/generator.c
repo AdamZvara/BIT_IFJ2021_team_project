@@ -95,6 +95,14 @@ void generate_name(ibuffer_t *buffer, string_t name)
     str_insert(&generated, local_tab->key.str);
     str_insert(&generated, "$");
     str_insert_int(&generated, symtab->depth);
+
+    if (symtab->depth != 0) {
+        str_insert(&generated, "$");
+        str_insert_int(&generated, symtab->next->if_cnt);
+        str_insert(&generated, "$");
+        str_insert_int(&generated, symtab->next->while_cnt);
+    }
+
     str_insert(&generated, "$");
     str_insert(&generated, name.str);
 
@@ -783,6 +791,33 @@ void generate_push_operator(prec_table_term_t op)
     }
 }
 
+void generate_name_previous_depth(ibuffer_t *buffer, string_t name)
+{
+    local_symtab_t *symtab = local_symtab_find(local_tab->next, name);
+    if (symtab == NULL)
+        return;
+
+    string_t generated;
+    str_init(&generated);
+
+    str_insert(&generated, local_tab->key.str);
+    str_insert(&generated, "$");
+    str_insert_int(&generated, symtab->depth);
+
+    if (symtab->depth != 0) {
+        str_insert(&generated, "$");
+        str_insert_int(&generated, symtab->next->if_cnt);
+        str_insert(&generated, "$");
+        str_insert_int(&generated, symtab->next->while_cnt);
+    }
+
+    str_insert(&generated, "$");
+    str_insert(&generated, name.str);
+
+    strcat(INST, generated.str);
+    str_free(&generated);
+}
+
 void generate_push_operand(token_t *token)
 {
     ADD_INST("pushs ");
@@ -803,7 +838,15 @@ void generate_push_operand(token_t *token)
 
     case TOK_ID:
         strcat(INST, "LF@");
-        generate_name(buffer, token->attribute.s);
+        if (str_getlast(p_helper->status) == 'i') {
+            if (p_helper->id_first != NULL) {
+                generate_name_previous_depth(buffer, token->attribute.s);
+            } else {
+                generate_name(buffer, token->attribute.s);
+            }
+        } else {
+            generate_name(buffer, token->attribute.s);
+        }
         break;
 
     case TOK_KEYWORD:

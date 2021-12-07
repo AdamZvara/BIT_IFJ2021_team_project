@@ -30,6 +30,7 @@ extern local_symtab_t *local_tab;   // local symtable from parser
 extern global_symtab_t *global_tab; // global symtable from parser
 extern ibuffer_t *buffer;           // instruction buffer from parser
 extern ibuffer_t *defvar_buffer;    // buffer for declaring variables
+extern parser_helper_t *p_helper;   // get context of parser
 
 void generate_name(ibuffer_t *buffer, string_t name);
 

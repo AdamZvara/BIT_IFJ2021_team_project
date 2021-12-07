@@ -1,0 +1,23 @@
+require "ifj21"
+
+
+function main()
+	local n1 : integer = 1
+
+    while (n1 ~= 3) do
+        local a : integer = 5
+        write(a)
+        n1 = n1 + 1
+    end
+
+	n1 = 1
+
+	while (n1 ~= 3) do
+        local a : integer = 8
+        write(a)
+        n1 = n1 + 1
+    end
+
+end
+
+main()
