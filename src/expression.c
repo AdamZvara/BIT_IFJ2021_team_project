@@ -261,6 +261,8 @@ int check_semantic(token_t *token, stack_t *stack, int *type)
                             *type = T_NUM;
                         } else if (check_id->type == STR_T) {
                             *type = T_STR;
+                        } else if (check_id->type == NIL_T) {
+                            *type = T_NIL;
                         }
                         break;
                     }
