@@ -103,8 +103,14 @@ Instrukce se generují na základe aktuální vykonávané funkce v syntaktické
 \texttt{parser\_helper}). Vygenerované instrukce se ukládají do pomocné struktury \texttt{ibuffer} - struktura definována ve souboru \texttt{ibuffer.c}
 obsahující "flexible array member", do kterého se ukládají samotné instrukce, které se v průběhu parsování tisknou na standardní výstup.
 
+
 Jeden z problémů je generovaní unikátních jmen identifikátorů mezi funkcemi nebo při vytvoření nového lokálního rámce ve funkci (podmínka/cyklus).
-Tento problém jsme vyřešili pomocí generovaní unikátního jména identifikátoru: \texttt{jméno\_funkce\$zanoření\$jméno\_identifikátoru}.
+Tento problém jsme vyřešili pomocí generovaní unikátního jména identifikátoru: \texttt{jméno\_funkce\$zanoření\$jméno\_identifikátoru} pro proměnné,
+které jsou v hlavním těle funkce. Jména proměnných v nových lokálních rámcích jsou navíc doplněna o \texttt{if\_counter} a \texttt{while\_counter},
+které představují počet aktuálních zanoření, aby se dali vytvářet stejná jména proměnných uvnitř více lokálních rámců. Tedy výsledný formát je:
+
+\texttt{jméno\_funkce\$zanoření\$if\_counter\$while\_counter\$jméno\_identifikátoru}
+
 
 Další problém, na který jsme při generovaní narazili, je deklarace identifikátorů uvnitř cyklu. To jsme vyřešili použitím pomocné struktury
 \texttt{defvar\_buffer} a stavového řetězce v struktuře \texttt{parser\_helper}. Pokud stavový řetězec obsahuje informaci, že jsme v těle cyklu,
