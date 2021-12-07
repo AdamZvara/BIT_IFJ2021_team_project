@@ -1,0 +1,14 @@
+require "ifj21"
+
+function concat(s1 : string, s2 : string) : string
+	return s1..s2
+end
+
+function foo()
+	local str : string = "Hello"
+	local str2 : string = ", world\n"
+	local res : string = concat(str,str2)
+	write(res)
+end
+
+foo()

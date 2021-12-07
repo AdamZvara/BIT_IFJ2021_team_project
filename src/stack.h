@@ -17,7 +17,6 @@
 typedef struct stack_item {
     struct stack_item *next;
     int data;
-    // more TODO?
 } stack_item_t;
 
 typedef struct {
@@ -102,5 +101,16 @@ void stack_dispose(stack_t *stack);
  * @return Count of items above HANDLE
  */
 int items_to_handle(stack_t *stack);
+
+int find_len_op(stack_t *stack);
+
+/**
+ * @brief Returns highest operator on stack
+ *
+ * @param stack Initialized stack
+ *
+ * @return Operator
+ */
+stack_item_t *get_top_operator(stack_t *stack);
 
 #endif //_STACK_H_

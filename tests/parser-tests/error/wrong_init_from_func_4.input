@@ -1,0 +1,13 @@
+-- testing C
+
+require "ifj21"
+
+function foo() : string
+	return "hello"
+end
+
+function main()
+	local i : integer = foo()
+end
+
+main()

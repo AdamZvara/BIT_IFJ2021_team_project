@@ -1,0 +1,10 @@
+require "ifj21"
+
+function foo(str : string, i : integer)
+
+	local index : integer = ord(str,i)
+	write(index,"\n")
+
+end
+
+foo("YO MAMA JOKES",2)

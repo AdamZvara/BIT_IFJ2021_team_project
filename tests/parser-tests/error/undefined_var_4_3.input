@@ -1,0 +1,12 @@
+require "ifj21"
+
+function foo(a : string, b : string)
+	write("test")
+end
+
+function bar()
+	local a : string = "abc"
+	foo(a, b)
+end
+
+bar()

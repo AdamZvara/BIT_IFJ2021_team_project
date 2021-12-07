@@ -1,0 +1,11 @@
+require "ifj21"
+
+function bar() : number
+    return 5
+end
+
+function main()
+	local a : integer = bar()
+end
+
+main()

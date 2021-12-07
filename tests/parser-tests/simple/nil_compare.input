@@ -1,0 +1,11 @@
+require "ifj21"
+
+function main()
+	local i : integer
+	if i == nil then
+		write("i is nil")
+	else
+	end
+
+end
+main()

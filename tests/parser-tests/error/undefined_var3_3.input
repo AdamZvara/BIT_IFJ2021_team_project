@@ -1,0 +1,9 @@
+require "ifj21"
+
+function main()
+	if a > 2 then
+	else
+	end
+end
+
+main()

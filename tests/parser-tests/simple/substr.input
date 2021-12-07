@@ -1,0 +1,9 @@
+require "ifj21"
+
+function main(str : string)
+	local s : string = substr(str, 1.0, 8.0)
+	write(s,"\n")
+
+end
+
+main("Strasne dlouhy string")

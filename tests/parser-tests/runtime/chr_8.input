@@ -1,0 +1,8 @@
+require "ifj21"
+
+function main()
+	local i : integer
+	local y : string = chr(i)
+end
+
+main()

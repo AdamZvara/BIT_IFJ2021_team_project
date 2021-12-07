@@ -14,6 +14,9 @@
 #ifndef _IBUFFER_H
 #define _IBUFFER_H
 
+#define IBUFFER_SIZE 1000  // size of ibuffer
+#define INSTR_SIZE   200  // size of single instruction
+
 #include <stddef.h>
 
 // macro for appending instruction into ibuffer
@@ -67,6 +70,13 @@ ibuffer_t *ibuffer_create(size_t buffer_size, size_t inst_size);
  * @param buffer Pointer to instruction buffer
  */
 void ibuffer_clear(ibuffer_t *buffer);
+
+/**
+ * @brief Revert generated expression in buffer
+ *
+ * @param buffer Pointer to instruction buffer
+ */
+void ibuffer_revert_expression(ibuffer_t *buffer);
 
 /**
  * @brief Print out instructions stored in buffer

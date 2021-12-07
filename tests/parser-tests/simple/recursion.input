@@ -1,0 +1,18 @@
+require "ifj21"
+
+function rec(i : integer) : integer
+	if (i == 1) then
+		return i
+	else
+		write(i," ")
+		i = i-1
+		i = rec(i)
+	end
+end
+
+function main()
+	local res : integer = rec(4)
+	write("\n")
+end
+
+main()

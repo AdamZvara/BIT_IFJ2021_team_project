@@ -1,0 +1,16 @@
+require "ifj21"
+
+
+function main()
+	local s : string = ""
+	write("ZADEJTE VELKE PISMENO: ")
+	s = reads()
+	while s ~= "X" do
+		write(s," is wrong input\n")
+		s = reads()
+	end
+	write(s)
+end
+
+
+main()

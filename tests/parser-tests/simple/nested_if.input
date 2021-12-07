@@ -10,7 +10,7 @@ function foo(s : string)
 			write("INNER\n")
 		else end
 	else end
-	if 1 then 
+	if 1>0 then
 		write("Another\n")
 	else end
 end

@@ -1,0 +1,9 @@
+require "ifj21"
+
+function main()
+	local s : string
+	local a : integer = #s
+	write(a)
+end
+
+main()

@@ -14,8 +14,6 @@
 #ifndef _PARSER_H_
 #define _PARSER_H_
 
-#include "func_helper.h"
-
 #define FREE_TOK_STRING() \
     do {               \
 		if (curr_token->type == TOK_STRING || curr_token->type == TOK_ID) \
@@ -38,23 +36,23 @@
 int parse();
 int require();
 int prog();
-int params(func_def_t *f_helper);
-int params_n(func_def_t *f_helper);
-int params_2(func_def_t *f_helper);
-int params_2_n(func_def_t *f_helper);
-int ret_params(func_def_t *f_helper);
-int ret_params_n(func_def_t *f_helper);
+int params();
+int params_n();
+int params_2();
+int params_2_n();
+int ret_params();
+int ret_params_n();
 int body();
-int body_n(func_def_t *f_helper);
-int assign_single(func_def_t *f_helper);
+int body_n();
+int assign_single();
 int assign_multi();
 int r_side();
 int r_side_n();
 int func();
-int init(struct local_data *id);
-int init_n(struct local_data *id);
-int args(func_def_t *f_helper);
-int args_n(func_def_t *f_helper);
+int init();
+int init_n();
+int args();
+int args_n();
 int term();
 int types_keyword();
 

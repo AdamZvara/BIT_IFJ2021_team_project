@@ -1,0 +1,8 @@
+require "ifj21"
+
+function main()
+	local s : string
+	local i : integer = ord(s,2)
+end
+
+main()

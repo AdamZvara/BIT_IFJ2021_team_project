@@ -64,6 +64,29 @@ void ibuffer_clear(ibuffer_t *buffer)
     buffer->length = 0;
 }
 
+void ibuffer_revert_expression(ibuffer_t *buffer)
+{
+    int expr_length = 0;
+    // remove START and END from current expression
+    buffer->inst[0] = "";
+    while (strcmp(buffer->inst[expr_length], "#EXPR END\n")) {
+        expr_length++;
+    }
+    buffer->inst[expr_length++] = "";
+
+    int skip_cnt = 0;
+    for (unsigned int i = 1; i < buffer->length; i++) {
+        if (!strcmp(buffer->inst[i], "#EXPR START\n")) {
+            skip_cnt++;
+        }
+    }
+
+    for (int i = 0; ;i++) {
+        buffer->inst[30][i] = buffer->inst[1][i];
+        if (buffer->inst[1][i] == '\0') break;
+    }
+}
+
 void ibuffer_print(ibuffer_t *buffer)
 {
     // print all instructions

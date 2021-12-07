@@ -1,0 +1,9 @@
+require "ifj21"
+
+global foo: function(string)
+
+function foo(a : integer)
+    write(a)
+end
+
+foo(5)

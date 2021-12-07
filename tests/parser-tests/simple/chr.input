@@ -1,0 +1,8 @@
+require "ifj21"
+
+function foo()
+	local a : string = chr(65)
+	write(a,"\n")
+end
+
+foo()

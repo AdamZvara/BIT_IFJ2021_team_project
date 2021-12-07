@@ -41,6 +41,7 @@ struct local_data {
 	string_t name;
 	type_t type;
 	bool init;
+    struct local_data *next;
 };
 
 /**
@@ -49,9 +50,9 @@ struct local_data {
 typedef struct local_symtab {
 	string_t key;
 	unsigned int depth;				// Level of depth (if, while ...)
-	unsigned int size;				// Amount of stored variables
 	unsigned int alloc_size;		// Size of allocated space for variables
 	unsigned int if_cnt;			// Counter of if statements for unique label generation
+	unsigned int after_else;		// Number to create unique labels for nested ifs
 	unsigned int while_cnt;			// Counter of while statements for unique label generation
 	struct local_symtab *next;		// Pointer to next local TS (creating linked list)
 	struct local_data *data[];		// Variables inside function
@@ -66,7 +67,6 @@ struct global_item {
 	string_t retvals;			// Function return values in string format
 	string_t params;			// Parameters of function in string format
 	struct global_item *next;
-	//TODO: maybe add names of parameters with their types?
 };
 
 /**
@@ -82,7 +82,7 @@ typedef struct global_symtab {
  * @param key Key in string format
  * @return Index to hashtable based on key
  */
-int hash_function(string_t key);
+size_t hash_function(string_t key);
 
 /**
  * @brief Create global symtable with initialized values
@@ -107,6 +107,13 @@ struct global_item *global_find(global_symtab_t *gs, string_t key);
 struct global_item *global_add(global_symtab_t *gs, string_t key);
 
 /**
+ * @brief Check if all functions in global symtable were defined
+ * @param gs Pointer to global symtable
+ * @return true if all functions were defined, otherwise false
+*/
+bool global_check_declared(global_symtab_t *gs);
+
+/**
  * @brief Destroy global symtable and free all its resources
  * @param gs Pointer to global symtable
  */
@@ -125,8 +132,9 @@ local_symtab_t *local_create(string_t key);
 
 /**
  * @brief Create new depth of last function in local symtable
+ * @warning New depth does not keep track of if_counter
  * @param previous Pointer to local symtable
- * @return 0 if successful, otherwise ERROR_INTERNAL TODO: maybe change
+ * @return 0 if successful, otherwise ERROR_INTERNAL
  */
 int local_new_depth(local_symtab_t **previous);
 
@@ -161,10 +169,16 @@ struct local_data *local_find(local_symtab_t *local_tab, string_t name);
 local_symtab_t *local_symtab_find(local_symtab_t *local_tab, string_t name);
 
 /**
- * @brief Increase if_cnt in local symtable
+ * @brief Increase if_cnt in current local symtable
  * @param local_tab Pointer to local symtable
  */
 void local_add_if(local_symtab_t *local_tab);
+
+/**
+ * @brief Increase identifier for nested if statements
+ * @param local_tab Pointer to local symtable
+ */
+void local_after_else(local_symtab_t *local_tab);
 
 /**
  * @brief Increase while_cnt in local symtable

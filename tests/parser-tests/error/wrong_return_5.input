@@ -1,0 +1,14 @@
+-- testing D
+require "ifj21"
+
+function foo () : integer
+	local i : integer = 4
+	return i,4
+
+end
+
+function main()
+	local i : integer = foo()
+
+end
+main()

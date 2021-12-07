@@ -1,0 +1,20 @@
+require "ifj21"
+
+global foo : function(integer) : integer
+
+function bar()
+	local a : integer = 4
+	a = foo(a)
+	write(a,"\n")
+	a = foo(20)
+	write(a,"\n")
+
+end
+
+function foo(i : integer) : integer
+	local a : integer = 5
+	i = a * 2 + 5
+	return i
+end
+
+bar()

@@ -1,0 +1,32 @@
+require "ifj21"
+
+function foo(i : integer, j : integer) : integer
+	return i * j
+
+end
+
+
+function main()
+	local i : integer = 0
+	local j : integer = 0
+	while i < 11 do
+		while j < 11 do
+			local result : integer
+			result = foo(i,j)
+			write(result," ")
+			if result == i*10 then
+				if result == 0 then
+				else
+					write("<- NASOBKY ",i,"\n")
+				end
+			else
+			end
+			j = j + 1
+		end
+	write("\n")
+	j = 0
+	i = i + 1
+	end
+end
+
+main()

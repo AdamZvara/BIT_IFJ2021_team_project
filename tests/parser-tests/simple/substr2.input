@@ -1,0 +1,9 @@
+require "ifj21"
+
+function main(str : string, n1 : number, n2 : number)
+
+	local s : string = substr(str,n1,n2)
+	write(s,"\n")
+end
+
+main("Ahoj",2.0,10.0)

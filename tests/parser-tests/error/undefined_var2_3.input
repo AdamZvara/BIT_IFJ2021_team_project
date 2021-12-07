@@ -1,0 +1,9 @@
+require "ifj21"
+
+function main()
+	while a > 3 do
+
+	end
+end
+
+main()

@@ -1,0 +1,40 @@
+require "ifj21"
+
+function foo(i : intger)
+	local a : integer = 0	
+	if i > 5 then
+		if i > 12 then
+			write(i,"\n")
+		else
+			write(i,"\n")
+		end
+	else
+		if i < 5 then
+			a = i
+			write(a,"\n")
+		else
+			a = i * 2
+			write(a, "\n")
+		end
+	end
+	write(a,"\n")
+end
+
+function main()
+	local i : integer = 1	
+	if i > 0 then
+		local i : integer = 2
+		write(i,"\n")
+		if i > 1 then
+			local i : integer = 3
+			write(i)
+		else
+		end
+	else
+	end
+	while i ~= 12 do
+		foo(i)	
+		i = i + 1
+	end
+	write(i,"\n")	
+end

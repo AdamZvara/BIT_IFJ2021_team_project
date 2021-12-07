@@ -1,0 +1,10 @@
+require "ifj21"
+
+function foo(i : integer)
+	local a : integer = 5
+	a,i = a+2,i*2
+	write(a, " ",i,"\n")
+end
+
+
+foo(5)

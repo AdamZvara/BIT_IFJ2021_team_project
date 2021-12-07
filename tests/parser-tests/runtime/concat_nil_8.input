@@ -1,0 +1,12 @@
+require "ifj21"
+
+
+function babuska()
+	local a : string
+    local b : string = "abcd"
+	local res : string = a .. b
+	write(res,"\n")
+end
+
+
+babuska()

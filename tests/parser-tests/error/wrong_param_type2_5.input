@@ -1,0 +1,14 @@
+require "ifj21"
+
+function foo(i : integer, s : string)
+
+end
+
+function main()
+	local a : integer 
+	local s : string
+	foo(s,a)
+
+end
+
+main()

@@ -1,0 +1,7 @@
+require "ifj21"
+
+function integer()
+	local i : integer
+end
+
+main()

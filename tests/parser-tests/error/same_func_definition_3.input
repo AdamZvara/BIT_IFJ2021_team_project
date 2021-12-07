@@ -1,0 +1,13 @@
+require "ifj21"
+
+global main : function()
+
+function main()
+	write("hello world")
+
+end
+
+function main()
+	write("hello world")
+end
+main()

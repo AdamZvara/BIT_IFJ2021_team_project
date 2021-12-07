@@ -1,0 +1,15 @@
+require "ifj21"
+
+function main()
+	local a : integer = 2
+	local b : number = 3.21
+	local c : number = a + b
+
+	if c > 2 then
+		write(c,"\n")
+	else
+	end
+
+end
+
+main()

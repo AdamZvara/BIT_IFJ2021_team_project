@@ -1,0 +1,15 @@
+-- testing B
+
+require "ifj21"
+
+function foo() : integer
+	return 2
+end
+
+function main()
+	local i : integer
+	local y : integer
+	i,y = foo()
+
+end
+main()

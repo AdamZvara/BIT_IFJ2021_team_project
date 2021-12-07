@@ -1,0 +1,9 @@
+require "ifj21"
+
+function main()
+	if 3 > "hele" then
+	else
+	end
+end
+
+main()

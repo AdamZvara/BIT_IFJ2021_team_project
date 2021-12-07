@@ -37,50 +37,6 @@ builtin_used_t *builtin_used_create()
     return bu;
 }
 
-void builtin_used_update(builtin_used_t *bu, string_t name)
-{
-    if (!strcmp(name.str, "reads")) {
-        bu->reads = true;
-    } else if (!strcmp(name.str, "readn")) {
-        bu->readn = true;
-    } else if (!strcmp(name.str, "readi")) {
-        bu->readi = true;
-    } else if (!strcmp(name.str, "tointeger")) {
-        bu->tointeger = true;
-    } else if (!strcmp(name.str, "substr")) {
-        bu->substr = true;
-    } else if (!strcmp(name.str, "ord")) {
-        bu->ord = true;
-    } else if (!strcmp(name.str, "chr")) {
-        bu->chr = true;
-    }
-}
-
-void builtin_used_generate(builtin_used_t *bu)
-{
-    if (bu->reads) {
-        generate_reads();
-    }
-    if (bu->readn) {
-        generate_readn();
-    }
-    if (bu->readi) {
-        generate_readi();
-    }
-    if (bu->tointeger) {
-        generate_tointeger();
-    }
-    if (bu->substr) {
-        generate_substr();
-    }
-    if (bu->ord) {
-        generate_ord();
-    }
-    if (bu->chr) {
-        generate_chr();
-    }
-}
-
 void add_builtin(global_symtab_t *gs)
 {
     string_t function_name;
@@ -144,7 +100,61 @@ void add_builtin(global_symtab_t *gs)
     str_add_char(&func->retvals, 's');
     str_add_char(&func->params, 'i');
     str_clear(&function_name);
+
+    str_free(&function_name);
 }
+
+
+
+void builtin_used_update(builtin_used_t *bu, string_t name)
+{
+    if (!strcmp(name.str, "reads")) {
+        bu->reads = true;
+    } else if (!strcmp(name.str, "readn")) {
+        bu->readn = true;
+    } else if (!strcmp(name.str, "readi")) {
+        bu->readi = true;
+    } else if (!strcmp(name.str, "tointeger")) {
+        bu->tointeger = true;
+    } else if (!strcmp(name.str, "substr")) {
+        bu->substr = true;
+    } else if (!strcmp(name.str, "ord")) {
+        bu->ord = true;
+    } else if (!strcmp(name.str, "chr")) {
+        bu->chr = true;
+    }
+}
+
+void builtin_destroy(builtin_used_t *bu)
+{
+    free(bu);
+}
+
+void generate_builtin(builtin_used_t *bu)
+{
+    if (bu->reads) {
+        generate_reads();
+    }
+    if (bu->readn) {
+        generate_readn();
+    }
+    if (bu->readi) {
+        generate_readi();
+    }
+    if (bu->tointeger) {
+        generate_tointeger();
+    }
+    if (bu->substr) {
+        generate_substr();
+    }
+    if (bu->ord) {
+        generate_ord();
+    }
+    if (bu->chr) {
+        generate_chr();
+    }
+}
+
 
 void generate_reads()
 {
@@ -205,7 +215,6 @@ void generate_chr()
     ADD_INST_N("jumpifeq _chr_end LF@%bool bool@true");
 
     ADD_INST_N("int2char LF@%retval0 LF@%0");
-    ADD_INST_N("write LF@%retval0");
 
     ADD_INST_N("label _chr_end");
     ADD_INST_N("popframe");
@@ -246,7 +255,6 @@ void generate_ord()
     ADD_INST_N("jumpifeq _ord_end LF@%bool bool@true");
 
     ADD_INST_N("stri2int LF@%retval0 LF@%0 LF@%1");
-    ADD_INST_N("write LF@%retval0");
 
     ADD_INST_N("label _ord_end");
     ADD_INST_N("popframe");
@@ -258,7 +266,7 @@ void generate_substr()
     ADD_NEWLINE();
     ADD_INST_N("label substr");
     ADD_INST_N("pushframe");
-    ADD_INST_N("defvar LF@%substring");
+    ADD_INST_N("defvar LF@%retval0");
     ADD_INST_N("defvar LF@%iterator");
     ADD_INST_N("defvar LF@%begin");
     ADD_INST_N("defvar LF@%end");
@@ -283,8 +291,8 @@ void generate_substr()
 
     ADD_INST_N("label _substr_cont");
 
-    // initialize empty substring
-    ADD_INST_N("move LF@%substring string@");
+    // initialize empty retval0
+    ADD_INST_N("move LF@%retval0 string@");
 
     // convert given numbers into integers
     ADD_INST_N("float2int LF@%begin LF@%1");
@@ -324,15 +332,13 @@ void generate_substr()
     // get single char from string and store it in LF@char
     ADD_INST_N("getchar LF@%char LF@%0 LF@%iterator");
 
-    // concatenate substring with newly extracted char
-    ADD_INST_N("concat LF@%substring LF@%substring LF@%char");
+    // concatenate retval0 with newly extracted char
+    ADD_INST_N("concat LF@%retval0 LF@%retval0 LF@%char");
 
     ADD_INST_N("add LF@%iterator LF@%iterator int@1");
     ADD_INST_N("jump _substr_loop");
-    // TODO: check if string is OK, index in range
 
     ADD_INST_N("label _substr_end");
-    ADD_INST_N("write LF@%substring");
 
     ADD_INST_N("popframe");
     ADD_INST_N("return");

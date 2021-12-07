@@ -1,0 +1,14 @@
+require "ifj21"
+
+global foo : function(integer) : integer
+
+function bar()
+	local res : integer = foo(5)
+	write(res)
+end
+
+function foo(i : integer) : integer
+	return i
+end
+
+bar()

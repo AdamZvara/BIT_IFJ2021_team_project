@@ -1,0 +1,26 @@
+require "ifj21"
+
+global foo : function() : number, integer, string
+
+function bar(i : integer, n : number) : number, integer
+	write(i, " ",n,"\n")
+	local s : string = ""
+	n,i, s = foo()
+	write(s)
+	return n * 2.21,i
+
+end
+
+function foo() : number, integer, string
+	local s : string = "DLOUHESLOVO"
+	local n : number = 2.0*1.26
+	local i : integer = #s
+
+	return n,i,s
+end
+
+function main()
+	bar(2,2)
+end
+
+main()

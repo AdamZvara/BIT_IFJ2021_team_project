@@ -1,0 +1,19 @@
+require "ifj21"
+
+
+function main()
+	local n1 : integer = 1
+	if n1 ~= 1 then
+    else
+		local a : integer = 8
+		write(a)
+	end
+
+	if n1 == 1 then
+		local a : integer = 5
+		write(a)
+	else end
+
+end
+
+main()

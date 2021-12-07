@@ -1,0 +1,15 @@
+require "ifj21"
+
+
+function bar()
+	local i : integer = 5
+	while i > 0 do
+		local a : integer = 2
+		i = i -1 
+		a = a * i - 2
+		write(a," ")
+	end
+	write("\n")
+end
+
+bar()

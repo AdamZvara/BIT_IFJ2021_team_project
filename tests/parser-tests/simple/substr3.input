@@ -1,0 +1,9 @@
+require "ifj21"
+
+function foo()
+	local s : string = substr("Jep",10.0,2.0)
+	write(s,"\n")
+
+end
+
+foo()

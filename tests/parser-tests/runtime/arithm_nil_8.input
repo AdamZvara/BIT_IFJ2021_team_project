@@ -1,0 +1,10 @@
+require "ifj21"
+
+function babuska()
+	local a : integer
+	local res : integer = a + 5
+	write(res,"\n")
+end
+
+
+babuska()

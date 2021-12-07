@@ -1,0 +1,9 @@
+require "ifj21"
+
+global bar:function()
+
+function foo(a : integer)
+    write(a)
+end
+
+foo(5)

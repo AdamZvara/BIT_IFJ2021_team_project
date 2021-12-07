@@ -1,0 +1,8 @@
+require "ifj21"
+
+function main()
+	local n : number = readn()
+	write(n,"\n")
+
+end
+main()

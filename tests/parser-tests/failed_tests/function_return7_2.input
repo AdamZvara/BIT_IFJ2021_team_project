@@ -1,0 +1,17 @@
+-- after return cant be anything if it is not in if statement
+require "ifj21"
+
+global bar : function()
+
+function foo()
+	write("TOTO vypis")
+	return
+	write("Honza Cernocky je legenda\n")
+end
+
+function bar()
+	foo()
+
+end
+
+bar()

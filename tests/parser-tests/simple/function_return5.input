@@ -1,0 +1,21 @@
+require "ifj21"
+
+function foo(i : integer) : integer
+	local a : integer = 20
+	return (a * i)-a
+end
+
+function concat(s1 : string, s2 : string) : string
+	return s1..s2
+end
+
+function main()
+	local a : integer
+	a = foo(2)
+	write(a,"\n")
+	local str : string
+	str = concat("","Hello\n")
+	write(str)
+end
+
+main()

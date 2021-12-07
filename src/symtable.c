@@ -14,12 +14,13 @@
 /* Implementation of hash table was taken from Language C course,
  * original implementation was made by Vojtech Eichler (xeichl01) */
 
+#include <stdint.h>
 #include "symtable.h"
 #include "error.h"
 
-int hash_function(string_t str)
+size_t hash_function(string_t str)
 {
-	long long h=0;
+	uint32_t h=0;
 	const unsigned char *p;
 	for(p=(const unsigned char*)str.str; *p!='\0'; p++)
 		h = 65599*h + *p;
@@ -46,7 +47,7 @@ global_symtab_t *global_create()
 struct global_item *global_find(global_symtab_t *gs, string_t key)
 {
 	// finding index of key in hash table
-	int index = hash_function(key);
+	size_t index = hash_function(key);
 
 	// cycling through all records at index in hash table
 	struct global_item *item;
@@ -89,7 +90,7 @@ struct global_item *global_add(global_symtab_t *gs, string_t key)
 	}
 
 	// create new function and insert it at the beginning of list
-	int hash = hash_function(key);
+	size_t hash = hash_function(key);
 	struct global_item *new_func = global_create_fun(key);
 	if (new_func == NULL) {
 		return NULL;
@@ -99,6 +100,22 @@ struct global_item *global_add(global_symtab_t *gs, string_t key)
 	gs->func[hash] = new_func;
 
 	return new_func;
+}
+
+bool global_check_declared(global_symtab_t *gs)
+{
+	struct global_item *tmp = NULL;
+	for (unsigned int i = 0; i < gs->size; i++) {
+		tmp = gs->func[i];
+		while (tmp != NULL) {
+			if (tmp->defined == false) {
+				return true;
+			}
+			tmp = tmp->next;
+		}
+	}
+
+	return false;
 }
 
 void global_destroy(global_symtab_t *gs)
@@ -134,9 +151,9 @@ local_symtab_t *local_create(string_t key)
 	if (str_init(&local->key)) return NULL;
 	if (str_copy(&key, &local->key)) return NULL;
 	local->if_cnt = 0;
+	local->after_else = 0;
 	local->while_cnt = 0;
 	local->depth = 0;
-	local->size = 0;
 	local->alloc_size = LOCAL_SYM_SIZE;
 	local->next = NULL;
 
@@ -160,8 +177,6 @@ int local_new_depth(local_symtab_t **previous)
 	}
 
 	new_local->depth = (*previous)->depth+1;
-	new_local->if_cnt = (*previous)->if_cnt;
-	new_local->while_cnt = (*previous)->while_cnt;
 
 	new_local->next = *previous;
 	*previous = new_local;
@@ -171,22 +186,17 @@ int local_new_depth(local_symtab_t **previous)
 
 struct local_data *local_add(local_symtab_t *local_tab, string_t name, bool init)
 {
-	// create pointer to data
-	struct local_data **id = &(local_tab->data[local_tab->size]);
-	*id = malloc(sizeof(struct local_data));
-	if (id == NULL) {
-		return NULL;
-	}
 
-	// fill pointer with information
-	if (str_init(&(*id)->name)) return NULL;
-	if (str_copy(&name, &(*id)->name)) return NULL;
-	(*id)->init = init;
-	(*id)->type = NIL_T;
+    struct local_data *id = malloc(sizeof(struct local_data));
+    if (str_init(&(id->name))) return NULL;
+    if (str_copy(&name, &(id->name))) return NULL;
+    id->init = init;
+    id->type = NIL_T;
+    size_t index = hash_function(name);
+    id->next = local_tab->data[index];
+    local_tab->data[index] = id;
 
-	local_tab->size++;
-	// TODO: realloc if table is full
-	return *id;
+	return id;
 }
 
 void local_add_type(struct local_data *data, keyword_t kw)
@@ -209,14 +219,20 @@ struct local_data *local_find(local_symtab_t *local_tab, string_t name)
 		return NULL;
 	}
 
-	// iterate through all local symtabs with the same key
+    size_t index = hash_function(name);
+    // variable that allows us to cycle through items
+    // with same hash in hash table
+    struct local_data *current = NULL;
+
+	// iterate through all local symtabs
 	while (true) {
-		// search through identifiers in this local symtable
-		for (unsigned int i = 0; i < tmp->size; i++) {
-			if (str_isequal(tmp->data[i]->name, name)) {
-				return tmp->data[i];
-			}
-		}
+        current = tmp->data[index];
+
+        while(current) {
+            if (str_isequal(current->name, name))
+                return current;
+            current = current->next;
+        }
 
 		// end of linked list
 		if (tmp->next == NULL) {
@@ -238,14 +254,18 @@ local_symtab_t *local_symtab_find(local_symtab_t *local_tab, string_t name)
 		return NULL;
 	}
 
-	// iterate through all local symtabs with the same key
+    size_t index = hash_function(name);
+    struct local_data *current = NULL;
+
+	// iterate through all local symtabs
 	while (true) {
-		// search through identifiers in this local symtable
-		for (unsigned int i = 0; i < tmp->size; i++) {
-			if (str_isequal(tmp->data[i]->name, name)) {
-				return tmp;
-			}
-		}
+        current = tmp->data[index];
+
+        while(current) {
+            if (str_isequal(current->name, name))
+                    return tmp;
+            current = current->next;
+        }
 
 		// end of linked list
 		if (tmp->next == NULL) {
@@ -263,35 +283,21 @@ local_symtab_t *local_symtab_find(local_symtab_t *local_tab, string_t name)
 
 void local_add_if(local_symtab_t *local_tab)
 {
-	// update if counter in all local_symtabs that belong to this function
+	// update if counter in current local_symtable
 	local_symtab_t *tmp = local_tab;
 	tmp->if_cnt++;
-	
-	while (tmp->next != NULL) {	
-		// stop if next local symtab is from different function
-		if (!str_isequal(tmp->key, tmp->next->key)) {
-			break;
-		}
-		tmp->next->if_cnt++;
-		tmp = tmp->next;
-	}
+}
 
+void local_after_else(local_symtab_t *local_tab)
+{
+	local_tab->after_else = 1;
 }
 
 void local_add_while(local_symtab_t *local_tab)
 {
-	// update while counter in all local_symtabs that belong to this function
+	// update while counter in current local_symtable
 	local_symtab_t *tmp = local_tab;
 	tmp->while_cnt++;
-	
-	while (tmp->next != NULL) {	
-		// stop if next local symtab is from different function
-		if (!str_isequal(tmp->key, tmp->next->key)) {
-			break;
-		}
-		tmp->next->while_cnt++;
-		tmp = tmp->next;
-	}
 }
 
 void local_delete_top(local_symtab_t **local_tab)
@@ -308,11 +314,14 @@ void local_delete_top(local_symtab_t **local_tab)
 
 	// free key of local symtable
 	str_free(&del->key);
-	for (unsigned int i = 0; i < del->size; i++) {
-		// free names of all identifiers
-		str_free(&(del->data[i]->name));
-		// free local data structure
-		free(del->data[i]);
+	for (unsigned int i = 0; i < LOCAL_SYM_SIZE; i++) {
+        while(del->data[i]) {
+            struct local_data *tmp = del->data[i]->next;
+            // free names of all identifiers
+            str_free(&(del->data[i]->name));
+            free(del->data[i]);
+            del->data[i] = tmp;
+        }
 	}
 	// free the local table itself
 	free(del);
