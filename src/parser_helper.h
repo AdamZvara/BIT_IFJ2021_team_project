@@ -84,7 +84,6 @@ void p_helper_delete_identifier(parser_helper_t *f);
  *  f->func parameters, otherwise set them into f->temp
  * @param f Pointer to helper structure
  * @param kw Which parameter should be added (string, number, integer)
- * @todo return values from str_add_char
  */
 int p_helper_set_params(parser_helper_t *f, keyword_t kw);
 
@@ -92,7 +91,6 @@ int p_helper_set_params(parser_helper_t *f, keyword_t kw);
  * @brief Set retvals of function in helper structure
  * @param f Pointer to helper structure
  * @param kw Which retval should be added (string, number, integer)
- * @todo return values from str_add_char
  */
 int p_helper_set_retvals(parser_helper_t *f, keyword_t kw);
 
@@ -100,7 +98,6 @@ int p_helper_set_retvals(parser_helper_t *f, keyword_t kw);
  * @brief Fill helper temporary string when function is called
  * @param f Pointer to helper structure
  * @param type Parameter type
- * @todo return values from str_add_char
  */
 int p_helper_call_params_const(parser_helper_t *f, token_type_t type);
 
@@ -109,7 +106,6 @@ int p_helper_call_params_const(parser_helper_t *f, token_type_t type);
  * @param f Pointer to helper structure
  * @param name Name of identifier
  * @return 0 if ID was found and added, otherwise 1
- * @todo return values from str_add_char
  */
 int p_helper_call_params_id(parser_helper_t *f, string_t name);
 

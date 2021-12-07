@@ -17,7 +17,6 @@
 typedef struct stack_item {
     struct stack_item *next;
     int data;
-    // more TODO?
 } stack_item_t;
 
 typedef struct {

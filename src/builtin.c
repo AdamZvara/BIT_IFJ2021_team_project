@@ -337,7 +337,6 @@ void generate_substr()
 
     ADD_INST_N("add LF@%iterator LF@%iterator int@1");
     ADD_INST_N("jump _substr_loop");
-    // TODO: check if string is OK, index in range
 
     ADD_INST_N("label _substr_end");
 

@@ -134,7 +134,7 @@ local_symtab_t *local_create(string_t key);
  * @brief Create new depth of last function in local symtable
  * @warning New depth does not keep track of if_counter
  * @param previous Pointer to local symtable
- * @return 0 if successful, otherwise ERROR_INTERNAL TODO: maybe change
+ * @return 0 if successful, otherwise ERROR_INTERNAL
  */
 int local_new_depth(local_symtab_t **previous);
 
