@@ -1264,6 +1264,5 @@ int args_n() {
 
 int main() {
     int ret_main = parse();
-    //fprintf(stderr, "%d", ret_main);
     return ret_main;
 }

@@ -20,7 +20,7 @@ for f in $PARSER_DIR; do
 		TEXT=$PARSER_TEST_DIR/$(echo $f | cut -d '.' -f1).txt
         echo -e "${BLUE}Testing:${NC} $TEST_NAME"
 		# Run tests
-		../src/parser < $PARSER_TEST_DIR/$f > $OUTPUT
+		../ifj2021_compiler < $PARSER_TEST_DIR/$f > $OUTPUT
 		./../interpret/ic21int $OUTPUT < $TEXT > $RESULT 2>/dev/null
 		diff $RESULT $EXPECTED > $DIFF
 		if [ "$?" -ne 0 ]; then

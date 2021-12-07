@@ -21,13 +21,13 @@ for f in $PARSER_DIR; do
         echo -e "${BLUE}Testing:${NC} $TEST_NAME"
         if [ $PARSER_TEST_DIR == "parser-tests/error" ]; then
             # Run tests
-            ../src/parser < $PARSER_TEST_DIR/$f >>/dev/null 2>&1
+            ../ifj2021_compiler < $PARSER_TEST_DIR/$f >>/dev/null 2>&1
             if [ "$?" != $RETURN ]; then
                 echo -e "${RED}FAIL${NC}"
             fi
         else
             # Run tests
-            ../src/parser < $PARSER_TEST_DIR/$f > $OUTPUT
+            ../ifj2021_compiler < $PARSER_TEST_DIR/$f > $OUTPUT
             ./../interpret/ic21int $OUTPUT > $RESULT 2>/dev/null
             diff $RESULT $EXPECTED > $DIFF
             if [ $? -ne 0 ]; then

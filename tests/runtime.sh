@@ -21,7 +21,7 @@ for f in $PARSER_DIR; do
         echo -e "${BLUE}Testing:${NC} $TEST_NAME"
         if [ $PARSER_TEST_DIR == "parser-tests/runtime" ]; then
             # Run tests
-            ../src/parser < $PARSER_TEST_DIR/$f > $OUTPUT
+            ../ifj2021_compiler < $PARSER_TEST_DIR/$f > $OUTPUT
             ./../interpret/ic21int $OUTPUT
             if [ "$?" != $RETURN ]; then
                 echo -e "${RED}FAIL${NC}"
