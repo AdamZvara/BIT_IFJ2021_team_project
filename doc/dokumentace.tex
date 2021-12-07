@@ -97,6 +97,22 @@ Během implementace jsme postupně zjišťovali,
 \subsection{Sémantická analýza}
 
 \subsection{Generování kódu}
+Pro generování kódu jsme zvolili metodu přímého generovaní zásobníkových instrukcí během rekurzivního sestupu v syntaktické analýze.
+
+Instrukce se generují na základe aktuální vykonávané funkce v syntaktické analýze a také na základe kontextu (informace uložené v struktuře
+\texttt{parser\_helper}). Vygenerované instrukce se ukládají do pomocné struktury \texttt{ibuffer} - struktura definována ve souboru \texttt{ibuffer.c}
+obsahující "flexible array member", do kterého se ukládají samotné instrukce, které se v průběhu parsování tisknou na standardní výstup.
+
+Jeden z problémů je generovaní unikátních jmen identifikátorů mezi funkcemi nebo při vytvoření nového lokálního rámce ve funkci (podmínka/cyklus).
+Tento problém jsme vyřešili pomocí generovaní unikátního jména identifikátoru: \texttt{jméno\_funkce\$zanoření\$jméno\_identifikátoru}.
+
+Další problém, na který jsme při generovaní narazili, je deklarace identifikátorů uvnitř cyklu. To jsme vyřešili použitím pomocné struktury
+\texttt{defvar\_buffer} a stavového řetězce v struktuře \texttt{parser\_helper}. Pokud stavový řetězec obsahuje informaci, že jsme v těle cyklu,
+všechny deklarace identifikátorů se generují do \texttt{defvar\_bufferu} (ostatní instrukce se generují do \texttt{ibufferu}). Když zjistíme,
+že se nenacházíme v cyklu, vytiskne se obsah \texttt{defvar\_bufferu} a následně obsah \texttt{ibufferu}, čím zabráníme vícenásobné deklaraci proměnné.
+
+Vestavěné funkce se generují na konci celého programu. Aby jsme negenerovali zbytečně všechny vestavěné funkce, používáme strukturu \texttt{builtin\_used},
+do které si ukládáme informace o použitých funkcích, které se pak generují. Speciálním případem je funkce \texttt{write}, která se generuje přímo na místě volání této funkce.
 
 \section{Práce v týmu}
 
