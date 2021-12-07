@@ -138,9 +138,9 @@ na vrcholu zásobníku. Obě funkce se používájí pro sémantickou kontrolu.
  schopni kontrolovat zda a případně v jakém bloku platnosti jsou proměnné definované. Obě tabulky jsou naimplementované v souboru
  \texttt{symtable.c}.
 
-Sémantická analýza ke své činnosti dále využívá řetězce na ukládání typů různých hodnot a strukturu \texttt{parser\_helper}, popsanou v kapitole o syntaktické analýze. 
-Do řetězců se ukládají například typy proměnných při inicializaci, které se pak porovnávají s hlavičkou funkce, nebo s typy hodnot, 
-kterými dané proměnné inicializujeme. Tímto způsobem jsme schopni kontrolovat nejen typy hodnot, ale i jejich počet, jelikož se do řetězce ukládajá 
+Sémantická analýza ke své činnosti dále využívá řetězce na ukládání typů různých hodnot a strukturu \texttt{parser\_helper}, popsanou v kapitole o syntaktické analýze.
+Do řetězců se ukládají například typy proměnných při inicializaci, které se pak porovnávají s hlavičkou funkce, nebo s typy hodnot,
+kterými dané proměnné inicializujeme. Tímto způsobem jsme schopni kontrolovat nejen typy hodnot, ale i jejich počet, jelikož se do řetězce ukládajá
 jen jeden znak pro každou hodnotu. Obdobně jsou řešené i parametry u volání funkce, nebo například návratové hodnoty u funkcí.
 \subsection{Generování kódu}
 Pro generování kódu jsme zvolili metodu přímého generování zásobníkových instrukcí během rekurzivního sestupu v syntaktické analýze.
@@ -227,39 +227,39 @@ Pro verzování jsme používali nástroj \texttt{git} a pro vzdálené sdílen�
 \begin{table}[H]
     \centering
     \begin{enumerate}
-        \item \verb|<require> -> REQUIRE STRING\_LIT <prog>|
+        \item \verb|<require> -> REQUIRE STRING_LIT <prog>|
 
-        \item \verb|<prog> -> GLOBAL ID : FUNCTION (<params>) <ret\_params> <prog>|
-        \item \verb|<prog> -> FUNCTION ID (<params\_2>) <ret\_params> <body> <prog>|
+        \item \verb|<prog> -> GLOBAL ID : FUNCTION (<params>) <ret_params> <prog>|
+        \item \verb|<prog> -> FUNCTION ID (<params_2>) <ret_params> <body> <prog>|
 
         \item \verb|<prog> -> ID (<args>  <prog>|
         \item \verb|<prog> -> EOF|
 
-        \item \verb|<params> -> <types-keyword> <params\_n>|
+        \item \verb|<params> -> <types-keyword> <params_n>|
         \item \verb|<params> -> eps|
-        \item \verb|<params\_n> -> , <types-keyword> <params\_n>|
-        \item \verb|<params\_n> -> eps|
+        \item \verb|<params_n> -> , <types-keyword> <params_n>|
+        \item \verb|<params_n> -> eps|
 
-        \item \verb|<params\_2> -> ID : <types-keyword> <params2\_n>|
-        \item \verb|<params\_2> -> eps|
-        \item \verb|<params\_2\_n> -> , ID : <types-keyword> <params2\_n>|
-        \item \verb|<params\_2\_n> -> eps|
+        \item \verb|<params_2> -> ID : <types-keyword> <params2_n>|
+        \item \verb|<params_2> -> eps|
+        \item \verb|<params_2_n> -> , ID : <types-keyword> <params2_n>|
+        \item \verb|<params_2_n> -> eps|
 
-        \item \verb|<ret\_params> -> : <types-keyword> <ret\_params\_n>|
-        \item \verb|<ret\_params> -> eps|
-        \item \verb|<ret\_params\_n> -> , <types-keyword> <ret\_params\_n>|
-        \item \verb|<ret\_params\_n> -> eps|
+        \item \verb|<ret_params> -> : <types-keyword> <ret_params_n>|
+        \item \verb|<ret_params> -> eps|
+        \item \verb|<ret_params_n> -> , <types-keyword> <ret_params_n>|
+        \item \verb|<ret_params_n> -> eps|
 
         \item \verb|<body> -> LOCAL ID : <types-keyword> <init> <body>|
         \item \verb|<body> -> IF <expr> THEN <body> ELSE <body> END <body>|
         \item \verb|<body> -> WHILE <expr> DO <body> END <body>|
-        \item \verb|<body> -> ID <body\_n> <body>|
+        \item \verb|<body> -> ID <body_n> <body>|
         \item \verb|<body> -> END|
-        \item \verb|<body> -> RETURN <R\_side> <body>|
+        \item \verb|<body> -> RETURN <R_side> <body>|
 
-        \item \verb|<body\_n> -> ( <args>|
-        \item \verb|<body\_n> -> = <assign\_single>|
-        \item \verb|<body\_n> -> , ID <assign\_multi> <R\_side>|
+        \item \verb|<body_n> -> ( <args>|
+        \item \verb|<body_n> -> = <assign_single>|
+        \item \verb|<body_n> -> , ID <assign_multi> <R_side>|
 
     \end{enumerate}
     \caption{Gramatika řídící syntaktickou analýzu}
@@ -269,29 +269,29 @@ Pro verzování jsme používali nástroj \texttt{git} a pro vzdálené sdílen�
 \begin{table}[H]
     \centering
     \begin{enumerate}
-        \setcounter{enumi}{27}
-        \item \verb|<assign\_single> -> <expr>|
+        \setcounter{enumi}{26}
+        \item \verb|<assign_single> -> <expr>|
 
-        \item \verb|<assign\_multi> -> , ID <assign\_multi>|
-        \item \verb|<assign\_multi> -> =|
+        \item \verb|<assign_multi> -> , ID <assign_multi>|
+        \item \verb|<assign_multi> -> =|
 
-        \item \verb|<R\_side> -> <expr> <R\_side\_n>|
-        \item \verb|<R\_side\_n> -> , <R\_side>|
-        \item \verb|<R\_side\_n> -> eps|
+        \item \verb|<R_side> -> <expr> <R_side_n>|
+        \item \verb|<R_side_n> -> , <R_side>|
+        \item \verb|<R_side_n> -> eps|
 
-        \item \verb|<init> -> = <init\_n>|
+        \item \verb|<init> -> = <init_n>|
         \item \verb|<init> -> eps|
-        \item \verb|<init\_n> -> <expr>|
+        \item \verb|<init_n> -> <expr>|
 
         \item \verb|<args> -> )|
-        \item \verb|<args> -> <term> <args\_n>|
-        \item \verb|<args\_n> -> , <args>|
-        \item \verb|<args\_n> -> )|
+        \item \verb|<args> -> <term> <args_n>|
+        \item \verb|<args_n> -> , <args>|
+        \item \verb|<args_n> -> )|
 
         \item \verb|<term> -> ID|
-        \item \verb|<term> -> INT\_LIT|
-        \item \verb|<term> -> NUM\_LIT|
-        \item \verb|<term> -> STRING\_LIT|
+        \item \verb|<term> -> INT_LIT|
+        \item \verb|<term> -> NUM_LIT|
+        \item \verb|<term> -> STRING_LIT|
 
         \item \verb|<types-keyword> -> STRING|
         \item \verb|<types-keyword> -> NUMBER|
