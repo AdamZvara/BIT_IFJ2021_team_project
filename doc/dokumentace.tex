@@ -65,7 +65,7 @@ hodnota je 255, je poté převedeno na korespondující ASCII hodnotu.
 
 \subsection{Syntaktická analýza}
 Syntaktická analýza je implementována metodou rekurzivního sestupu. Překlad zdrojového kódu začíná zavolaním funkce
-\texttt{parse} z funkce main ve zdrojovém souboru \texttt{main.c}. Následuje inicializace tokenu, do kterého lexikální analyzátor
+\texttt{parse} z funkce main ve zdrojovém souboru \texttt{parser.c}. Následuje inicializace tokenu, do kterého lexikální analyzátor
 zapisuje hodnoty, globální tabulky symbolů, paměti pro postupné ukládání generovaných instrukcí a také se nainicializuje pomocná struktura.
 
 Během implementace jsme postupně zjišťovali,
@@ -84,7 +84,7 @@ Během implementace jsme postupně zjišťovali,
  další token, nebo je potřeba pracovat s tokenem který už má načtený. Tímto způsobem jsme řešili situaci, kdy je při
  vyhodnocování výrazů nevyhnutelně načten jeden token za koncem výrazu, jinak totiž nejsme schopní určit konec výrazu.
 
- Syntaktická analýza pracuje se dvěma typy tabulky symbolů. První z nich je globální tabulka symbolů, do které jsou na začátku
+ Syntaktická analýza pracuje se dvěma typy tabulek symbolů. První z nich je globální tabulka symbolů, do které jsou na začátku
  syntaktické analýzy uloženy vestavěné funkce a postupně během překladu i uživatelem definované funkce. Druhý typ tabulky je lokální
  tabulka symbolů, na začátku funkce se vytvoří první lokální tabulka a při dalším zanoření do cyklu, nebo v těle podmínky se vytvoří
  další, která se pomocí ukazatele napojí na ostatní lokální tabulky. Vznikne tak jednostranně vázaný seznam, na jehož začátku se nachází
