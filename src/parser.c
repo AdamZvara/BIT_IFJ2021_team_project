@@ -88,18 +88,20 @@ int parse()
 
     ret = require();
 
-    // check if all functions were defined - ret has higher priority
-    if (!ret && global_check_declared(global_tab)) {
-        return ERROR_SEMANTIC;
-    }
-
     ibuffer_print(buffer);
     ibuffer_destroy(buffer);
     ibuffer_destroy(defvar_buffer);
-    global_destroy(global_tab);
     builtin_destroy(builtin_used);
     p_helper_dispose(p_helper);
     local_destroy(local_tab);
+
+    // check if all functions were defined - ret has higher priority
+    if (!ret && global_check_declared(global_tab)) {
+        global_destroy(global_tab);
+        return ERROR_SEMANTIC;
+    }
+
+    global_destroy(global_tab);
 
     if (curr_token != NULL) {
         token_free();

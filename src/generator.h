@@ -14,8 +14,6 @@
 #ifndef _GENERATOR_H
 #define _GENERATOR_H
 
-#define IBUFFER_SIZE 200  // size of ibuffer
-#define INSTR_SIZE   100  // size of single instruction
 
 #include <stdio.h>
 #include "scanner.h"
